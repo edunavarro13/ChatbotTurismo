@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.google.gson.Gson;
 
@@ -46,18 +47,23 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 String text = editText.getText().toString();
-                ChatModel model = new ChatModel(text,true); // user send message
-                list_chat.add(model);
+                if(!text.isEmpty()) {
+                    ChatModel model = new ChatModel(text, true); // user send message
+                    list_chat.add(model);
 
-                ChatModel respuesta = new ChatModel("Hola", false);
+                    ChatModel respuesta = new ChatModel("Hola", false);
 
-                list_chat.add(respuesta);
+                    list_chat.add(respuesta);
 
-                CustomAdapter adapter2 = new CustomAdapter(list_chat,getApplicationContext());
-                listView.setAdapter(adapter2);
+                    CustomAdapter adapter2 = new CustomAdapter(list_chat, getApplicationContext());
+                    listView.setAdapter(adapter2);
 
-                //remove user message
-                editText.setText("");
+                    //remove user message
+                    editText.setText("");
+                }
+                else {
+                    Toast.makeText (MainActivity.this ,getString(R.string.error_no_mensaje),2).show();
+                }
             }
         });
     }
