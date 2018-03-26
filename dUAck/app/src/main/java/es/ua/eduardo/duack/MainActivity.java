@@ -34,6 +34,14 @@ public class MainActivity extends AppCompatActivity {
         editText = (EditText)findViewById(R.id.user_message);
         btn_send_message = (FloatingActionButton)findViewById(R.id.fab);
 
+        // Saludo inicial
+        ChatModel saludo = new ChatModel(getString(R.string.saludo), false);
+
+        list_chat.add(saludo);
+
+        CustomAdapter adapter = new CustomAdapter(list_chat,getApplicationContext());
+        listView.setAdapter(adapter);
+
         btn_send_message.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -45,8 +53,8 @@ public class MainActivity extends AppCompatActivity {
 
                 list_chat.add(respuesta);
 
-                CustomAdapter adapter = new CustomAdapter(list_chat,getApplicationContext());
-                listView.setAdapter(adapter);
+                CustomAdapter adapter2 = new CustomAdapter(list_chat,getApplicationContext());
+                listView.setAdapter(adapter2);
 
                 //remove user message
                 editText.setText("");

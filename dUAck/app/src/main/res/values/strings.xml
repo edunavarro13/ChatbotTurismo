@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">dUAck</string>
+    <string name="chat_vacio">Introduce un mensaje</string>
+    <string name="saludo">¡Hola, soy dUAck, tu guía sobre turismo! ¿Qué quieres saber?</string>
 </resources>
