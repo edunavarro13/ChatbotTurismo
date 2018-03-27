@@ -1,3 +1,9 @@
 <resources>
     <string name="app_name">dUAck</string>
+    <string name="saludo">¡Hola, soy dUAck, tu guía sobre turismo! ¿Qué quieres saber?</string>
+    <string name="error_no_mensaje">Introduce un mensaje</string>
+    <string name="ibm_no_responde">He perdido la conexión con Internet. ¡Comprueba tu conexión y vuelve a intentarlo!</string>
+    <string name="username">597cbfb8-bd21-4d03-9b2d-fb9a0884b390</string>
+    <string name="password">68cxpwUxwX5s</string>
+    <string name="workspace">145540c7-0fb5-4bea-bf64-cb30ccc72c90</string>
 </resources>
