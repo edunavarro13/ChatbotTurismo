@@ -1,6 +1,7 @@
 package es.ua.eduardo.duack;
 
 import android.content.Context;
+import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
@@ -47,6 +48,8 @@ public class MainActivity extends AppCompatActivity {
     List<ChatModel> list_chat = new ArrayList<>();
     FloatingActionButton btn_send_message;
 
+    public LocationManager manager;
+
     // IBM
     String outputText;
 
@@ -77,6 +80,8 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 String text = editText.getText().toString();
+                //remove user message
+                editText.setText("");
                 if(!text.isEmpty()) {
                     ChatModel model = new ChatModel(text, true); // user send message
                     list_chat.add(model);
@@ -102,9 +107,6 @@ public class MainActivity extends AppCompatActivity {
 
                     CustomAdapter adapter2 = new CustomAdapter(list_chat, getApplicationContext());
                     listView.setAdapter(adapter2);
-
-                    //remove user message
-                    editText.setText("");
                 }
                 else {
                     Toast.makeText (MainActivity.this ,getString(R.string.error_no_mensaje),Toast.LENGTH_LONG).show();
@@ -122,7 +124,29 @@ public class MainActivity extends AppCompatActivity {
                         .enqueue(new ServiceCallback<MessageResponse>() {
                             @Override
                             public void onResponse(MessageResponse response) {
+                                // ######## No funciona, hay que arreglarlo #######################3
+                                //int num_respuesta = (int) (Math.random()*(response.getText().size()));
                                 outputText = response.getText().get(0);
+
+                                if(response.getIntents().get(0).getIntent()
+                                        .endsWith("OficinaTurismo")) {
+                                    // Primero esperamos que output no este vacio
+                                    while (outputText == null || outputText == "") {
+                                        try {
+                                            Thread.sleep(1000);
+                                        } catch (Exception ex) {
+                                            outputText = "El hilo ha dado el error: " + ex.toString();
+                                        }
+                                    }
+                                    // Comprobamos si esta conectado
+                                    manager = (LocationManager) getSystemService( Context.LOCATION_SERVICE );
+                                    if ( !manager.isProviderEnabled( LocationManager.GPS_PROVIDER ) ) {
+                                        outputText += "\n" + getString(R.string.sin_gps);
+                                    }
+                                    else {
+                                        outputText += "\nDistancia = ";
+                                    }
+                                }
 
                             /*if(response.getIntents().get(0).getIntent()
                                     .endsWith("Solicitudes")) {
@@ -147,17 +171,6 @@ public class MainActivity extends AppCompatActivity {
                                                                 FuelError fuelError) {
                                             }
                                         });
-                            }
-                            else {
-                                runOnUiThread(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        conversation.append(
-                                                Html.fromHtml("<p><b>Bot:</b> " +
-                                                        outputText + "</p>")
-                                        );
-                                    }
-                                });
                             }*/
                             }
 

@@ -6,4 +6,5 @@
     <string name="username">597cbfb8-bd21-4d03-9b2d-fb9a0884b390</string>
     <string name="password">68cxpwUxwX5s</string>
     <string name="workspace">145540c7-0fb5-4bea-bf64-cb30ccc72c90</string>
+    <string name="sin_gps">Si conectas el GPS y me vuelves a preguntar podría decirte la distancia.</string>
 </resources>
