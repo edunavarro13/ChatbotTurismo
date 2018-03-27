@@ -1,10 +1,14 @@
 package es.ua.eduardo.duack;
 
+import android.Manifest;
 import android.content.Context;
+import android.content.pm.PackageManager;
+import android.location.Location;
 import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.design.widget.FloatingActionButton;
 import android.os.Bundle;
@@ -48,7 +52,11 @@ public class MainActivity extends AppCompatActivity {
     List<ChatModel> list_chat = new ArrayList<>();
     FloatingActionButton btn_send_message;
 
-    public LocationManager manager;
+    private LocationManager manager;
+
+    private double latitud_oficina = 38.47790161262177;
+    private double longitud_oficina = -0.7960233999999673;
+    private int TIEMPO_BUCLE = 500;
 
     // IBM
     String outputText;
@@ -92,7 +100,7 @@ public class MainActivity extends AppCompatActivity {
                     // asi que esperamos hasta que lo este y lo cargamos
                     while (outputText == null || outputText == "") {
                         try {
-                            Thread.sleep(1000);
+                            Thread.sleep(TIEMPO_BUCLE);
                         } catch (Exception ex) {
                             outputText = "El hilo ha dado el error: " + ex.toString();
                         }
@@ -133,7 +141,7 @@ public class MainActivity extends AppCompatActivity {
                                     // Primero esperamos que output no este vacio
                                     while (outputText == null || outputText == "") {
                                         try {
-                                            Thread.sleep(1000);
+                                            Thread.sleep(TIEMPO_BUCLE);
                                         } catch (Exception ex) {
                                             outputText = "El hilo ha dado el error: " + ex.toString();
                                         }
@@ -144,34 +152,32 @@ public class MainActivity extends AppCompatActivity {
                                         outputText += "\n" + getString(R.string.sin_gps);
                                     }
                                     else {
-                                        outputText += "\nDistancia = ";
+                                        if (ActivityCompat.checkSelfPermission(MainActivity.this,
+                                                Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                                            // Obtenemos la localizacion
+                                            List<String> providers = manager.getProviders(true);
+                                            Location bestLocation = null;
+                                            for (String provider : providers) {
+                                                Location l = manager.getLastKnownLocation(provider);
+                                                if (l == null) {
+                                                    continue;
+                                                }
+                                                if (bestLocation == null || l.getAccuracy() < bestLocation.getAccuracy()) {
+                                                    // Found best last known location: %s", l);
+                                                    bestLocation = l;
+                                                }
+                                            }
+                                            if(bestLocation != null)
+                                                outputText += "\nDistancia = " + distancia(latitud_oficina, longitud_oficina,
+                                                        bestLocation.getLatitude(), bestLocation.getLongitude()) + " km.";
+                                            else
+                                                outputText += "\nERROR: Location es null";
+                                        }
+                                        else {
+                                            outputText += "\n" + getString(R.string.permisos_gps);
+                                        }
                                     }
                                 }
-
-                            /*if(response.getIntents().get(0).getIntent()
-                                    .endsWith("Solicitudes")) {
-                                String quotesURL =
-                                        "https://api.forismatic.com/api/1.0/" +
-                                                "?method=getQuote&format=text&lang=en";
-
-                                Fuel.get(quotesURL)
-                                        .responseString(new Handler<String>() {
-                                            @Override
-                                            public void success(Request request,
-                                                                Response response, String quote) {
-                                                conversation.append(
-                                                        Html.fromHtml("<p><b>Bot:</b> " +
-                                                                quote + "</p>")
-                                                );
-                                            }
-
-                                            @Override
-                                            public void failure(Request request,
-                                                                Response response,
-                                                                FuelError fuelError) {
-                                            }
-                                        });
-                            }*/
                             }
 
                             @Override
@@ -210,5 +216,18 @@ public class MainActivity extends AppCompatActivity {
             }
         }
         return connected;
+    }
+
+    public double distancia(double lat1, double lon1, double lat2, double lon2)
+    {
+        double R = 6378.137; //Radio de la tierra en km
+        double dLat  = ( lat2 - lat1 )*Math.PI/180;
+        double dLong = ( lon2 - lon1 )*Math.PI/180;
+
+        double a = Math.sin(dLat/2) * Math.sin(dLat/2) + Math.cos(lat1*Math.PI/180) * Math.cos(lat2*Math.PI/180) * Math.sin(dLong/2) * Math.sin(dLong/2);
+        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+        double d = R * c;
+
+        return (double)Math.round(d * 1000d) / 1000d;
     }
 }
