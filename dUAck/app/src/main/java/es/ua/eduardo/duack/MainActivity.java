@@ -1,5 +1,8 @@
 package es.ua.eduardo.duack;
 
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.support.design.widget.FloatingActionButton;
@@ -111,14 +114,15 @@ public class MainActivity extends AppCompatActivity {
     }
 
     protected void mensajeIBM(String inputText) {
-        MessageRequest request = new MessageRequest.Builder().inputText(inputText).build();
-        try {
-            myConversationService
-                    .message(getString(R.string.workspace), request)
-                    .enqueue(new ServiceCallback<MessageResponse>() {
-                        @Override
-                        public void onResponse(MessageResponse response) {
-                            outputText = response.getText().get(0);
+        if (compruebaConexion(this)) {
+            MessageRequest request = new MessageRequest.Builder().inputText(inputText).build();
+            try {
+                myConversationService
+                        .message(getString(R.string.workspace), request)
+                        .enqueue(new ServiceCallback<MessageResponse>() {
+                            @Override
+                            public void onResponse(MessageResponse response) {
+                                outputText = response.getText().get(0);
 
                             /*if(response.getIntents().get(0).getIntent()
                                     .endsWith("Solicitudes")) {
@@ -155,15 +159,43 @@ public class MainActivity extends AppCompatActivity {
                                     }
                                 });
                             }*/
-                        }
+                            }
 
-                        @Override
-                        public void onFailure(Exception e) {
-                        }
-                    });
-            //Thread.sleep(5000);
-        } catch (Exception ex) {
+                            @Override
+                            public void onFailure(Exception e) {
+                            }
+                        });
+                //Thread.sleep(5000);
+            } catch (Exception ex) {
+                outputText = getString(R.string.ibm_no_responde);
+            }
+        }
+        else {
             outputText = getString(R.string.ibm_no_responde);
         }
+    }
+
+    /**
+     * Función para comprobar si hay conexión a Internet
+     * @param context
+     * @return boolean
+     */
+
+    public static boolean compruebaConexion(Context context) {
+
+        boolean connected = false;
+
+        ConnectivityManager connec = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+
+        // Recupera todas las redes (tanto móviles como wifi)
+        NetworkInfo[] redes = connec.getAllNetworkInfo();
+
+        for (int i = 0; i < redes.length; i++) {
+            // Si alguna red tiene conexión, se devuelve true
+            if (redes[i].getState() == NetworkInfo.State.CONNECTED) {
+                connected = true;
+            }
+        }
+        return connected;
     }
 }
