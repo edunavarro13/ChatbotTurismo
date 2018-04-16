@@ -7,5 +7,6 @@
     <string name="password">68cxpwUxwX5s</string>
     <string name="workspace">145540c7-0fb5-4bea-bf64-cb30ccc72c90</string>
     <string name="sin_gps">Si conectas el GPS y me vuelves a preguntar podría decirte la distancia.</string>
-    <string name="permisos_gps">Si me das los permisos necesarios comprobaré la distancia.</string>
+    <string name="permisos_gps">Si me das los permisos necesarios comprobaré la distancia con tu ubicación.</string>
+    <string name="location_null">¡Vaya! No estoy detectando bien tu ubicación. Intenta salir de la aplicación y volver a entrar con el GPS activado.</string>
 </resources>

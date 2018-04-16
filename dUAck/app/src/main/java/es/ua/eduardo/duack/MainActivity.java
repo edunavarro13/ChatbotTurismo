@@ -1,18 +1,24 @@
 package es.ua.eduardo.duack;
 
 import android.Manifest;
+import android.app.Activity;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.location.Location;
+import android.location.LocationListener;
 import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.design.widget.FloatingActionButton;
 import android.os.Bundle;
 import android.text.Html;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ListView;
@@ -39,7 +45,7 @@ import com.ibm.watson.developer_cloud.conversation.v1.model.MessageRequest;
 import com.ibm.watson.developer_cloud.conversation.v1.model.MessageResponse;
 import com.ibm.watson.developer_cloud.http.ServiceCallback;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements LocationListener {
 
     //The ConversationService class of the Watson SDK has all the methods you'll need to
     // communicate with the Conversation service. Therefore, the first thing you need to do
@@ -52,14 +58,19 @@ public class MainActivity extends AppCompatActivity {
     List<ChatModel> list_chat = new ArrayList<>();
     FloatingActionButton btn_send_message;
 
-    private LocationManager manager;
-
     private double latitud_oficina = 38.47790161262177;
     private double longitud_oficina = -0.7960233999999673;
     private int TIEMPO_BUCLE = 500;
 
     // IBM
     String outputText;
+
+    // ###### Localizacion #######
+    private static final int SOLICITUD_PERMISO_LOCALIZACION = 0;
+    private static final long DOS_MINUTOS = 2 * 60 * 1000;
+    private LocationManager manejador;
+    private Location mejorLocaliz;
+    // ###########################
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -121,6 +132,10 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
+
+        // ###### Localizacion #######
+        manejador = (LocationManager) getSystemService(LOCATION_SERVICE);
+        // ###########################
     }
 
     protected void mensajeIBM(String inputText) {
@@ -147,31 +162,21 @@ public class MainActivity extends AppCompatActivity {
                                         }
                                     }
                                     // Comprobamos si esta conectado
-                                    manager = (LocationManager) getSystemService( Context.LOCATION_SERVICE );
-                                    if ( !manager.isProviderEnabled( LocationManager.GPS_PROVIDER ) ) {
+                                    ultimaLocalizazion();
+                                    //manager = (LocationManager) getSystemService( Context.LOCATION_SERVICE );
+                                    if ( !manejador.isProviderEnabled(LocationManager.GPS_PROVIDER) ||
+                                            !manejador.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
                                         outputText += "\n" + getString(R.string.sin_gps);
                                     }
                                     else {
                                         if (ActivityCompat.checkSelfPermission(MainActivity.this,
                                                 Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
                                             // Obtenemos la localizacion
-                                            List<String> providers = manager.getProviders(true);
-                                            Location bestLocation = null;
-                                            for (String provider : providers) {
-                                                Location l = manager.getLastKnownLocation(provider);
-                                                if (l == null) {
-                                                    continue;
-                                                }
-                                                if (bestLocation == null || l.getAccuracy() < bestLocation.getAccuracy()) {
-                                                    // Found best last known location: %s", l);
-                                                    bestLocation = l;
-                                                }
-                                            }
-                                            if(bestLocation != null)
+                                            if(mejorLocaliz != null)
                                                 outputText += "\nDistancia = " + distancia(latitud_oficina, longitud_oficina,
-                                                        bestLocation.getLatitude(), bestLocation.getLongitude()) + " km.";
+                                                        mejorLocaliz.getLatitude(), mejorLocaliz.getLongitude()) + " km.";
                                             else
-                                                outputText += "\nERROR: Location es null";
+                                                outputText += "\n" + getString(R.string.location_null);
                                         }
                                         else {
                                             outputText += "\n" + getString(R.string.permisos_gps);
@@ -230,4 +235,115 @@ public class MainActivity extends AppCompatActivity {
 
         return (double)Math.round(d * 1000d) / 1000d;
     }
+
+    // ########## Localizacion ###########
+    void ultimaLocalizazion(){
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.
+                ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            if (manejador.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+                actualizaMejorLocaliz(manejador.getLastKnownLocation(
+                        LocationManager.GPS_PROVIDER));
+            }
+            if (manejador.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
+                actualizaMejorLocaliz(manejador.getLastKnownLocation(
+                        LocationManager.NETWORK_PROVIDER));
+            }
+        }
+        else  {
+            solicitarPermiso(Manifest.permission.ACCESS_FINE_LOCATION,
+                    getString(R.string.permisos_gps), SOLICITUD_PERMISO_LOCALIZACION, this);
+        }
+    }
+
+        // Metodo que solicita cierto permiso (por ejemplo, Ubicacion)
+    public static void solicitarPermiso(final String permiso, String justificacion,
+                                        final int requestCode, final Activity actividad) {
+        if (ActivityCompat.shouldShowRequestPermissionRationale(actividad,
+                permiso)){
+            new AlertDialog.Builder(actividad)
+                    .setTitle("Solicitud de permiso")
+                    .setMessage(justificacion)
+                    .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int whichButton) {
+                            ActivityCompat.requestPermissions(actividad,
+                                    new String[]{permiso}, requestCode);
+                        }})
+                    .show();
+        } else {
+            ActivityCompat.requestPermissions(actividad,
+                    new String[]{permiso}, requestCode);
+        }
+    }
+
+        // Una vez que el usuario escoja en el metodo solicitarpermiso se realizará una
+        // llamada a este metodo
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           String[] permissions, int[] grantResults) {
+        if (requestCode == SOLICITUD_PERMISO_LOCALIZACION) {
+            if (grantResults.length== 1 &&
+                    grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                ultimaLocalizazion();
+                activarProveedores();
+            }
+        }
+    }
+
+    @Override protected void onResume() {
+        super.onResume();
+        activarProveedores();
+    }
+
+    private void activarProveedores() {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.
+                ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            if (manejador.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+                manejador.requestLocationUpdates(LocationManager.GPS_PROVIDER,
+                        20 * 1000, 5, this);
+            }
+            if (manejador.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
+                manejador.requestLocationUpdates(LocationManager.NETWORK_PROVIDER,
+                        10 * 1000, 10, this);
+            }
+        } else {
+            solicitarPermiso(Manifest.permission.ACCESS_FINE_LOCATION,
+                    getString(R.string.permisos_gps), SOLICITUD_PERMISO_LOCALIZACION, this);
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.
+                ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            manejador.removeUpdates(this);
+        }
+    }
+    @Override
+    public void onLocationChanged(Location location) {
+        actualizaMejorLocaliz(location);
+    }
+    @Override
+    public void onProviderDisabled(String proveedor) {
+        activarProveedores();
+    }
+    @Override
+    public void onProviderEnabled(String proveedor) {
+        activarProveedores();
+    }
+    @Override
+    public void onStatusChanged(String proveedor, int estado, Bundle extras) {
+        activarProveedores();
+    }
+
+    private void actualizaMejorLocaliz(Location localiz) {
+        if (localiz != null && (mejorLocaliz == null
+                || localiz.getAccuracy() < 2*mejorLocaliz.getAccuracy()
+                || localiz.getTime() - mejorLocaliz.getTime() > DOS_MINUTOS)) {
+            mejorLocaliz = localiz;
+        }
+    }
+
+    // ###################################
+
 }
