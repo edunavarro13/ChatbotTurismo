@@ -24,7 +24,7 @@
         app:arrowPosition="14dp"
         app:arrowLocation="left"
         app:arrowCenter="true"
-        app:bubbleColor="@color/colorAccent"
+        app:bubbleColor="@color/respuesta"
         />
 
 
