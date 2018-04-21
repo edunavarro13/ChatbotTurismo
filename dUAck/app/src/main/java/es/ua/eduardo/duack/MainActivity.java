@@ -138,7 +138,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
         // ###########################
     }
 
-    protected void mensajeIBM(String inputText) {
+    protected void mensajeIBM(final String inputText) {
         if (compruebaConexion(this)) {
             MessageRequest request = new MessageRequest.Builder().inputText(inputText).build();
             try {
@@ -183,6 +183,43 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
                                         }
                                     }
                                 }
+                                else if(response.getIntents().get(0).getIntent()
+                                        .endsWith("Nombre")) {
+                                    // Primero esperamos que output no este vacio
+                                    while (outputText == null || outputText == "") {
+                                        try {
+                                            Thread.sleep(TIEMPO_BUCLE);
+                                        } catch (Exception ex) {
+                                            outputText = "El hilo ha dado el error: " + ex.toString();
+                                        }
+                                    }
+                                    String aux_nombre = inputText;
+                                    aux_nombre = convertirANombre(aux_nombre);
+
+                                    // La primera ocurrencia de '-' empezando por el final del string es donde empieza
+                                    // el substring
+                                    int pos_nombre = -1;
+                                    for(int i_nombre = aux_nombre.length() - 1; i_nombre >= 0; i_nombre-- ){
+                                        if(aux_nombre.charAt(i_nombre) == '-' && pos_nombre < 0) {
+                                            pos_nombre = i_nombre + 1;
+                                            break;
+                                        }
+                                    }
+                                    if(pos_nombre >= 0) {
+                                        aux_nombre = aux_nombre.substring(pos_nombre);
+                                        outputText += " " + aux_nombre;
+                                        outputText += "\nSELECT * FROM x WHERE nombre='" + aux_nombre + "'";
+                                        // Plaza mayor de elda aunque tambien puede ser universidad de alicante
+                                        if(aux_nombre.contains(" de ")) {
+                                            aux_nombre = aux_nombre.replace(" de ", "-");
+                                            String ciudad = aux_nombre.substring(aux_nombre.indexOf("-") + 1);
+                                            String nombre = aux_nombre.substring(0, aux_nombre.indexOf("-"));
+                                            outputText += " || (WHERE nombre='" + nombre + "' && ciudad='" + ciudad + "')";
+                                        }
+                                    }
+                                    else
+                                        outputText = "La cadena no contenía del, la ni el.";
+                                }
                             }
 
                             @Override
@@ -221,6 +258,29 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
             }
         }
         return connected;
+    }
+
+    public String convertirANombre(String nombre) {
+        // Existe la posibilidad de que por autocorrector, en vez de las posibles soluciones
+        // que son la, el o del, hayan mayusculas y por tanto, aqui lo comprobamos
+        // Le ponemos despues de los 'la', 'el', 'del' ya que ahi es donde separaremos
+        nombre = nombre.replace(" del ", " del-");
+        nombre = nombre.replace(" Del ", " Del-");
+        nombre = nombre.replace(" dEl ", " dEl-");
+        nombre = nombre.replace(" deL ", " deL-");
+        nombre = nombre.replace(" DEl ", " DEl-");
+        nombre = nombre.replace(" dEL ", " dEL-");
+        nombre = nombre.replace(" DeL ", " DeL-");
+
+        nombre = nombre.replace(" la ", " la-");
+        nombre = nombre.replace(" La ", " La-");
+        nombre = nombre.replace(" lA ", " lA-");
+
+        nombre = nombre.replace(" el ", " el-");
+        nombre = nombre.replace(" El ", " El-");
+
+        nombre = nombre.replace(" eL ", " eL-");
+        return nombre;
     }
 
     public double distancia(double lat1, double lon1, double lat2, double lon2)
