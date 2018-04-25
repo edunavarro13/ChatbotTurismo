@@ -208,17 +208,18 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
                                     if(pos_nombre >= 0) {
                                         aux_nombre = aux_nombre.substring(pos_nombre);
                                         outputText += " " + aux_nombre;
-                                        outputText += "\nSELECT * FROM x WHERE nombre='" + aux_nombre + "'";
+                                        // Puede ser Universidad de Alicante o UA
+                                        outputText += "\nSELECT * FROM x WHERE nombre='" + aux_nombre + "' OR nombre2='" + aux_nombre + "'";
                                         // Plaza mayor de elda aunque tambien puede ser universidad de alicante
                                         if(aux_nombre.contains(" de ")) {
                                             aux_nombre = aux_nombre.replace(" de ", "-");
                                             String ciudad = aux_nombre.substring(aux_nombre.indexOf("-") + 1);
                                             String nombre = aux_nombre.substring(0, aux_nombre.indexOf("-"));
-                                            outputText += " || (WHERE nombre='" + nombre + "' && ciudad='" + ciudad + "')";
+                                            outputText += " AND (WHERE nombre='" + nombre + "' && ciudad='" + ciudad + "')";
                                         }
                                     }
                                     else
-                                        outputText = "La cadena no contenía del, la ni el.";
+                                        outputText = getString(R.string.beta_error_nombre);
                                 }
                             }
 
@@ -278,8 +279,11 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
 
         nombre = nombre.replace(" el ", " el-");
         nombre = nombre.replace(" El ", " El-");
-
         nombre = nombre.replace(" eL ", " eL-");
+
+        // Quitamos tambien los simbolos '?', '!'
+        nombre = nombre.replace("?", "");
+        nombre = nombre.replace("!", "");
         return nombre;
     }
 
