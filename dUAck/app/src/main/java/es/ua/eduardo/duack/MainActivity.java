@@ -10,36 +10,23 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.os.AsyncTask;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.design.widget.FloatingActionButton;
 import android.os.Bundle;
-import android.text.Html;
-import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
 
-import com.google.gson.Gson;
-
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import es.ua.eduardo.duack.Adapter.CustomAdapter;
-import es.ua.eduardo.duack.Helper.HttpDataHandler;
 import es.ua.eduardo.duack.Models.ChatModel;
-import es.ua.eduardo.duack.Models.DuackModel;
 
-import com.github.kittinunf.fuel.Fuel;
-import com.github.kittinunf.fuel.core.FuelError;
-import com.github.kittinunf.fuel.core.Handler;
-import com.github.kittinunf.fuel.core.Request;
-import com.github.kittinunf.fuel.core.Response;
 import com.ibm.watson.developer_cloud.conversation.v1.ConversationService;
 import com.ibm.watson.developer_cloud.conversation.v1.model.MessageRequest;
 import com.ibm.watson.developer_cloud.conversation.v1.model.MessageResponse;
@@ -62,6 +49,11 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
     private double longitud_oficina = -0.7960233999999673;
     private int TIEMPO_BUCLE = 500;
 
+    private LugarInteres clase_lugar;
+    private boolean fin = false;
+    private boolean datos_interes = true;
+    private int modificar_datos_lugar = -1; // 0=coste;1=guia;2=idioma;3=tipo;4=sub_tipo
+
     // IBM
     String outputText;
 
@@ -77,6 +69,8 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        clase_lugar = new LugarInteres();
+
         listView = (ListView)findViewById(R.id.list_of_message);
         editText = (EditText)findViewById(R.id.user_message);
         btn_send_message = (FloatingActionButton)findViewById(R.id.fab);
@@ -88,7 +82,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
         );
 
         // Saludo inicial
-        ChatModel saludo = new ChatModel(getString(R.string.saludo), false);
+        ChatModel saludo = new ChatModel(getString(R.string.saludo), false, false);
 
         list_chat.add(saludo);
 
@@ -98,37 +92,248 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
         btn_send_message.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String text = editText.getText().toString();
-                //remove user message
-                editText.setText("");
-                if(!text.isEmpty()) {
-                    ChatModel model = new ChatModel(text, true); // user send message
-                    list_chat.add(model);
+                if(!fin) {
+                    if(datos_interes) {
+                        String text = editText.getText().toString();
+                        //remove user message
+                        editText.setText("");
+                        if (!text.isEmpty()) {
+                            ChatModel model = new ChatModel(text, true, false); // user send message
+                            list_chat.add(model);
 
-                    // Cogemos el mensaje de IBM
-                    mensajeIBM(text);
-                    // Si outputText esta vacio es que aun no ha cargado el mensaje
-                    // asi que esperamos hasta que lo este y lo cargamos
-                    while (outputText == null || outputText == "") {
-                        try {
-                            Thread.sleep(TIEMPO_BUCLE);
-                        } catch (Exception ex) {
-                            outputText = "El hilo ha dado el error: " + ex.toString();
+                            // Cogemos el mensaje de IBM
+                            mensajeIBM(text);
+                            // Si outputText esta vacio es que aun no ha cargado el mensaje
+                            // asi que esperamos hasta que lo este y lo cargamos
+                            while (outputText == null || outputText == "") {
+                                try {
+                                    Thread.sleep(TIEMPO_BUCLE);
+                                } catch (Exception ex) {
+                                    outputText = "El hilo ha dado el error: " + ex.toString();
+                                }
+                            }
+                            if(datos_interes) {
+                                if (fin) {
+                                    outputText += "\n" + getString(R.string.fin_chat);
+                                }
+
+                                ChatModel respuesta = new ChatModel(outputText, false, false);
+
+                                // Lo vacio para que no salga del while en el proximo mensaje hasta que tenga un mensaje
+                                outputText = "";
+
+                                list_chat.add(respuesta);
+
+                                CustomAdapter adapter2 = new CustomAdapter(list_chat, getApplicationContext());
+                                listView.setAdapter(adapter2);
+
+                                // Si hay que decir el mensaje de fin
+                                if (fin) {
+                                    ChatModel fin_chat_pregunta = new ChatModel("", false, true);
+                                    list_chat.add(fin_chat_pregunta);
+                                    adapter2 = new CustomAdapter(list_chat, getApplicationContext());
+                                    adapter2.setEdit(editText);
+                                    listView.setAdapter(adapter2);
+                                    // Impedimos que se pueda clickar editText
+                                    //editText.setEnabled(false);
+                                }
+                            } else {
+                                // Comprobamos si estan todos los datos
+                                datos_interes = clase_lugar.todosDatos();
+                                if(!datos_interes) {
+                                    // Si algun valor es null es que aun no lo hemos definido
+                                    // Coste
+                                    if (clase_lugar.getCoste() == null) {
+                                        ChatModel datos_coste= new ChatModel(outputText + getString(R.string.datos_coste)
+                                                + "\n" + getString(R.string.irrelevante), false, false);
+                                        list_chat.add(datos_coste);
+                                        CustomAdapter adapter4 = new CustomAdapter(list_chat, getApplicationContext());
+                                        adapter4.setEdit(editText);
+                                        listView.setAdapter(adapter4);
+                                        modificar_datos_lugar = 0;
+                                    } // Guia
+                                    else if (clase_lugar.isGuia() == null) {
+                                        ChatModel datos_guia = new ChatModel(outputText + getString(R.string.datos_guia)
+                                                + "\n" + getString(R.string.irrelevante), false, false);
+                                        list_chat.add(datos_guia);
+                                        ChatModel fin_chat_opciones = new ChatModel("", false, true);
+                                        list_chat.add(fin_chat_opciones);
+                                        CustomAdapter adapter4 = new CustomAdapter(list_chat, getApplicationContext());
+                                        adapter4.setEdit(editText);
+                                        listView.setAdapter(adapter4);
+                                        modificar_datos_lugar = 1;
+                                    } // Idioma
+                                    else if (clase_lugar.getIdioma() == null) {
+                                        ChatModel datos_idioma = new ChatModel(outputText + getString(R.string.datos_idioma)
+                                                + "\n" + getString(R.string.irrelevante), false, false);
+                                        list_chat.add(datos_idioma);
+                                        CustomAdapter adapter4 = new CustomAdapter(list_chat, getApplicationContext());
+                                        adapter4.setEdit(editText);
+                                        listView.setAdapter(adapter4);
+                                        modificar_datos_lugar = 2;
+                                    } // Tipo
+                                    else if (clase_lugar.getTipo() == null) {
+                                        ChatModel datos_tipo = new ChatModel(outputText + getString(R.string.datos_tipo)
+                                                + "\n" + getString(R.string.irrelevante), false, false);
+                                        list_chat.add(datos_tipo);
+                                        CustomAdapter adapter4 = new CustomAdapter(list_chat, getApplicationContext());
+                                        adapter4.setEdit(editText);
+                                        listView.setAdapter(adapter4);
+                                        modificar_datos_lugar = 3;
+                                    } // Sub tipo
+                                    else if (clase_lugar.getSub_tipo() == null) {
+                                        ChatModel datos_sub_tipo = new ChatModel(outputText + getString(R.string.datos_sub_tipo)
+                                                + "\n" + getString(R.string.irrelevante), false, false);
+                                        list_chat.add(datos_sub_tipo);
+                                        CustomAdapter adapter4 = new CustomAdapter(list_chat, getApplicationContext());
+                                        adapter4.setEdit(editText);
+                                        listView.setAdapter(adapter4);
+                                        modificar_datos_lugar = 4;
+                                    }
+                                } else {
+                                    modificar_datos_lugar = -1;
+                                    finDatosLugar();
+                                }
+                            }
+                        } else {
+                            Toast.makeText(MainActivity.this, getString(R.string.error_no_mensaje), Toast.LENGTH_LONG).show();
+                        }
+                        // Caso en el que preguntamos al usuario los datos de LugaresInteres
+                        // que faltan o hasta que pone FIN o Fin
+                    } else {
+                        String text = editText.getText().toString();
+                        //remove user message
+                        editText.setText("");
+                        if (!text.isEmpty()) {
+                            // Han de ser palabras sueltas, sin espacios
+                            if(!text.contains(" ")) {
+                                if (!text.equals("FIN") && !text.equals("Fin")
+                                        && !text.equals("fin")) {
+                                    ChatModel datos = new ChatModel(text, true, false);
+                                    list_chat.add(datos);
+                                    CustomAdapter adapter4 = new CustomAdapter(list_chat, getApplicationContext());
+                                    adapter4.setEdit(editText);
+                                    listView.setAdapter(adapter4);
+
+                                    boolean correcto = true;
+                                    // Modificar coste
+                                    if (modificar_datos_lugar == 0) {
+                                        // Si no es irrelevante
+                                        if (!text.equals("Irrelevante") && !text.equals("irrelevante"))
+                                            clase_lugar.setCoste(Double.parseDouble(text));
+                                    }
+                                    // Modificar guia
+                                    else if(modificar_datos_lugar == 1) {
+                                        if(text.equals("Sí") || text.equals("Si")
+                                                || text.equals("si") || text.equals("sí"))
+                                            clase_lugar.setGuia(true);
+                                        else if(text.equals("No") || text.equals("no"))
+                                            clase_lugar.setGuia(false);
+                                        else if(!text.equals("Irrelevante") && !text.equals("irrelevante")) {
+                                            Toast.makeText(MainActivity.this, getString(R.string.error_salir_incorrecto), Toast.LENGTH_LONG).show();
+                                            correcto = false;
+                                        }
+                                    }
+                                    // Modificar idioma
+                                    else if (modificar_datos_lugar == 2) {
+                                        if (!text.equals("Irrelevante") && !text.equals("irrelevante"))
+                                            clase_lugar.setIdioma(text);
+                                    }
+                                    // Modificar tipo
+                                    else if (modificar_datos_lugar == 3) {
+                                        if (!text.equals("Irrelevante") && !text.equals("irrelevante"))
+                                            clase_lugar.setTipo(text);
+                                    }
+                                    // Modificar sub_tipo
+                                    else if (modificar_datos_lugar == 4) {
+                                        if (!text.equals("Irrelevante") && !text.equals("irrelevante"))
+                                            clase_lugar.setSub_tipo(text);
+                                    }
+                                    else {
+                                        Toast.makeText(MainActivity.this, getString(R.string.beta_error_modificar_datos), Toast.LENGTH_LONG).show();
+                                    }
+
+                                    if(correcto) {
+                                        // Comprobamos si estan todos los datos
+                                        datos_interes = clase_lugar.todosDatos();
+                                        if(!datos_interes) {
+                                            // Si algun valor es null es que aun no lo hemos definido
+                                            // Coste
+                                            if (clase_lugar.getCoste() == null) {
+                                                ChatModel datos_coste= new ChatModel(getString(R.string.datos_coste)
+                                                        + "\n" + getString(R.string.irrelevante), false, false);
+                                                list_chat.add(datos_coste);
+                                                CustomAdapter adapter2 = new CustomAdapter(list_chat, getApplicationContext());
+                                                adapter2.setEdit(editText);
+                                                listView.setAdapter(adapter2);
+                                                modificar_datos_lugar = 0;
+                                            } // Guia
+                                            else if (clase_lugar.isGuia() == null) {
+                                                ChatModel datos_guia = new ChatModel(getString(R.string.datos_guia)
+                                                        + "\n" + getString(R.string.irrelevante), false, false);
+                                                list_chat.add(datos_guia);
+                                                ChatModel fin_chat_opciones = new ChatModel("", false, true);
+                                                list_chat.add(fin_chat_opciones);
+                                                CustomAdapter adapter2 = new CustomAdapter(list_chat, getApplicationContext());
+                                                adapter2.setEdit(editText);
+                                                listView.setAdapter(adapter2);
+                                                modificar_datos_lugar = 1;
+                                            } // Idioma
+                                            else if (clase_lugar.getIdioma() == null) {
+                                                ChatModel datos_idioma = new ChatModel(getString(R.string.datos_idioma)
+                                                        + "\n" + getString(R.string.irrelevante), false, false);
+                                                list_chat.add(datos_idioma);
+                                                CustomAdapter adapter2 = new CustomAdapter(list_chat, getApplicationContext());
+                                                adapter2.setEdit(editText);
+                                                listView.setAdapter(adapter2);
+                                                modificar_datos_lugar = 2;
+                                            } // Tipo
+                                            else if (clase_lugar.getTipo() == null) {
+                                                ChatModel datos_tipo = new ChatModel(getString(R.string.datos_tipo)
+                                                        + "\n" + getString(R.string.irrelevante), false, false);
+                                                list_chat.add(datos_tipo);
+                                                CustomAdapter adapter2 = new CustomAdapter(list_chat, getApplicationContext());
+                                                adapter2.setEdit(editText);
+                                                listView.setAdapter(adapter2);
+                                                modificar_datos_lugar = 3;
+                                            } // Sub tipo
+                                            else if (clase_lugar.getSub_tipo() == null) {
+                                                ChatModel datos_sub_tipo = new ChatModel(getString(R.string.datos_sub_tipo)
+                                                        + "\n" + getString(R.string.irrelevante), false, false);
+                                                list_chat.add(datos_sub_tipo);
+                                                CustomAdapter adapter2 = new CustomAdapter(list_chat, getApplicationContext());
+                                                adapter2.setEdit(editText);
+                                                listView.setAdapter(adapter2);
+                                                modificar_datos_lugar = 4;
+                                            }
+                                        } else {
+                                            modificar_datos_lugar = -1;
+                                            finDatosLugar();
+                                        }
+                                    }
+                                }
+                                // Caso pone fin
+                                else if (text.equals("FIN") || text.equals("Fin") || text.equals("fin")) {
+                                    ChatModel datos = new ChatModel(text, true, false);
+                                    list_chat.add(datos);
+                                    CustomAdapter adapter4 = new CustomAdapter(list_chat, getApplicationContext());
+                                    adapter4.setEdit(editText);
+                                    listView.setAdapter(adapter4);
+
+                                    datos_interes = true;
+                                    finDatosLugar();
+                                }
+                            }
+                            else {
+                                Toast.makeText(MainActivity.this, getString(R.string.error_dato_espacio), Toast.LENGTH_LONG).show();
+                            }
+                        }
+                        else {
+                            Toast.makeText(MainActivity.this, getString(R.string.error_no_mensaje), Toast.LENGTH_LONG).show();
                         }
                     }
-
-                    ChatModel respuesta = new ChatModel(outputText, false);
-
-                    // Lo vacio para que no salga del while en el proximo mensaje hasta que tenga un mensaje
-                    outputText = "";
-
-                    list_chat.add(respuesta);
-
-                    CustomAdapter adapter2 = new CustomAdapter(list_chat, getApplicationContext());
-                    listView.setAdapter(adapter2);
-                }
-                else {
-                    Toast.makeText (MainActivity.this ,getString(R.string.error_no_mensaje),Toast.LENGTH_LONG).show();
+                } else {
+                    salirDuack();
                 }
             }
         });
@@ -138,7 +343,60 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
         // ###########################
     }
 
-    protected void mensajeIBM(String inputText) {
+    public void finDatosLugar() {
+        String datos_li = "Ya estan todos los datos.\n Buscaré en mi BD: " + clase_lugar.toString()
+                + "\n" + getString(R.string.fin_chat);
+        ChatModel fin_datos = new ChatModel(datos_li,false, false);
+        list_chat.add(fin_datos);
+        ChatModel fin_chat_pregunta = new ChatModel("", false, true);
+        list_chat.add(fin_chat_pregunta);
+        CustomAdapter adapter3 = new CustomAdapter(list_chat,getApplicationContext());
+        adapter3 = new CustomAdapter(list_chat, getApplicationContext());
+        adapter3.setEdit(editText);
+        listView.setAdapter(adapter3);
+        // Ponemos clase_lugar a null
+        clase_lugar.vaciarLugar();
+        fin = true;
+    }
+
+    public void ejecutarDatosLugarInteres(String cadena) {
+
+    }
+
+    public void salirDuack() {
+        // Caso de queremos hacer otra consulta
+        if(editText.getText().toString().equals("Sí") ||
+                editText.getText().toString().equals("Si")) {
+            ChatModel final_duack = new ChatModel(getString(R.string.nueva_consulta), false, false);
+            list_chat.add(final_duack);
+            CustomAdapter adapter2 = new CustomAdapter(list_chat, getApplicationContext());
+            adapter2.setEdit(editText);
+            listView.setAdapter(adapter2);
+            fin = false;
+            editText.setText("");
+        }
+        // Caso de queremos salir
+        else if(editText.getText().toString().equals("No")) {
+            //fin = false;
+            try {
+                ChatModel final_duack = new ChatModel(getString(R.string.salir), false, false);
+                list_chat.add(final_duack);
+                CustomAdapter adapter2 = new CustomAdapter(list_chat, getApplicationContext());
+                adapter2.setEdit(editText);
+                listView.setAdapter(adapter2);
+                // No se cómo hacer que espere tiempo, si pongo Thread solo tarda mas en cargar
+            } catch (Exception ex) {
+                outputText = "El hilo ha dado el error: " + ex.toString();
+            }
+            finish();
+        }
+        // Caso incorrecto
+        else {
+            Toast.makeText(MainActivity.this, getString(R.string.error_salir_incorrecto), Toast.LENGTH_LONG).show();
+        }
+    }
+
+    protected void mensajeIBM(final String inputText) {
         if (compruebaConexion(this)) {
             MessageRequest request = new MessageRequest.Builder().inputText(inputText).build();
             try {
@@ -154,7 +412,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
                                 if(response.getIntents().get(0).getIntent()
                                         .endsWith("OficinaTurismo")) {
                                     // Primero esperamos que output no este vacio
-                                    while (outputText == null || outputText == "") {
+                                    while (outputText == null || outputText.equals("")) {
                                         try {
                                             Thread.sleep(TIEMPO_BUCLE);
                                         } catch (Exception ex) {
@@ -181,6 +439,92 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
                                         else {
                                             outputText += "\n" + getString(R.string.permisos_gps);
                                         }
+                                    }
+                                    fin = true;
+                                }
+                                else if(response.getIntents().get(0).getIntent()
+                                        .endsWith("Nombre")) {
+                                    // Primero esperamos que output no este vacio
+                                    while (outputText == null || outputText == "") {
+                                        try {
+                                            Thread.sleep(TIEMPO_BUCLE);
+                                        } catch (Exception ex) {
+                                            outputText = "El hilo ha dado el error: " + ex.toString();
+                                        }
+                                    }
+                                    String aux_nombre = inputText;
+                                    aux_nombre = convertirANombre(aux_nombre);
+
+                                    // La primera ocurrencia de '-' empezando por el final del string es donde empieza
+                                    // el substring
+                                    int pos_nombre = -1;
+                                    for(int i_nombre = aux_nombre.length() - 1; i_nombre >= 0; i_nombre-- ){
+                                        if(aux_nombre.charAt(i_nombre) == '-' && pos_nombre < 0) {
+                                            pos_nombre = i_nombre + 1;
+                                            break;
+                                        }
+                                    }
+                                    if(pos_nombre >= 0) {
+                                        aux_nombre = aux_nombre.substring(pos_nombre);
+                                        outputText += " " + aux_nombre;
+                                        // Puede ser Universidad de Alicante o UA
+                                        outputText += "\nSELECT * FROM x WHERE nombre='" + aux_nombre + "' OR nombre2='" + aux_nombre + "'";
+                                        // Plaza mayor de elda aunque tambien puede ser universidad de alicante
+                                        if(aux_nombre.contains(" de ")) {
+                                            aux_nombre = aux_nombre.replace(" de ", "-");
+                                            String ciudad = aux_nombre.substring(aux_nombre.indexOf("-") + 1);
+                                            String nombre = aux_nombre.substring(0, aux_nombre.indexOf("-"));
+                                            outputText += " AND (WHERE nombre='" + nombre + "' && ciudad='" + ciudad + "')";
+                                        }
+                                    }
+                                    else
+                                        outputText = getString(R.string.beta_error_nombre);
+                                    fin = true;
+                                }
+                                else if(response.getIntents().get(0).getIntent()
+                                        .endsWith("LugarInteres")) {
+                                    // Primero comprobamos que no sea null
+                                    if(response.getEntities() != null) {
+                                        // Iniciamos el bucle
+                                        for (int t = 0; t < response.getEntities().size(); t++) {
+                                            // Caso gratis
+                                            if(response.getEntities().get(t).getValue().equals("gratis")) {
+                                                clase_lugar.setCoste(0.0);
+                                            }
+                                            // Caso guia
+                                            else if(response.getEntities().get(t).getValue().equals("guia")) {
+                                                // Puede ser 'con' o 'sin'
+                                                // En caso de no poner nada entendemos que si quiere guia
+                                                if(inputText.contains(" sin "))
+                                                    clase_lugar.setGuia(false);
+                                                else
+                                                    clase_lugar.setGuia(true);
+                                            }
+                                            // Caso idioma
+                                            else if(response.getEntities().get(t).getEntity().equals("idioma")) {
+                                                clase_lugar.setIdioma(response.getEntities().get(t).getValue());
+                                            }
+                                            // Caso tipo
+                                            else if(response.getEntities().get(t).getEntity().equals("tipo")) {
+                                                clase_lugar.setTipo(response.getEntities().get(t).getValue());
+                                            }
+                                            // Caso sub_tipo
+                                            else if(response.getEntities().get(t).getEntity().equals("sub_tipo")) {
+                                                clase_lugar.setSub_tipo(response.getEntities().get(t).getValue());
+                                            }
+                                        }
+                                    }
+                                    else {
+                                        outputText += " es null ";
+                                    }
+                                    // Comprobamos si estan todos los datos
+                                    datos_interes = clase_lugar.todosDatos();
+                                    if(!datos_interes) {
+                                        outputText = getString(R.string.lugar_interes_datos) + "\n";
+                                    }
+                                    else {
+                                        outputText = "Buscaré en mi BD: " + clase_lugar.toString();
+                                        fin = true;
                                     }
                                 }
                             }
@@ -221,6 +565,32 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
             }
         }
         return connected;
+    }
+
+    public String convertirANombre(String nombre) {
+        // Existe la posibilidad de que por autocorrector, en vez de las posibles soluciones
+        // que son la, el o del, hayan mayusculas y por tanto, aqui lo comprobamos
+        // Le ponemos despues de los 'la', 'el', 'del' ya que ahi es donde separaremos
+        nombre = nombre.replace(" del ", " del-");
+        nombre = nombre.replace(" Del ", " Del-");
+        nombre = nombre.replace(" dEl ", " dEl-");
+        nombre = nombre.replace(" deL ", " deL-");
+        nombre = nombre.replace(" DEl ", " DEl-");
+        nombre = nombre.replace(" dEL ", " dEL-");
+        nombre = nombre.replace(" DeL ", " DeL-");
+
+        nombre = nombre.replace(" la ", " la-");
+        nombre = nombre.replace(" La ", " La-");
+        nombre = nombre.replace(" lA ", " lA-");
+
+        nombre = nombre.replace(" el ", " el-");
+        nombre = nombre.replace(" El ", " El-");
+        nombre = nombre.replace(" eL ", " eL-");
+
+        // Quitamos tambien los simbolos '?', '!'
+        nombre = nombre.replace("?", "");
+        nombre = nombre.replace("!", "");
+        return nombre;
     }
 
     public double distancia(double lat1, double lon1, double lat2, double lon2)
