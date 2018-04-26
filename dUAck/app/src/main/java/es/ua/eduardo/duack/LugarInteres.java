@@ -17,30 +17,50 @@ public class LugarInteres {
         sub_tipo = null;
     }
 
-    @Override
-    public String toString() {
-        return "LugarInteres{" +
-                "coste=" + coste +
-                ", guia=" + guia +
-                ", idioma='" + idioma + '\'' +
-                ", tipo='" + tipo + '\'' +
-                ", sub_tipo='" + sub_tipo + '\'' +
-                '}';
+    public void vaciarLugar() {
+        coste = null;
+        guia = null;
+        idioma = null;
+        tipo = null;
+        sub_tipo = null;
     }
 
-    public double getCoste() {
+    @Override
+    public String toString() {
+        String lugar = "LugarInteres{";
+        if(coste != null)
+            lugar += "coste=" + coste + ", ";
+        if(guia != null)
+            lugar += "guia=" + guia + ", ";
+        if(idioma != null)
+            lugar += "idioma=" + idioma + ", ";
+        if(tipo != null)
+            lugar += "tipo=" + tipo + ", ";
+        if(sub_tipo != null)
+            lugar += "sub_tipo=" + sub_tipo;
+        lugar += "}";
+        return lugar;
+    }
+
+    // Devuelve true si ya tiene todos los datos y false si no
+    public boolean todosDatos() {
+        return coste != null && guia != null && idioma != null
+                && tipo != null && sub_tipo != null;
+    }
+
+    public Double getCoste() {
         return coste;
     }
 
-    public void setCoste(double coste) {
+    public void setCoste(Double coste) {
         this.coste = coste;
     }
 
-    public boolean isGuia() {
+    public Boolean isGuia() {
         return guia;
     }
 
-    public void setGuia(boolean guia) {
+    public void setGuia(Boolean guia) {
         this.guia = guia;
     }
 
