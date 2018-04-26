@@ -62,6 +62,8 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
     private double longitud_oficina = -0.7960233999999673;
     private int TIEMPO_BUCLE = 500;
 
+    private LugarInteres clase_lugar;
+
     // IBM
     String outputText;
 
@@ -76,6 +78,8 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        clase_lugar = new LugarInteres();
 
         listView = (ListView)findViewById(R.id.list_of_message);
         editText = (EditText)findViewById(R.id.user_message);
@@ -220,6 +224,43 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
                                     }
                                     else
                                         outputText = getString(R.string.beta_error_nombre);
+                                }
+                                else if(response.getIntents().get(0).getIntent()
+                                        .endsWith("LugarInteres")) {
+                                    // Primero comprobamos que no sea null
+                                    if(response.getEntities() != null) {
+                                        // Iniciamos el bucle
+                                        for (int t = 0; t < response.getEntities().size(); t++) {
+                                            // Caso gratis
+                                            if(response.getEntities().get(t).getValue().equals("gratis")) {
+                                                clase_lugar.setCoste(0);
+                                            }
+                                            // Caso guia
+                                            else if(response.getEntities().get(t).getValue().equals("guia")) {
+                                                // Puede ser 'con' o 'sin'
+                                                // En caso de no poner nada entendemos que si quiere guia
+                                                if(inputText.contains(" sin "))
+                                                    clase_lugar.setGuia(false);
+                                                else
+                                                    clase_lugar.setGuia(true);
+                                            }
+                                            // Caso idioma
+                                            else if(response.getEntities().get(t).getEntity().equals("idioma")) {
+                                                clase_lugar.setIdioma(response.getEntities().get(t).getValue());
+                                            }
+                                            // Caso tipo
+                                            else if(response.getEntities().get(t).getEntity().equals("tipo")) {
+                                                clase_lugar.setTipo(response.getEntities().get(t).getValue());
+                                            }
+                                            // Caso sub_tipo
+                                            else if(response.getEntities().get(t).getEntity().equals("sub_tipo")) {
+                                                clase_lugar.setSub_tipo(response.getEntities().get(t).getValue());
+                                            }
+                                        }
+                                    }
+                                    else
+                                        outputText += " es null ";
+                                    outputText = "Buscare un " + clase_lugar.toString();
                                 }
                             }
 
