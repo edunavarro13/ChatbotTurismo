@@ -10,36 +10,23 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.os.AsyncTask;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.design.widget.FloatingActionButton;
 import android.os.Bundle;
-import android.text.Html;
-import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
 
-import com.google.gson.Gson;
-
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import es.ua.eduardo.duack.Adapter.CustomAdapter;
-import es.ua.eduardo.duack.Helper.HttpDataHandler;
 import es.ua.eduardo.duack.Models.ChatModel;
-import es.ua.eduardo.duack.Models.DuackModel;
 
-import com.github.kittinunf.fuel.Fuel;
-import com.github.kittinunf.fuel.core.FuelError;
-import com.github.kittinunf.fuel.core.Handler;
-import com.github.kittinunf.fuel.core.Request;
-import com.github.kittinunf.fuel.core.Response;
 import com.ibm.watson.developer_cloud.conversation.v1.ConversationService;
 import com.ibm.watson.developer_cloud.conversation.v1.model.MessageRequest;
 import com.ibm.watson.developer_cloud.conversation.v1.model.MessageResponse;
@@ -63,6 +50,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
     private int TIEMPO_BUCLE = 500;
 
     private LugarInteres clase_lugar;
+    private boolean fin = false;
 
     // IBM
     String outputText;
@@ -92,7 +80,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
         );
 
         // Saludo inicial
-        ChatModel saludo = new ChatModel(getString(R.string.saludo), false);
+        ChatModel saludo = new ChatModel(getString(R.string.saludo), false, false);
 
         list_chat.add(saludo);
 
@@ -102,37 +90,83 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
         btn_send_message.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String text = editText.getText().toString();
-                //remove user message
-                editText.setText("");
-                if(!text.isEmpty()) {
-                    ChatModel model = new ChatModel(text, true); // user send message
-                    list_chat.add(model);
+                if(!fin) {
+                    String text = editText.getText().toString();
+                    //remove user message
+                    editText.setText("");
+                    if (!text.isEmpty()) {
+                        ChatModel model = new ChatModel(text, true, false); // user send message
+                        list_chat.add(model);
 
-                    // Cogemos el mensaje de IBM
-                    mensajeIBM(text);
-                    // Si outputText esta vacio es que aun no ha cargado el mensaje
-                    // asi que esperamos hasta que lo este y lo cargamos
-                    while (outputText == null || outputText == "") {
+                        // Cogemos el mensaje de IBM
+                        mensajeIBM(text);
+                        // Si outputText esta vacio es que aun no ha cargado el mensaje
+                        // asi que esperamos hasta que lo este y lo cargamos
+                        while (outputText == null || outputText == "") {
+                            try {
+                                Thread.sleep(TIEMPO_BUCLE);
+                            } catch (Exception ex) {
+                                outputText = "El hilo ha dado el error: " + ex.toString();
+                            }
+                        }
+                        if (fin) {
+                            outputText += "\n" + getString(R.string.fin_chat);
+                        }
+
+                        ChatModel respuesta = new ChatModel(outputText, false, false);
+
+                        // Lo vacio para que no salga del while en el proximo mensaje hasta que tenga un mensaje
+                        outputText = "";
+
+                        list_chat.add(respuesta);
+
+                        CustomAdapter adapter2 = new CustomAdapter(list_chat, getApplicationContext());
+                        listView.setAdapter(adapter2);
+
+                        // Si hay que decir el mensaje de fin
+                        if (fin) {
+                            ChatModel fin_chat_pregunta = new ChatModel("", false, true);
+                            list_chat.add(fin_chat_pregunta);
+                            adapter2 = new CustomAdapter(list_chat, getApplicationContext());
+                            adapter2.setEdit(editText);
+                            listView.setAdapter(adapter2);
+                            // Impedimos que se pueda clickar editText
+                            //editText.setEnabled(false);
+                        }
+                    } else {
+                        Toast.makeText(MainActivity.this, getString(R.string.error_no_mensaje), Toast.LENGTH_LONG).show();
+                    }
+                } else {
+                    // Caso de queremos hacer otra consulta
+                    if(editText.getText().toString().equals("Sí") ||
+                            editText.getText().toString().equals("Si")) {
+                        ChatModel final_duack = new ChatModel(getString(R.string.nueva_consulta), false, false);
+                        list_chat.add(final_duack);
+                        CustomAdapter adapter2 = new CustomAdapter(list_chat, getApplicationContext());
+                        adapter2.setEdit(editText);
+                        listView.setAdapter(adapter2);
+                        fin = false;
+                        editText.setText("");
+                    }
+                    // Caso de queremos salir
+                    else if(editText.getText().toString().equals("No")) {
+                        //fin = false;
                         try {
-                            Thread.sleep(TIEMPO_BUCLE);
+                            ChatModel final_duack = new ChatModel(getString(R.string.salir), false, false);
+                            list_chat.add(final_duack);
+                            CustomAdapter adapter2 = new CustomAdapter(list_chat, getApplicationContext());
+                            adapter2.setEdit(editText);
+                            listView.setAdapter(adapter2);
+                            // No se cómo hacer que espere tiempo, si pongo Thread solo tarda mas en cargar
                         } catch (Exception ex) {
                             outputText = "El hilo ha dado el error: " + ex.toString();
                         }
+                        finish();
                     }
-
-                    ChatModel respuesta = new ChatModel(outputText, false);
-
-                    // Lo vacio para que no salga del while en el proximo mensaje hasta que tenga un mensaje
-                    outputText = "";
-
-                    list_chat.add(respuesta);
-
-                    CustomAdapter adapter2 = new CustomAdapter(list_chat, getApplicationContext());
-                    listView.setAdapter(adapter2);
-                }
-                else {
-                    Toast.makeText (MainActivity.this ,getString(R.string.error_no_mensaje),Toast.LENGTH_LONG).show();
+                    // Caso incorrecto
+                    else {
+                        Toast.makeText(MainActivity.this, getString(R.string.error_salir_incorrecto), Toast.LENGTH_LONG).show();
+                    }
                 }
             }
         });
@@ -186,6 +220,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
                                             outputText += "\n" + getString(R.string.permisos_gps);
                                         }
                                     }
+                                    fin = true;
                                 }
                                 else if(response.getIntents().get(0).getIntent()
                                         .endsWith("Nombre")) {

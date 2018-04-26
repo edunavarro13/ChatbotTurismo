@@ -7,10 +7,12 @@ package es.ua.eduardo.duack.Models;
 public class ChatModel {
     public String message;
     public boolean isSend;
+    public boolean esPregunta;
 
-    public ChatModel(String message, boolean isSend) {
+    public ChatModel(String message, boolean isSend, boolean esPregunta) {
         this.message = message;
         this.isSend = isSend;
+        this.esPregunta = esPregunta;
     }
 
     public ChatModel() {
@@ -30,5 +32,13 @@ public class ChatModel {
 
     public void setSend(boolean send) {
         isSend = send;
+    }
+
+    public boolean isPregunta() {
+        return esPregunta;
+    }
+
+    public void setPregunta(boolean esPregunta) {
+        this.esPregunta = esPregunta;
     }
 }
