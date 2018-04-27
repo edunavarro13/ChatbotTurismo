@@ -1,5 +1,8 @@
 package es.ua.eduardo.duack;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class LugarInteres {
     private Double coste;
     private Boolean guia;
@@ -7,6 +10,7 @@ public class LugarInteres {
     private String tipo;
     private String sub_tipo;
     // tambien tiene, nombre, nombre2, ubicacion
+    private List<Boolean> comprobado;
 
     // El constructor por defecto lo pone todo a null
     public LugarInteres() {
@@ -15,6 +19,19 @@ public class LugarInteres {
         idioma = null;
         tipo = null;
         sub_tipo = null;
+        ponerANoComprobado();
+    }
+
+    public void ponerANoComprobado() {
+        if(comprobado == null) {
+            comprobado = new ArrayList<Boolean>();
+            for (int i = 0; i < 5; i++)
+                comprobado.add(false);
+        }
+        else {
+            for (int i = 0; i < 5; i++)
+                comprobado.set(i, false);
+        }
     }
 
     public void vaciarLugar() {
@@ -44,8 +61,9 @@ public class LugarInteres {
 
     // Devuelve true si ya tiene todos los datos y false si no
     public boolean todosDatos() {
-        return coste != null && guia != null && idioma != null
-                && tipo != null && sub_tipo != null;
+        return (coste != null || comprobado.get(0)) && (guia != null || comprobado.get(1))
+                && (idioma != null || comprobado.get(2)) && (tipo != null || comprobado.get(3))
+                && (sub_tipo != null || comprobado.get(4));
     }
 
     public Double getCoste() {
@@ -54,6 +72,7 @@ public class LugarInteres {
 
     public void setCoste(Double coste) {
         this.coste = coste;
+        comprobado.set(0, true);
     }
 
     public Boolean isGuia() {
@@ -62,6 +81,7 @@ public class LugarInteres {
 
     public void setGuia(Boolean guia) {
         this.guia = guia;
+        comprobado.set(1, true);
     }
 
     public String getIdioma() {
@@ -70,6 +90,7 @@ public class LugarInteres {
 
     public void setIdioma(String idioma) {
         this.idioma = idioma;
+        comprobado.set(2, true);
     }
 
     public String getTipo() {
@@ -78,6 +99,7 @@ public class LugarInteres {
 
     public void setTipo(String tipo) {
         this.tipo = tipo;
+        comprobado.set(3, true);
     }
 
     public String getSub_tipo() {
@@ -86,6 +108,11 @@ public class LugarInteres {
 
     public void setSub_tipo(String sub_tipo) {
         this.sub_tipo = sub_tipo;
+        comprobado.set(4, true);
+    }
+
+    public Boolean getComprobadoId(int id) {
+        return comprobado.get(id);
     }
 
 }
