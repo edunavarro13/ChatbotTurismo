@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item android:title="Cancelar"
+        android:id="@+id/edicion_cancelar"
+        android:orderInCategory="115"
+        app:showAsAction="always|collapseActionView"/>
+    <item android:title="Guardar"
+        android:id="@+id/edicion_guardar"
+        android:orderInCategory="115"
+        app:showAsAction="always|collapseActionView"/>
+</menu>
