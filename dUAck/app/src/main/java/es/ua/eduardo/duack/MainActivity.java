@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -29,6 +30,7 @@ import java.util.List;
 
 import es.ua.eduardo.duack.Adapter.CustomAdapter;
 import es.ua.eduardo.duack.Models.ChatModel;
+import es.ua.eduardo.duack.Models.SubTipoLugar;
 
 import com.ibm.watson.developer_cloud.conversation.v1.ConversationService;
 import com.ibm.watson.developer_cloud.conversation.v1.model.MessageRequest;
@@ -56,6 +58,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
     private boolean fin = false;
     private boolean datos_interes = true;
     private int modificar_datos_lugar = -1; // 0=coste;1=guia;2=idioma;3=tipo;4=sub_tipo
+    public static BaseDatos bd;
 
     // IBM
     String outputText;
@@ -71,6 +74,8 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        bd = new BaseDatos(this);
 
         clase_lugar = new LugarInteres();
 
@@ -192,21 +197,21 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
                                     // Modificar idioma
                                     else if (modificar_datos_lugar == 2) {
                                         if (!text.equals("irrelevante"))
-                                            clase_lugar.setIdioma(text);
+                                            clase_lugar.setIdioma(Idioma.valueOf(text.toUpperCase()));
                                         else
                                             clase_lugar.setIdioma(null);
                                     }
                                     // Modificar tipo
                                     else if (modificar_datos_lugar == 3) {
                                         if (!text.equals("irrelevante"))
-                                            clase_lugar.setTipo(text);
+                                            clase_lugar.setTipo(TipoLugar.valueOf(text.toUpperCase()));
                                         else
                                             clase_lugar.setTipo(null);
                                     }
                                     // Modificar sub_tipo
                                     else if (modificar_datos_lugar == 4) {
                                         if (!text.equals("irrelevante"))
-                                            clase_lugar.setSub_tipo(text);
+                                            clase_lugar.setSub_tipo(SubTipoLugar.valueOf(text.toUpperCase()));
                                         else
                                             clase_lugar.setSub_tipo(null);
                                     }
@@ -388,6 +393,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
                                 }
                                 else if(response.getIntents().get(0).getIntent()
                                         .endsWith("Nombre")) {
+                                    String para_bd = "";
                                     // Primero esperamos que output no este vacio
                                     while (outputText == null || outputText == "") {
                                         try {
@@ -412,17 +418,22 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
                                         aux_nombre = aux_nombre.substring(pos_nombre);
                                         outputText += " " + aux_nombre;
                                         // Puede ser Universidad de Alicante o UA
-                                        outputText += "\nSELECT * FROM x WHERE nombre='" + aux_nombre + "' OR nombre2='" + aux_nombre + "'";
+                                        para_bd = "SELECT * FROM lugares WHERE nombre='" + primeraMayus(aux_nombre)
+                                                + "' OR nombre2='" + primeraMayus(aux_nombre) + "'";
                                         // Plaza mayor de elda aunque tambien puede ser universidad de alicante
                                         if(aux_nombre.contains(" de ")) {
                                             aux_nombre = aux_nombre.replace(" de ", "-");
                                             String ciudad = aux_nombre.substring(aux_nombre.indexOf("-") + 1);
                                             String nombre = aux_nombre.substring(0, aux_nombre.indexOf("-"));
-                                            outputText += " AND (WHERE nombre='" + nombre + "' && ciudad='" + ciudad + "')";
+                                            para_bd += " OR (nombre='" + primeraMayus(nombre) + "' && ciudad='" + primeraMayus(ciudad) + "')";
                                         }
                                     }
                                     else
                                         outputText = getString(R.string.beta_error_nombre);
+
+                                    Cursor cursor_aux = bd.extraeCursorNombre(primeraMayus(para_bd));
+                                    clase_lugar = bd.extraeLugarInteres(cursor_aux);
+                                    outputText += "\nId = " + clase_lugar.getId();
                                     fin = true;
                                 }
                                 else if(response.getIntents().get(0).getIntent()
@@ -446,15 +457,15 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
                                             }
                                             // Caso idioma
                                             else if(response.getEntities().get(t).getEntity().equals("idioma")) {
-                                                clase_lugar.setIdioma(response.getEntities().get(t).getValue());
+                                                clase_lugar.setIdioma(Idioma.valueOf(response.getEntities().get(t).getValue().toUpperCase()));
                                             }
                                             // Caso tipo
                                             else if(response.getEntities().get(t).getEntity().equals("tipo")) {
-                                                clase_lugar.setTipo(response.getEntities().get(t).getValue());
+                                                clase_lugar.setTipo(TipoLugar.valueOf(response.getEntities().get(t).getValue().toUpperCase()));
                                             }
                                             // Caso sub_tipo
                                             else if(response.getEntities().get(t).getEntity().equals("sub_tipo")) {
-                                                clase_lugar.setSub_tipo(response.getEntities().get(t).getValue());
+                                                clase_lugar.setSub_tipo(SubTipoLugar.valueOf(response.getEntities().get(t).getValue().toUpperCase()));
                                             }
                                         }
                                     }
@@ -516,20 +527,10 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
         // que son la, el o del, hayan mayusculas y por tanto, aqui lo comprobamos
         // Le ponemos despues de los 'la', 'el', 'del' ya que ahi es donde separaremos
         nombre = nombre.replace(" del ", " del-");
-        nombre = nombre.replace(" Del ", " Del-");
-        nombre = nombre.replace(" dEl ", " dEl-");
-        nombre = nombre.replace(" deL ", " deL-");
-        nombre = nombre.replace(" DEl ", " DEl-");
-        nombre = nombre.replace(" dEL ", " dEL-");
-        nombre = nombre.replace(" DeL ", " DeL-");
 
         nombre = nombre.replace(" la ", " la-");
-        nombre = nombre.replace(" La ", " La-");
-        nombre = nombre.replace(" lA ", " lA-");
 
         nombre = nombre.replace(" el ", " el-");
-        nombre = nombre.replace(" El ", " El-");
-        nombre = nombre.replace(" eL ", " eL-");
 
         // Quitamos tambien los simbolos '?', '!'
         nombre = nombre.replace("?", "");
@@ -688,6 +689,12 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
         return mensaje;
     }
     // ------------------------------
+
+    public String primeraMayus(String cadena) {
+        String mayus = cadena.substring(0,1).toUpperCase();
+        mayus += cadena.substring(1);
+        return mayus;
+    }
 
     public String quitarAcentosMayus(String cadena) {
         String nueva_cadena = "";

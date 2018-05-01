@@ -3,17 +3,42 @@ package es.ua.eduardo.duack;
 import java.util.ArrayList;
 import java.util.List;
 
+import es.ua.eduardo.duack.Models.SubTipoLugar;
+
 public class LugarInteres {
+    private int id;
+    private String nombre;
+    private String nombre2;
+    private String descripcion;
+    private Double latitud;
+    private Double longitud;
+    private String direccion;
+    private String localidad;
+    private String provincia;
+    private String pais;
     private Double coste;
     private Boolean guia;
-    private String idioma;
-    private String tipo;
-    private String sub_tipo;
-    // tambien tiene, nombre, nombre2, ubicacion
+    private Idioma idioma;
+    private TipoLugar tipo;
+    private SubTipoLugar sub_tipo;
+    private String foto;
+    private int telefono;
+    private String url;
+
+
+    // Este es para salir del bucle que comprueba los null
     private List<Boolean> comprobado;
 
     // El constructor por defecto lo pone todo a null
+    // solo lo que vayamos a usar
     public LugarInteres() {
+        nombre = null;
+        nombre2 = null;
+        latitud = null;
+        longitud = null;
+        localidad = null;
+        provincia = null;
+        pais = null;
         coste = null;
         guia = null;
         idioma = null;
@@ -35,11 +60,19 @@ public class LugarInteres {
     }
 
     public void vaciarLugar() {
+        nombre = null;
+        nombre2 = null;
+        latitud = null;
+        longitud = null;
+        localidad = null;
+        provincia = null;
+        pais = null;
         coste = null;
         guia = null;
         idioma = null;
         tipo = null;
         sub_tipo = null;
+        ponerANoComprobado();
     }
 
     @Override
@@ -84,31 +117,139 @@ public class LugarInteres {
         comprobado.set(1, true);
     }
 
-    public String getIdioma() {
+    public Idioma getIdioma() {
         return idioma;
     }
 
-    public void setIdioma(String idioma) {
+    public void setIdioma(Idioma idioma) {
         this.idioma = idioma;
         comprobado.set(2, true);
     }
 
-    public String getTipo() {
+    public TipoLugar getTipo() {
         return tipo;
     }
 
-    public void setTipo(String tipo) {
+    public void setTipo(TipoLugar tipo) {
         this.tipo = tipo;
         comprobado.set(3, true);
     }
 
-    public String getSub_tipo() {
+    public SubTipoLugar getSub_tipo() {
         return sub_tipo;
     }
 
-    public void setSub_tipo(String sub_tipo) {
+    public void setSub_tipo(SubTipoLugar sub_tipo) {
         this.sub_tipo = sub_tipo;
         comprobado.set(4, true);
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public String getNombre() {
+        return nombre;
+    }
+
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
+    }
+
+    public String getNombre2() {
+        return nombre2;
+    }
+
+    public void setNombre2(String nombre2) {
+        this.nombre2 = nombre2;
+    }
+
+    public String getDescripcion() {
+        return descripcion;
+    }
+
+    public void setDescripcion(String descripcion) {
+        this.descripcion = descripcion;
+    }
+
+    public Double getLatitud() {
+        return latitud;
+    }
+
+    public void setLatitud(Double latitud) {
+        this.latitud = latitud;
+    }
+
+    public Double getLongitud() {
+        return longitud;
+    }
+
+    public void setLongitud(Double longitud) {
+        this.longitud = longitud;
+    }
+
+    public String getDireccion() {
+        return direccion;
+    }
+
+    public void setDireccion(String direccion) {
+        this.direccion = direccion;
+    }
+
+    public String getLocalidad() {
+        return localidad;
+    }
+
+    public void setLocalidad(String localidad) {
+        this.localidad = localidad;
+    }
+
+    public String getProvincia() {
+        return provincia;
+    }
+
+    public void setProvincia(String provincia) {
+        this.provincia = provincia;
+    }
+
+    public String getPais() {
+        return pais;
+    }
+
+    public void setPais(String pais) {
+        this.pais = pais;
+    }
+
+    public Boolean getGuia() {
+        return guia;
+    }
+
+    public String getFoto() {
+        return foto;
+    }
+
+    public void setFoto(String foto) {
+        this.foto = foto;
+    }
+
+    public int getTelefono() {
+        return telefono;
+    }
+
+    public void setTelefono(int telefono) {
+        this.telefono = telefono;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
     }
 
     public Boolean getComprobadoId(int id) {
