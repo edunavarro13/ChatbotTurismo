@@ -175,7 +175,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
                                     // Modificar coste
                                     if (modificar_datos_lugar == 0) {
                                         // Si no es irrelevante
-                                        if (!text.equals("irrelevante"))
+                                        if (!text.equals("paso"))
                                             clase_lugar.setCoste(Double.parseDouble(text));
                                         else
                                             clase_lugar.setCoste(null);
@@ -186,7 +186,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
                                             clase_lugar.setGuia(true);
                                         else if(text.equals("no"))
                                             clase_lugar.setGuia(false);
-                                        else if(!text.equals("irrelevante")) {
+                                        else if(!text.equals("paso")) {
                                             Toast.makeText(MainActivity.this, getString(R.string.error_salir_incorrecto), Toast.LENGTH_LONG).show();
                                             correcto = false;
                                         }
@@ -196,21 +196,21 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
                                     }
                                     // Modificar idioma
                                     else if (modificar_datos_lugar == 2) {
-                                        if (!text.equals("irrelevante"))
+                                        if (!text.equals("paso"))
                                             clase_lugar.setIdioma(Idioma.valueOf(text.toUpperCase()));
                                         else
                                             clase_lugar.setIdioma(null);
                                     }
                                     // Modificar tipo
                                     else if (modificar_datos_lugar == 3) {
-                                        if (!text.equals("irrelevante"))
+                                        if (!text.equals("paso"))
                                             clase_lugar.setTipo(TipoLugar.valueOf(text.toUpperCase()));
                                         else
                                             clase_lugar.setTipo(null);
                                     }
                                     // Modificar sub_tipo
                                     else if (modificar_datos_lugar == 4) {
-                                        if (!text.equals("irrelevante"))
+                                        if (!text.equals("paso"))
                                             clase_lugar.setSub_tipo(SubTipoLugar.valueOf(text.toUpperCase()));
                                         else
                                             clase_lugar.setSub_tipo(null);
@@ -258,14 +258,15 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
     }
 
     public void finDatosLugar() {
-        String datos_li = "Ya estan todos los datos.\n Buscaré en mi BD: " + clase_lugar.toString()
-                + "\n" + getString(R.string.fin_chat);
+        Cursor cursor_aux = bd.extraeCursorConsulta(clase_lugar);
+        clase_lugar = bd.extraeLugarInteres(cursor_aux);
+
+        String datos_li = "Id: " + clase_lugar.getId() + "\nNombre: " + clase_lugar.getNombre();
+        datos_li += "\n" + getString(R.string.fin_chat);
         ChatModel fin_datos = new ChatModel(datos_li,false, false);
         list_chat.add(fin_datos);
         ChatModel fin_chat_pregunta = new ChatModel("", false, true);
         list_chat.add(fin_chat_pregunta);
-        // Ponemos clase_lugar a null
-        clase_lugar.vaciarLugar();
         fin = true;
     }
 
@@ -314,6 +315,8 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
     }
 
     public void salirDuack() {
+        // Ponemos clase_lugar a null
+        clase_lugar.vaciarLugar();
         // Caso de queremos hacer otra consulta
         if(quitarAcentosMayus(editText.getText().toString()).equals("si")) {
             ChatModel final_duack = new ChatModel(getString(R.string.nueva_consulta), false, false);
@@ -354,7 +357,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
                         .enqueue(new ServiceCallback<MessageResponse>() {
                             @Override
                             public void onResponse(MessageResponse response) {
-                                // ######## No funciona, hay que arreglarlo #######################3
+                                // ######## No funciona, hay que arreglarlo #######################
                                 //int num_respuesta = (int) (Math.random()*(response.getText().size()));
                                 outputText = response.getText().get(0);
 
@@ -368,7 +371,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
                                             outputText = "El hilo ha dado el error: " + ex.toString();
                                         }
                                     }
-                                    // Comprobamos si esta conectado
+                                    /*// Comprobamos si esta conectado
                                     ultimaLocalizazion();
                                     //manager = (LocationManager) getSystemService( Context.LOCATION_SERVICE );
                                     if ( !manejador.isProviderEnabled(LocationManager.GPS_PROVIDER) ||
@@ -388,7 +391,12 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
                                         else {
                                             outputText += "\n" + getString(R.string.permisos_gps);
                                         }
-                                    }
+                                    }*/
+                                    clase_lugar.setTipo(TipoLugar.OFICINA);
+                                    Cursor cursor_aux = bd.extraeCursorConsulta(clase_lugar);
+                                    clase_lugar = bd.extraeLugarInteres(cursor_aux);
+                                    outputText = "Direccion: " + clase_lugar.getDireccion();
+                                    outputText += "\nId = " + clase_lugar.getId();
                                     fin = true;
                                 }
                                 else if(response.getIntents().get(0).getIntent()

@@ -7,7 +7,7 @@ public enum TipoLugar {
     JARDIN("Jardin"),
     PLAZA("Plaza"),
     IGLESIA("Iglesia"),
-    OFICINA("OficinaT");
+    OFICINA("Oficina");
 
     private final String texto;
 

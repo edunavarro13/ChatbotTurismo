@@ -176,6 +176,7 @@ public class BaseDatos extends SQLiteOpenHelper {
         lugar.setUrl(cursor.getString(17));
         return lugar;
     }
+
     public Cursor extraeCursor() {
         String consulta = "SELECT * FROM lugares";
         SQLiteDatabase bd = getReadableDatabase();
