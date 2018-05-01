@@ -1,0 +1,251 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/scrollView1"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    tools:context="es.ua.eduardo.duack.DescripcionLugarActivity">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_gravity="center_vertical"
+        android:gravity="center">
+
+        <TextView
+            android:id="@+id/nombre_lugar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginTop="10dp"
+            android:gravity="center"
+            android:text="Nombre del lugar"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:textColor="@color/colorAccent"
+            android:textStyle="bold" />
+
+        <ImageView
+            android:id="@+id/imagen_lugar"
+            android:layout_width="130dp"
+            android:layout_height="130dp"
+            android:layout_marginTop="10dp"
+            android:src="@android:drawable/ic_delete" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="5dp">
+
+            <TextView
+                android:id="@+id/direccion_android"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="2"
+                android:text="Dirección:"
+                android:textAlignment="textEnd"
+                android:textStyle="bold"
+                android:textSize="16dp"
+                android:layout_marginRight="4dp"/>
+
+            <TextView
+                android:id="@+id/direccion_lugar"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:text="Direccion del lugar"
+                android:textSize="16dp"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            android:layout_marginTop="5dp">
+
+            <TextView
+                android:id="@+id/ubicacion_android"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="2"
+                android:text="Ubicación:"
+                android:textAlignment="textEnd"
+                android:textStyle="bold"
+                android:textSize="16dp"
+                android:layout_marginRight="4dp"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1">
+
+                <Button
+                    android:id="@+id/ubicacion_lugar"
+                    android:layout_width="70dp"
+                    android:layout_height="40dp"
+                    android:background="@color/colorAccent"
+                    android:text="Maps"
+                    android:textColor="@android:color/background_light"
+                    android:textStyle="bold"/>
+            </LinearLayout>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="5dp">
+
+            <TextView
+                android:id="@+id/precio_android"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="2"
+                android:text="Precio:"
+                android:textAlignment="textEnd"
+                android:textStyle="bold"
+                android:textSize="16dp"
+                android:layout_marginRight="4dp"/>
+
+            <TextView
+                android:id="@+id/precio_lugar"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:text="Precio del lugar"
+                android:textSize="16dp"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="5dp">
+
+            <TextView
+                android:id="@+id/guia_android"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="2"
+                android:text="Guía:"
+                android:textAlignment="textEnd"
+                android:textStyle="bold"
+                android:textSize="16dp"
+                android:layout_marginRight="4dp"/>
+
+            <TextView
+                android:id="@+id/guia_lugar"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:text="¿Hay guía?"
+                android:textSize="16dp"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="5dp">
+
+            <TextView
+                android:id="@+id/idioma_android"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="2"
+                android:text="Idioma:"
+                android:textAlignment="textEnd"
+                android:textStyle="bold"
+                android:textSize="16dp"
+                android:layout_marginRight="4dp"/>
+
+            <TextView
+                android:id="@+id/idioma_lugar"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:text="Idioma del lugar"
+                android:textSize="16dp"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="5dp">
+
+            <TextView
+                android:id="@+id/tipo_android"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="2"
+                android:text="Tipo:"
+                android:textAlignment="textEnd"
+                android:textStyle="bold"
+                android:textSize="16dp"
+                android:layout_marginRight="4dp"/>
+
+            <TextView
+                android:id="@+id/tipo_lugar"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:text="Tipo del lugar"
+                android:textSize="16dp"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="5dp">
+
+            <TextView
+                android:id="@+id/telefono_android"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="2"
+                android:text="Teléfono:"
+                android:textAlignment="textEnd"
+                android:textStyle="bold"
+                android:textSize="16dp"
+                android:layout_marginRight="4dp"/>
+
+            <TextView
+                android:id="@+id/telefono_lugar"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:text="Telefono del lugar"
+                android:textSize="16dp"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="5dp">
+
+            <TextView
+                android:id="@+id/url_android"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="2"
+                android:text="Página web:"
+                android:textAlignment="textEnd"
+                android:textStyle="bold"
+                android:textSize="16dp"
+                android:layout_marginRight="4dp"/>
+
+            <TextView
+                android:id="@+id/url_lugar"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:text="Página web del lugar"
+                android:textSize="16dp"/>
+        </LinearLayout>
+
+    </LinearLayout>
+</ScrollView>

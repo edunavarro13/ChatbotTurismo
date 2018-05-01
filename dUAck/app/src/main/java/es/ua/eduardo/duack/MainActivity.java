@@ -143,8 +143,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
                                     adapter2.setEdit(editText);
                                     adapter2.setButton(btn_send_message);
                                     listView.setAdapter(adapter2);
-                                    // Impedimos que se pueda clickar editText
-                                    //editText.setEnabled(false);
+                                    iniciarDescripcion();
                                 }
                             } else {
                                 ejecutarDatosLugarInteres(outputText);
@@ -272,6 +271,29 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
         // ###########################
     }
 
+    public void iniciarDescripcion() {
+        Intent intent = new Intent(this, DescripcionLugarActivity.class);
+        intent.putExtra("nombre", clase_lugar.getNombre());
+        intent.putExtra("foto", clase_lugar.getFoto());
+        intent.putExtra("direccion", clase_lugar.getDireccion());
+        intent.putExtra("localidad", clase_lugar.getLocalidad());
+        intent.putExtra("provincia", clase_lugar.getProvincia());
+        intent.putExtra("pais", clase_lugar.getPais());
+        intent.putExtra("latitud", clase_lugar.getLatitud());
+        intent.putExtra("longitud", clase_lugar.getLongitud());
+        intent.putExtra("precio", clase_lugar.getCoste());
+        intent.putExtra("guia", clase_lugar.getGuia());
+        if(clase_lugar.getIdioma() != null)
+            intent.putExtra("idioma", clase_lugar.getIdioma().getTexto());
+        if(clase_lugar.getTipo() != null)
+            intent.putExtra("tipo", clase_lugar.getTipo().getTexto());
+        if(clase_lugar.getSub_tipo() != null)
+            intent.putExtra("subtipo", clase_lugar.getSub_tipo().getTexto());
+        intent.putExtra("telefono", clase_lugar.getTelefono());
+        intent.putExtra("url", clase_lugar.getUrl());
+        startActivity(intent);
+    }
+
     public void finDatosLugar() {
         Cursor cursor_aux = bd.extraeCursorConsulta(clase_lugar);
         clase_lugar = bd.extraeLugarInteres(cursor_aux);
@@ -282,6 +304,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
         list_chat.add(fin_datos);
         ChatModel fin_chat_pregunta = new ChatModel("", false, true);
         list_chat.add(fin_chat_pregunta);
+        iniciarDescripcion();
         fin = true;
     }
 
