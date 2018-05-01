@@ -188,7 +188,7 @@ public class BaseDatos extends SQLiteOpenHelper {
         String aux_consulta = " WHERE";
         boolean hayAntes = false;
         if(lugar.getCoste() != null) {
-            aux_consulta += " precio<" + lugar.getCoste();
+            aux_consulta += " precio<=" + lugar.getCoste();
             hayAntes = true;
         }
         if(lugar.getGuia() != null) {

@@ -141,6 +141,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
                                     list_chat.add(fin_chat_pregunta);
                                     adapter2 = new CustomAdapter(list_chat, getApplicationContext());
                                     adapter2.setEdit(editText);
+                                    adapter2.setButton(btn_send_message);
                                     listView.setAdapter(adapter2);
                                     // Impedimos que se pueda clickar editText
                                     //editText.setEnabled(false);
@@ -149,6 +150,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
                                 ejecutarDatosLugarInteres(outputText);
                                 CustomAdapter adapter2 = new CustomAdapter(list_chat, getApplicationContext());
                                 adapter2.setEdit(editText);
+                                adapter2.setButton(btn_send_message);
                                 listView.setAdapter(adapter2);
                             }
                         } else {
@@ -165,18 +167,22 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
                             // Han de ser palabras sueltas, sin espacios
                             if(!text.contains(" ")) {
                                 if (!text.equals("fin")) {
-                                    ChatModel datos = new ChatModel(aux_edit, true, false);
-                                    list_chat.add(datos);
-                                    CustomAdapter adapter4 = new CustomAdapter(list_chat, getApplicationContext());
-                                    adapter4.setEdit(editText);
-                                    listView.setAdapter(adapter4);
-
                                     boolean correcto = true;
                                     // Modificar coste
                                     if (modificar_datos_lugar == 0) {
                                         // Si no es irrelevante
-                                        if (!text.equals("paso"))
-                                            clase_lugar.setCoste(Double.parseDouble(text));
+                                        if (!text.equals("paso")) {
+                                            if(text.equals("gratis"))
+                                                clase_lugar.setCoste(0.0);
+                                            else if(esDouble(text)) {
+                                                text = text.replace(',', '.'); // Los doubles necesitan '.'
+                                                clase_lugar.setCoste(Double.parseDouble(text));
+                                            }
+                                            else {
+                                                Toast.makeText(MainActivity.this, getString(R.string.error_precio_incorrecto), Toast.LENGTH_LONG).show();
+                                                correcto = false;
+                                            }
+                                        }
                                         else
                                             clase_lugar.setCoste(null);
                                     }
@@ -220,9 +226,17 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
                                     }
 
                                     if(correcto) {
+                                        ChatModel datos = new ChatModel(aux_edit, true, false);
+                                        list_chat.add(datos);
+                                        CustomAdapter adapter4 = new CustomAdapter(list_chat, getApplicationContext());
+                                        adapter4.setEdit(editText);
+                                        adapter4.setButton(btn_send_message);
+                                        listView.setAdapter(adapter4);
+
                                         ejecutarDatosLugarInteres("");
                                         CustomAdapter adapter2 = new CustomAdapter(list_chat, getApplicationContext());
                                         adapter2.setEdit(editText);
+                                        adapter2.setButton(btn_send_message);
                                         listView.setAdapter(adapter2);
                                     }
                                 }
@@ -232,6 +246,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
                                     list_chat.add(datos);
                                     CustomAdapter adapter4 = new CustomAdapter(list_chat, getApplicationContext());
                                     adapter4.setEdit(editText);
+                                    adapter4.setButton(btn_send_message);
                                     listView.setAdapter(adapter4);
 
                                     datos_interes = true;
@@ -323,6 +338,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
             list_chat.add(final_duack);
             CustomAdapter adapter2 = new CustomAdapter(list_chat, getApplicationContext());
             adapter2.setEdit(editText);
+            adapter2.setButton(btn_send_message);
             listView.setAdapter(adapter2);
             fin = false;
             editText.setText("");
@@ -335,6 +351,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
                 list_chat.add(final_duack);
                 CustomAdapter adapter2 = new CustomAdapter(list_chat, getApplicationContext());
                 adapter2.setEdit(editText);
+                adapter2.setButton(btn_send_message);
                 listView.setAdapter(adapter2);
                 // No se cómo hacer que espere tiempo, si pongo Thread solo tarda mas en cargar
             } catch (Exception ex) {
@@ -544,6 +561,17 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
         nombre = nombre.replace("?", "");
         nombre = nombre.replace("!", "");
         return nombre;
+    }
+
+    public boolean esDouble(String d) {
+        for(int i = 0; i < d.length(); i++) {
+            // Pueden ser numeros, ',' y '.'
+            if(d.charAt(i) < '0' || d.charAt(i) > '9') {
+                if(d.charAt(i) != ',' && d.charAt(i) != '.')
+                    return false;
+            }
+        }
+        return true;
     }
 
     public double distancia(double lat1, double lon1, double lat2, double lon2)
