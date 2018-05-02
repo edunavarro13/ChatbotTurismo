@@ -1,14 +1,26 @@
 package es.ua.eduardo.duack;
 
 import android.app.Activity;
+import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import java.io.FileNotFoundException;
 
 import es.ua.eduardo.duack.Models.SubTipoLugar;
 
-public class DescripcionLugarActivity extends Activity {
+public class DescripcionLugarActivity extends AppCompatActivity {
 
     LugarInteres lugar;
 
@@ -44,11 +56,15 @@ public class DescripcionLugarActivity extends Activity {
         // Inicializamos los textview
         TextView nombre = (TextView)findViewById(R.id.nombre_lugar);
         nombre.setText(lugar.getNombre());
-        // Direccion es direccion, localidad, provincia, pais
+        ImageView foto = (ImageView)findViewById(R.id.imagen_lugar);
+        elegirFoto(foto, lugar.getFoto());
         TextView direccion = (TextView)findViewById(R.id.direccion_lugar);
-        String direccion_total = lugar.getDireccion() + ", " + lugar.getLocalidad() + ", "
+        direccion.setText(lugar.getDireccion());
+        // Localidad es localidad, provincia, pais
+        TextView localidad = (TextView)findViewById(R.id.localidad_lugar);
+        String localidad_total =  lugar.getLocalidad() + ", "
                 + lugar.getProvincia() + ", " + lugar.getPais();
-        direccion.setText(direccion_total);
+        localidad.setText(localidad_total);
         TextView precio = (TextView)findViewById(R.id.precio_lugar);
         if(lugar.getCoste() == 0.0)
             precio.setText("Gratis");
@@ -64,16 +80,6 @@ public class DescripcionLugarActivity extends Activity {
             idioma.setText(lugar.getIdioma().getTexto());
         else
             idioma.setText("");
-        // Tipo es tipo, subtipo
-        TextView tipo = (TextView)findViewById(R.id.tipo_lugar);
-        if(lugar.getTipo() != null) {
-            String tipo_total = lugar.getTipo().getTexto();
-            if (lugar.getSub_tipo() != null)
-                tipo_total += ", " + lugar.getSub_tipo().getTexto();
-            tipo.setText(tipo_total);
-        }
-        else
-            tipo.setText(null);
         TextView telefono = (TextView)findViewById(R.id.telefono_lugar);
         if(lugar.getTelefono() == 0)
             telefono.setText("");
@@ -83,4 +89,61 @@ public class DescripcionLugarActivity extends Activity {
         url.setText(lugar.getUrl());
 
     }
+
+    protected void elegirFoto(ImageView imageView, String uri) {
+        switch(uri) {
+            case "plazacastelar.png" :
+                imageView.setImageResource(R.drawable.plazacastelar);
+                break;
+            case "jardindelamusica.png" :
+                imageView.setImageResource(R.drawable.jardindelamusica);
+                break;
+            case "plazadelzapatero.png" :
+                imageView.setImageResource(R.drawable.plazadelzapatero);
+                break;
+            case "parquedelaconcordia.png" :
+                imageView.setImageResource(R.drawable.parquedelaconcordia);
+                break;
+            case "touristinfo.png" :
+                imageView.setImageResource(R.drawable.touristinfo);
+                break;
+            case "museodelcalzado.png" :
+                imageView.setImageResource(R.drawable.museodelcalzado);
+                break;
+            case "teatrocastelar.png" :
+                imageView.setImageResource(R.drawable.teatrocastelar);
+                break;
+            case "plazamayor.png" :
+                imageView.setImageResource(R.drawable.plazamayor);
+                break;
+            case "inmaculada.png" :
+                imageView.setImageResource(R.drawable.inmaculada);
+                break;
+            case "santaana.png" :
+                imageView.setImageResource(R.drawable.santaana);
+                break;
+            case "nuevopepicoamat.png" :
+                imageView.setImageResource(R.drawable.nuevopepicoamat);
+                break;
+            case "castillopalacio.png" :
+                imageView.setImageResource(R.drawable.castillopalacio);
+                break;
+        }
+    }
+
+    // --------------- Menu -----------------
+    @Override public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.descripcion_lugar, menu);
+        return true; /** true -> el menú ya está visible */
+    }
+
+    @Override public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        if (id == R.id.menu_atras) {
+            finish();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+    // ------------------------------
 }

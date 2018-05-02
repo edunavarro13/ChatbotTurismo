@@ -355,6 +355,8 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
     public void salirDuack() {
         // Ponemos clase_lugar a null
         clase_lugar.vaciarLugar();
+        datos_interes = true;
+        outputText = "";
         // Caso de queremos hacer otra consulta
         if(quitarAcentosMayus(editText.getText().toString()).equals("si")) {
             ChatModel final_duack = new ChatModel(getString(R.string.nueva_consulta), false, false);

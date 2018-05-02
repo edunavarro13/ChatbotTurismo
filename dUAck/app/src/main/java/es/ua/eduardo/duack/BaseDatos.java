@@ -44,6 +44,8 @@ public class BaseDatos extends SQLiteOpenHelper {
         insertarTeatros(bd);
         insertarPlazas(bd);
         insertarIglesias(bd);
+        insertarEstadios(bd);
+        insertarCastillos(bd);
     }
 
     public void insertarJardines(SQLiteDatabase bd) {
@@ -53,25 +55,25 @@ public class BaseDatos extends SQLiteOpenHelper {
                 "'Jardin de la musica', null, 'Bonito parque de Elda', " +
                 "38.476249412621016, -0.7917687000000342, 'Jardin de la musica', 'Elda', " +
                 "'Alicante', 'España', 0.0, 0, null, " +
-                "'" + TipoLugar.JARDIN.getTexto() + "', null, null, 965380402, null)");
+                "'" + TipoLugar.JARDIN.getTexto() + "', null, 'jardindelamusica.png', 965380402, null)");
         // Plaza castelar
         bd.execSQL("INSERT INTO lugares VALUES (null, " +
                 "'Plaza castelar', null, 'Bonito parque de Elda', " +
                 "38.47866806262212, -0.7898506999999881, 'Plaza castelar', 'Elda', " +
                 "'Alicante', 'España', 0.0, 0, null, " +
-                "'" + TipoLugar.JARDIN.getTexto() + "', null, null, null, null)");
+                "'" + TipoLugar.JARDIN.getTexto() + "', null, 'plazacastelar.png', null, null)");
         // Plaza del zapatero
         bd.execSQL("INSERT INTO lugares VALUES (null, " +
                 "'Plaza trabajadores del calzado', 'Plaza del zapatero', 'Bonito parque de Elda', " +
                 "38.476193712621, -0.7943401999999651, 'Plaza trabajadores del calzado, 11', 'Elda', " +
                 "'Alicante', 'España', 0.0, 0, null, " +
-                "'" + TipoLugar.JARDIN.getTexto() + "', null, null, null, null)");
+                "'" + TipoLugar.JARDIN.getTexto() + "', null, 'plazadelzapatero.png', null, null)");
         // Parque de la concordia
         bd.execSQL("INSERT INTO lugares VALUES (null, " +
                 "'Parque de la concordia', null, 'Bonito parque de Elda', " +
                 "38.48092106262314, -0.7904552999999623, 'Parque de la Concordia', 'Elda', " +
                 "'Alicante', 'España', 0.0, 0, null, " +
-                "'" + TipoLugar.JARDIN.getTexto() + "', null, null, null, null)");
+                "'" + TipoLugar.JARDIN.getTexto() + "', null, 'parquedelaconcordia.png', null, null)");
     }
 
     public void insertarOficinasTurismo(SQLiteDatabase bd) {
@@ -81,7 +83,7 @@ public class BaseDatos extends SQLiteOpenHelper {
                 "'Tourist info elda', null, 'Oficina de turismo de la ciudad de Elda', " +
                 "38.47790161262177, -0.7960233999999673, 'Calle nueva, 14', 'Elda', " +
                 "'Alicante', 'España', 0.0, 0, '" + Idioma.ESPAÑOL.getTexto() + "', " +
-                "'" + TipoLugar.OFICINA.getTexto() + "', null, null, 966980300, null)");
+                "'" + TipoLugar.OFICINA.getTexto() + "', null, 'touristinfo.png', 966980300, null)");
     }
 
     public void insertarMuseos(SQLiteDatabase bd) {
@@ -91,7 +93,7 @@ public class BaseDatos extends SQLiteOpenHelper {
                 "'Museo del calzado', null, 'Museo del calzado de Elda', " +
                 "38.474002312619994, -0.7952750999999125, 'Avenida chapí, 32', 'Elda', " +
                 "'Alicante', 'España', 0.0, 0, '" + Idioma.ESPAÑOL.getTexto() + "', " +
-                "'" + TipoLugar.MUSEO.getTexto() + "', '" + SubTipoLugar.CALZADO.getTexto() + "', null, 965383021, 'museocalzado.com')");
+                "'" + TipoLugar.MUSEO.getTexto() + "', '" + SubTipoLugar.CALZADO.getTexto() + "', 'museodelcalzado.png', 965383021, 'museocalzado.com')");
     }
 
     public void insertarTeatros(SQLiteDatabase bd) {
@@ -101,7 +103,7 @@ public class BaseDatos extends SQLiteOpenHelper {
                 "'Teatro castelar', null, 'Teatro de la ciudad de Elda', " +
                 "38.47704941262138, -0.7952086000000236, 'Calle jardines, 24', 'Elda', " +
                 "'Alicante', 'España', 0.0, 0, '" + Idioma.ESPAÑOL.getTexto() + "', " +
-                "'" + TipoLugar.TEATRO.getTexto() + "', null, null, 966982222, 'teatrocastelar.wordpress.com')");
+                "'" + TipoLugar.TEATRO.getTexto() + "', null, 'teatrocastelar.png', 966982222, 'teatrocastelar.wordpress.com')");
     }
 
     public void insertarPlazas(SQLiteDatabase bd) {
@@ -111,7 +113,7 @@ public class BaseDatos extends SQLiteOpenHelper {
                 "'Plaza mayor', null, 'Plaza mayor de Elda', " +
                 "38.478351812621966, -0.7938149000000294, 'Calle jardines perpendicular, 30', 'Elda', " +
                 "'Alicante', 'España', 0.0, 0, null, " +
-                "'" + TipoLugar.PLAZA.getTexto() + "', null, null, 966982222, 'elda.es')");
+                "'" + TipoLugar.PLAZA.getTexto() + "', null, 'plazamayor.png', 966982222, 'elda.es')");
     }
 
     public void insertarIglesias(SQLiteDatabase bd) {
@@ -121,13 +123,33 @@ public class BaseDatos extends SQLiteOpenHelper {
                 "'Parroquia de la inmaculada concepción', 'Inmaculada', 'Iglesia Inmaculada de Elda', " +
                 "38.478092912621854, -0.7878170000000182, 'Calle Donoso Cortés', 'Elda', " +
                 "'Alicante', 'España', 0.0, 0, '" + Idioma.ESPAÑOL.getTexto() + "', " +
-                "'" + TipoLugar.IGLESIA.getTexto() + "', null, null, 965380823, null)");
+                "'" + TipoLugar.IGLESIA.getTexto() + "', null, 'inmaculada.png', 965380823, null)");
         // Santa Ana
         bd.execSQL("INSERT INTO lugares VALUES (null, " +
                 "'Parroquia de santa ana', 'Santa ana', 'Iglesia Santa Ana de Elda', " +
                 "38.47920391262236, -0.7958945999999969, 'Calle los Giles, 0', 'Elda', " +
                 "'Alicante', 'España', 0.0, 0, '" + Idioma.ESPAÑOL.getTexto() + "', " +
-                "'" + TipoLugar.IGLESIA.getTexto() + "', null, null, 965385208, 'https://parroquiadesantaana.wordpress.com/')");
+                "'" + TipoLugar.IGLESIA.getTexto() + "', null, 'santaana.png', 965385208, 'https://parroquiadesantaana.wordpress.com/')");
+    }
+
+    public void insertarEstadios(SQLiteDatabase bd) {
+        // -------------- Elda ------------------
+        // Estadio nuevo pepico amat
+        bd.execSQL("INSERT INTO lugares VALUES (null, " +
+                "'Estadio nuevo pepico amat', 'Nuevo pepico amat', 'Campo de fútbol de Elda', " +
+                "38.46748411261705, -0.7961378999999624, 'Avenida de Ronda, 72', 'Elda', " +
+                "'Alicante', 'España', 0.0, 0, '" + Idioma.ESPAÑOL.getTexto() + "', " +
+                "'" + TipoLugar.ESTADIO.getTexto() + "', null, 'nuevopepicoamat.png', 965380402, 'http://www.elda.es/')");
+    }
+
+    public void insertarCastillos(SQLiteDatabase bd) {
+        // -------------- Elda ------------------
+        // Castillo del Conde de Elda
+        bd.execSQL("INSERT INTO lugares VALUES (null, " +
+                "'Castillo del conde de elda', 'Castillo de elda', 'Castillo de la ciudad de Elda', " +
+                "38.48105421262318, -0.7973575999999412, 'Castillo del Conde de Elda', 'Elda', " +
+                "'Alicante', 'España', 0.0, 0, null, " +
+                "'" + TipoLugar.CASTILLO.getTexto() + "', null, 'castillopalacio.png', null, null)");
     }
 
     @Override
