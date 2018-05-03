@@ -5,7 +5,7 @@
     tools:context=".MainActivity">
     <item
         android:id="@+id/menu_mail"
-        android:icon="@android:drawable/ic_dialog_email"
+        android:icon="@mipmap/gmaillogo"
         android:orderInCategory="115"
         android:title="Mail"
         app:showAsAction="always|collapseActionView" />

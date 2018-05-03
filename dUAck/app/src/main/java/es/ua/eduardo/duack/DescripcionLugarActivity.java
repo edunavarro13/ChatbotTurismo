@@ -12,6 +12,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -87,6 +88,30 @@ public class DescripcionLugarActivity extends AppCompatActivity {
             telefono.setText("" + lugar.getTelefono());
         TextView url = (TextView)findViewById(R.id.url_lugar);
         url.setText(lugar.getUrl());
+
+        // Incializamos los Imagebutton
+        ImageButton maps = (ImageButton)findViewById(R.id.logo_direccion);
+        maps.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String geo = "geo:0,0?q=" + lugar.getLatitud() + "," + lugar.getLongitud()
+                        + "(" + lugar.getNombre() + ")";
+                Intent intent = new Intent(Intent.ACTION_VIEW,
+                        Uri.parse(geo));
+                startActivity(intent);
+            }
+        });
+        ImageButton web = (ImageButton)findViewById(R.id.logo_url);
+        web.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(lugar.getUrl() != null && lugar.getUrl() != "") {
+                    Intent intent = new Intent(Intent.ACTION_VIEW,
+                            Uri.parse("http://" + lugar.getUrl()));
+                    startActivity(intent);
+                }
+            }
+        });
 
     }
 

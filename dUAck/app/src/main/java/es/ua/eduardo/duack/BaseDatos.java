@@ -129,7 +129,7 @@ public class BaseDatos extends SQLiteOpenHelper {
                 "'Parroquia de santa ana', 'Santa ana', 'Iglesia Santa Ana de Elda', " +
                 "38.47920391262236, -0.7958945999999969, 'Calle los Giles, 0', 'Elda', " +
                 "'Alicante', 'España', 0.0, 0, '" + Idioma.ESPAÑOL.getTexto() + "', " +
-                "'" + TipoLugar.IGLESIA.getTexto() + "', null, 'santaana.png', 965385208, 'https://parroquiadesantaana.wordpress.com/')");
+                "'" + TipoLugar.IGLESIA.getTexto() + "', null, 'santaana.png', 965385208, 'parroquiadesantaana.wordpress.com')");
     }
 
     public void insertarEstadios(SQLiteDatabase bd) {
@@ -139,7 +139,7 @@ public class BaseDatos extends SQLiteOpenHelper {
                 "'Estadio nuevo pepico amat', 'Nuevo pepico amat', 'Campo de fútbol de Elda', " +
                 "38.46748411261705, -0.7961378999999624, 'Avenida de Ronda, 72', 'Elda', " +
                 "'Alicante', 'España', 0.0, 0, '" + Idioma.ESPAÑOL.getTexto() + "', " +
-                "'" + TipoLugar.ESTADIO.getTexto() + "', null, 'nuevopepicoamat.png', 965380402, 'http://www.elda.es/')");
+                "'" + TipoLugar.ESTADIO.getTexto() + "', null, 'nuevopepicoamat.png', 965380402, 'www.elda.es')");
     }
 
     public void insertarCastillos(SQLiteDatabase bd) {
