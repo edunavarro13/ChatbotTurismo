@@ -2,6 +2,7 @@ package es.ua.eduardo.duack.Adapter;
 
 import android.app.Activity;
 import android.content.Context;
+import android.support.design.widget.FloatingActionButton;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,6 +28,7 @@ public class CustomAdapter extends BaseAdapter {
     private Context context;
     private LayoutInflater layoutInflater;
     private EditText editText;
+    private FloatingActionButton button_main;
 
     public CustomAdapter(List<ChatModel> list_chat_models, Context context) {
         this.list_chat_models = list_chat_models;
@@ -36,6 +38,10 @@ public class CustomAdapter extends BaseAdapter {
 
     public void setEdit(EditText edit) {
         editText = edit;
+    }
+
+    public void setButton(FloatingActionButton button_main) {
+        this.button_main = button_main;
     }
 
     @Override
@@ -61,19 +67,21 @@ public class CustomAdapter extends BaseAdapter {
             if(list_chat_models.get(position).isPregunta()) {
                 view = layoutInflater.inflate(R.layout.list_item_message_pregunta, null);
                 Button button_si = (Button) view.findViewById(R.id.boton_si);
-                Button button_no = (Button) view.findViewById(R.id.boton_no);
+                final Button button_no = (Button) view.findViewById(R.id.boton_no);
 
                 button_si.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        editText.setText("Sí");
+                        editText.setText("Sí"); // Si que lo pilla pero no lo imprime
+                        button_main.callOnClick();
                     }
                 });
 
                 button_no.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        editText.setText("No");
+                        editText.setText("No"); // Si que lo pilla pero no lo imprime
+                        button_main.callOnClick();
                     }
                 });
             }

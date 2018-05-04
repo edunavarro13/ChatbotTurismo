@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -29,6 +30,7 @@ import java.util.List;
 
 import es.ua.eduardo.duack.Adapter.CustomAdapter;
 import es.ua.eduardo.duack.Models.ChatModel;
+import es.ua.eduardo.duack.Models.SubTipoLugar;
 
 import com.ibm.watson.developer_cloud.conversation.v1.ConversationService;
 import com.ibm.watson.developer_cloud.conversation.v1.model.MessageRequest;
@@ -56,6 +58,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
     private boolean fin = false;
     private boolean datos_interes = true;
     private int modificar_datos_lugar = -1; // 0=coste;1=guia;2=idioma;3=tipo;4=sub_tipo
+    public static BaseDatos bd;
 
     // IBM
     String outputText;
@@ -71,6 +74,8 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        bd = new BaseDatos(this);
 
         clase_lugar = new LugarInteres();
 
@@ -136,14 +141,16 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
                                     list_chat.add(fin_chat_pregunta);
                                     adapter2 = new CustomAdapter(list_chat, getApplicationContext());
                                     adapter2.setEdit(editText);
+                                    adapter2.setButton(btn_send_message);
                                     listView.setAdapter(adapter2);
-                                    // Impedimos que se pueda clickar editText
-                                    //editText.setEnabled(false);
+                                    if(clase_lugar != null)
+                                        iniciarDescripcion();
                                 }
                             } else {
                                 ejecutarDatosLugarInteres(outputText);
                                 CustomAdapter adapter2 = new CustomAdapter(list_chat, getApplicationContext());
                                 adapter2.setEdit(editText);
+                                adapter2.setButton(btn_send_message);
                                 listView.setAdapter(adapter2);
                             }
                         } else {
@@ -160,18 +167,22 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
                             // Han de ser palabras sueltas, sin espacios
                             if(!text.contains(" ")) {
                                 if (!text.equals("fin")) {
-                                    ChatModel datos = new ChatModel(aux_edit, true, false);
-                                    list_chat.add(datos);
-                                    CustomAdapter adapter4 = new CustomAdapter(list_chat, getApplicationContext());
-                                    adapter4.setEdit(editText);
-                                    listView.setAdapter(adapter4);
-
                                     boolean correcto = true;
                                     // Modificar coste
                                     if (modificar_datos_lugar == 0) {
                                         // Si no es irrelevante
-                                        if (!text.equals("irrelevante"))
-                                            clase_lugar.setCoste(Double.parseDouble(text));
+                                        if (!text.equals("paso")) {
+                                            if(text.equals("gratis"))
+                                                clase_lugar.setCoste(0.0);
+                                            else if(esDouble(text)) {
+                                                text = text.replace(',', '.'); // Los doubles necesitan '.'
+                                                clase_lugar.setCoste(Double.parseDouble(text));
+                                            }
+                                            else {
+                                                Toast.makeText(MainActivity.this, getString(R.string.error_precio_incorrecto), Toast.LENGTH_LONG).show();
+                                                correcto = false;
+                                            }
+                                        }
                                         else
                                             clase_lugar.setCoste(null);
                                     }
@@ -181,7 +192,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
                                             clase_lugar.setGuia(true);
                                         else if(text.equals("no"))
                                             clase_lugar.setGuia(false);
-                                        else if(!text.equals("irrelevante")) {
+                                        else if(!text.equals("paso")) {
                                             Toast.makeText(MainActivity.this, getString(R.string.error_salir_incorrecto), Toast.LENGTH_LONG).show();
                                             correcto = false;
                                         }
@@ -191,22 +202,22 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
                                     }
                                     // Modificar idioma
                                     else if (modificar_datos_lugar == 2) {
-                                        if (!text.equals("irrelevante"))
-                                            clase_lugar.setIdioma(text);
+                                        if (!text.equals("paso"))
+                                            clase_lugar.setIdioma(Idioma.valueOf(text.toUpperCase()));
                                         else
                                             clase_lugar.setIdioma(null);
                                     }
                                     // Modificar tipo
                                     else if (modificar_datos_lugar == 3) {
-                                        if (!text.equals("irrelevante"))
-                                            clase_lugar.setTipo(text);
+                                        if (!text.equals("paso"))
+                                            clase_lugar.setTipo(TipoLugar.valueOf(text.toUpperCase()));
                                         else
                                             clase_lugar.setTipo(null);
                                     }
                                     // Modificar sub_tipo
                                     else if (modificar_datos_lugar == 4) {
-                                        if (!text.equals("irrelevante"))
-                                            clase_lugar.setSub_tipo(text);
+                                        if (!text.equals("paso"))
+                                            clase_lugar.setSub_tipo(SubTipoLugar.valueOf(text.toUpperCase()));
                                         else
                                             clase_lugar.setSub_tipo(null);
                                     }
@@ -215,9 +226,17 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
                                     }
 
                                     if(correcto) {
+                                        ChatModel datos = new ChatModel(aux_edit, true, false);
+                                        list_chat.add(datos);
+                                        CustomAdapter adapter4 = new CustomAdapter(list_chat, getApplicationContext());
+                                        adapter4.setEdit(editText);
+                                        adapter4.setButton(btn_send_message);
+                                        listView.setAdapter(adapter4);
+
                                         ejecutarDatosLugarInteres("");
                                         CustomAdapter adapter2 = new CustomAdapter(list_chat, getApplicationContext());
                                         adapter2.setEdit(editText);
+                                        adapter2.setButton(btn_send_message);
                                         listView.setAdapter(adapter2);
                                     }
                                 }
@@ -227,6 +246,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
                                     list_chat.add(datos);
                                     CustomAdapter adapter4 = new CustomAdapter(list_chat, getApplicationContext());
                                     adapter4.setEdit(editText);
+                                    adapter4.setButton(btn_send_message);
                                     listView.setAdapter(adapter4);
 
                                     datos_interes = true;
@@ -252,16 +272,50 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
         // ###########################
     }
 
+    public void iniciarDescripcion() {
+        Intent intent = new Intent(this, DescripcionLugarActivity.class);
+        intent.putExtra("nombre", clase_lugar.getNombre());
+        intent.putExtra("foto", clase_lugar.getFoto());
+        intent.putExtra("direccion", clase_lugar.getDireccion());
+        intent.putExtra("localidad", clase_lugar.getLocalidad());
+        intent.putExtra("provincia", clase_lugar.getProvincia());
+        intent.putExtra("pais", clase_lugar.getPais());
+        intent.putExtra("latitud", clase_lugar.getLatitud());
+        intent.putExtra("longitud", clase_lugar.getLongitud());
+        intent.putExtra("precio", clase_lugar.getCoste());
+        intent.putExtra("guia", clase_lugar.getGuia());
+        if(clase_lugar.getIdioma() != null)
+            intent.putExtra("idioma", clase_lugar.getIdioma().getTexto());
+        if(clase_lugar.getTipo() != null)
+            intent.putExtra("tipo", clase_lugar.getTipo().getTexto());
+        if(clase_lugar.getSub_tipo() != null)
+            intent.putExtra("subtipo", clase_lugar.getSub_tipo().getTexto());
+        intent.putExtra("telefono", clase_lugar.getTelefono());
+        intent.putExtra("url", clase_lugar.getUrl());
+        startActivity(intent);
+    }
+
     public void finDatosLugar() {
-        String datos_li = "Ya estan todos los datos.\n Buscaré en mi BD: " + clase_lugar.toString()
-                + "\n" + getString(R.string.fin_chat);
-        ChatModel fin_datos = new ChatModel(datos_li,false, false);
-        list_chat.add(fin_datos);
-        ChatModel fin_chat_pregunta = new ChatModel("", false, true);
-        list_chat.add(fin_chat_pregunta);
-        // Ponemos clase_lugar a null
-        clase_lugar.vaciarLugar();
-        fin = true;
+        Cursor cursor_aux = bd.extraeCursorConsulta(clase_lugar);
+        clase_lugar = bd.extraeLugarInteres(cursor_aux);
+        if(clase_lugar != null) {
+            String datos_li = "Id: " + clase_lugar.getId() + "\nNombre: " + clase_lugar.getNombre();
+            datos_li += "\n" + getString(R.string.fin_chat);
+            ChatModel fin_datos = new ChatModel(datos_li, false, false);
+            list_chat.add(fin_datos);
+            ChatModel fin_chat_pregunta = new ChatModel("", false, true);
+            list_chat.add(fin_chat_pregunta);
+            iniciarDescripcion();
+            fin = true;
+        } else {
+            String datos_li = getString(R.string.error_no_datos);
+            datos_li += "\n" + getString(R.string.fin_chat);
+            ChatModel fin_datos = new ChatModel(datos_li, false, false);
+            list_chat.add(fin_datos);
+            ChatModel fin_chat_pregunta = new ChatModel("", false, true);
+            list_chat.add(fin_chat_pregunta);
+            fin = true;
+        }
     }
 
     public void ejecutarDatosLugarInteres(String cadena) {
@@ -309,12 +363,17 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
     }
 
     public void salirDuack() {
+        // Ponemos clase_lugar a null
+        clase_lugar.vaciarLugar();
+        datos_interes = true;
+        outputText = "";
         // Caso de queremos hacer otra consulta
         if(quitarAcentosMayus(editText.getText().toString()).equals("si")) {
             ChatModel final_duack = new ChatModel(getString(R.string.nueva_consulta), false, false);
             list_chat.add(final_duack);
             CustomAdapter adapter2 = new CustomAdapter(list_chat, getApplicationContext());
             adapter2.setEdit(editText);
+            adapter2.setButton(btn_send_message);
             listView.setAdapter(adapter2);
             fin = false;
             editText.setText("");
@@ -327,6 +386,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
                 list_chat.add(final_duack);
                 CustomAdapter adapter2 = new CustomAdapter(list_chat, getApplicationContext());
                 adapter2.setEdit(editText);
+                adapter2.setButton(btn_send_message);
                 listView.setAdapter(adapter2);
                 // No se cómo hacer que espere tiempo, si pongo Thread solo tarda mas en cargar
             } catch (Exception ex) {
@@ -349,7 +409,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
                         .enqueue(new ServiceCallback<MessageResponse>() {
                             @Override
                             public void onResponse(MessageResponse response) {
-                                // ######## No funciona, hay que arreglarlo #######################3
+                                // ######## No funciona, hay que arreglarlo #######################
                                 //int num_respuesta = (int) (Math.random()*(response.getText().size()));
                                 outputText = response.getText().get(0);
 
@@ -363,7 +423,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
                                             outputText = "El hilo ha dado el error: " + ex.toString();
                                         }
                                     }
-                                    // Comprobamos si esta conectado
+                                    /*// Comprobamos si esta conectado
                                     ultimaLocalizazion();
                                     //manager = (LocationManager) getSystemService( Context.LOCATION_SERVICE );
                                     if ( !manejador.isProviderEnabled(LocationManager.GPS_PROVIDER) ||
@@ -383,11 +443,21 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
                                         else {
                                             outputText += "\n" + getString(R.string.permisos_gps);
                                         }
+                                    }*/
+                                    clase_lugar.setTipo(TipoLugar.OFICINA);
+                                    Cursor cursor_aux = bd.extraeCursorConsulta(clase_lugar);
+                                    clase_lugar = bd.extraeLugarInteres(cursor_aux);
+                                    if(clase_lugar != null) {
+                                        outputText = "Direccion: " + clase_lugar.getDireccion();
+                                        outputText += "\nId = " + clase_lugar.getId();
                                     }
+                                    else
+                                        outputText = getString(R.string.error_no_datos);
                                     fin = true;
                                 }
                                 else if(response.getIntents().get(0).getIntent()
                                         .endsWith("Nombre")) {
+                                    String para_bd = "";
                                     // Primero esperamos que output no este vacio
                                     while (outputText == null || outputText == "") {
                                         try {
@@ -412,17 +482,25 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
                                         aux_nombre = aux_nombre.substring(pos_nombre);
                                         outputText += " " + aux_nombre;
                                         // Puede ser Universidad de Alicante o UA
-                                        outputText += "\nSELECT * FROM x WHERE nombre='" + aux_nombre + "' OR nombre2='" + aux_nombre + "'";
+                                        para_bd = "SELECT * FROM lugares WHERE nombre='" + primeraMayus(aux_nombre)
+                                                + "' OR nombre2='" + primeraMayus(aux_nombre) + "'";
                                         // Plaza mayor de elda aunque tambien puede ser universidad de alicante
                                         if(aux_nombre.contains(" de ")) {
                                             aux_nombre = aux_nombre.replace(" de ", "-");
                                             String ciudad = aux_nombre.substring(aux_nombre.indexOf("-") + 1);
                                             String nombre = aux_nombre.substring(0, aux_nombre.indexOf("-"));
-                                            outputText += " AND (WHERE nombre='" + nombre + "' && ciudad='" + ciudad + "')";
+                                            para_bd += " OR (nombre='" + primeraMayus(nombre) + "' AND localidad='" + primeraMayus(ciudad) + "')";
                                         }
                                     }
                                     else
                                         outputText = getString(R.string.beta_error_nombre);
+
+                                    Cursor cursor_aux = bd.extraeCursorNombre(para_bd);
+                                    clase_lugar = bd.extraeLugarInteres(cursor_aux);
+                                    if(clase_lugar != null)
+                                        outputText += "\nId = " + clase_lugar.getId();
+                                    else
+                                        outputText += "\n" + getString(R.string.error_no_datos);
                                     fin = true;
                                 }
                                 else if(response.getIntents().get(0).getIntent()
@@ -446,15 +524,15 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
                                             }
                                             // Caso idioma
                                             else if(response.getEntities().get(t).getEntity().equals("idioma")) {
-                                                clase_lugar.setIdioma(response.getEntities().get(t).getValue());
+                                                clase_lugar.setIdioma(Idioma.valueOf(response.getEntities().get(t).getValue().toUpperCase()));
                                             }
                                             // Caso tipo
                                             else if(response.getEntities().get(t).getEntity().equals("tipo")) {
-                                                clase_lugar.setTipo(response.getEntities().get(t).getValue());
+                                                clase_lugar.setTipo(TipoLugar.valueOf(response.getEntities().get(t).getValue().toUpperCase()));
                                             }
                                             // Caso sub_tipo
                                             else if(response.getEntities().get(t).getEntity().equals("sub_tipo")) {
-                                                clase_lugar.setSub_tipo(response.getEntities().get(t).getValue());
+                                                clase_lugar.setSub_tipo(SubTipoLugar.valueOf(response.getEntities().get(t).getValue().toUpperCase()));
                                             }
                                         }
                                     }
@@ -512,29 +590,34 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
     }
 
     public String convertirANombre(String nombre) {
-        // Existe la posibilidad de que por autocorrector, en vez de las posibles soluciones
-        // que son la, el o del, hayan mayusculas y por tanto, aqui lo comprobamos
-        // Le ponemos despues de los 'la', 'el', 'del' ya que ahi es donde separaremos
-        nombre = nombre.replace(" del ", " del-");
-        nombre = nombre.replace(" Del ", " Del-");
-        nombre = nombre.replace(" dEl ", " dEl-");
-        nombre = nombre.replace(" deL ", " deL-");
-        nombre = nombre.replace(" DEl ", " DEl-");
-        nombre = nombre.replace(" dEL ", " dEL-");
-        nombre = nombre.replace(" DeL ", " DeL-");
+        // Por ahora consideramos que empezara por un articulo 'el' o 'la'
+        // mientras que 'del' y 'de la' seran partes del nombre (jardín de la música, museo del calzado)
+        String auxiliar = nombre;
+        auxiliar = auxiliar.replace(" del ", " del#");
+        auxiliar = auxiliar.replace(" de la ", " de la#");
 
-        nombre = nombre.replace(" la ", " la-");
-        nombre = nombre.replace(" La ", " La-");
-        nombre = nombre.replace(" lA ", " lA-");
-
-        nombre = nombre.replace(" el ", " el-");
-        nombre = nombre.replace(" El ", " El-");
-        nombre = nombre.replace(" eL ", " eL-");
+        auxiliar = auxiliar.replace(" la ", " la-");
+        auxiliar = auxiliar.replace(" el ", " el-");
+        // Si tiene 'del' o 'de la'
+        if(auxiliar.contains("#")) {
+            auxiliar = auxiliar.replace("#", " ");
+        }
 
         // Quitamos tambien los simbolos '?', '!'
-        nombre = nombre.replace("?", "");
-        nombre = nombre.replace("!", "");
-        return nombre;
+        auxiliar = auxiliar.replace("?", "");
+        auxiliar = auxiliar.replace("!", "");
+        return auxiliar;
+    }
+
+    public boolean esDouble(String d) {
+        for(int i = 0; i < d.length(); i++) {
+            // Pueden ser numeros, ',' y '.'
+            if(d.charAt(i) < '0' || d.charAt(i) > '9') {
+                if(d.charAt(i) != ',' && d.charAt(i) != '.')
+                    return false;
+            }
+        }
+        return true;
     }
 
     public double distancia(double lat1, double lon1, double lat2, double lon2)
@@ -688,6 +771,12 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
         return mensaje;
     }
     // ------------------------------
+
+    public String primeraMayus(String cadena) {
+        String mayus = cadena.substring(0,1).toUpperCase();
+        mayus += cadena.substring(1);
+        return mayus;
+    }
 
     public String quitarAcentosMayus(String cadena) {
         String nueva_cadena = "";
