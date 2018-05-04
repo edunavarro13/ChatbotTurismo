@@ -143,7 +143,8 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
                                     adapter2.setEdit(editText);
                                     adapter2.setButton(btn_send_message);
                                     listView.setAdapter(adapter2);
-                                    iniciarDescripcion();
+                                    if(clase_lugar != null)
+                                        iniciarDescripcion();
                                 }
                             } else {
                                 ejecutarDatosLugarInteres(outputText);
@@ -297,15 +298,24 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
     public void finDatosLugar() {
         Cursor cursor_aux = bd.extraeCursorConsulta(clase_lugar);
         clase_lugar = bd.extraeLugarInteres(cursor_aux);
-
-        String datos_li = "Id: " + clase_lugar.getId() + "\nNombre: " + clase_lugar.getNombre();
-        datos_li += "\n" + getString(R.string.fin_chat);
-        ChatModel fin_datos = new ChatModel(datos_li,false, false);
-        list_chat.add(fin_datos);
-        ChatModel fin_chat_pregunta = new ChatModel("", false, true);
-        list_chat.add(fin_chat_pregunta);
-        iniciarDescripcion();
-        fin = true;
+        if(clase_lugar != null) {
+            String datos_li = "Id: " + clase_lugar.getId() + "\nNombre: " + clase_lugar.getNombre();
+            datos_li += "\n" + getString(R.string.fin_chat);
+            ChatModel fin_datos = new ChatModel(datos_li, false, false);
+            list_chat.add(fin_datos);
+            ChatModel fin_chat_pregunta = new ChatModel("", false, true);
+            list_chat.add(fin_chat_pregunta);
+            iniciarDescripcion();
+            fin = true;
+        } else {
+            String datos_li = getString(R.string.error_no_datos);
+            datos_li += "\n" + getString(R.string.fin_chat);
+            ChatModel fin_datos = new ChatModel(datos_li, false, false);
+            list_chat.add(fin_datos);
+            ChatModel fin_chat_pregunta = new ChatModel("", false, true);
+            list_chat.add(fin_chat_pregunta);
+            fin = true;
+        }
     }
 
     public void ejecutarDatosLugarInteres(String cadena) {
@@ -437,8 +447,12 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
                                     clase_lugar.setTipo(TipoLugar.OFICINA);
                                     Cursor cursor_aux = bd.extraeCursorConsulta(clase_lugar);
                                     clase_lugar = bd.extraeLugarInteres(cursor_aux);
-                                    outputText = "Direccion: " + clase_lugar.getDireccion();
-                                    outputText += "\nId = " + clase_lugar.getId();
+                                    if(clase_lugar != null) {
+                                        outputText = "Direccion: " + clase_lugar.getDireccion();
+                                        outputText += "\nId = " + clase_lugar.getId();
+                                    }
+                                    else
+                                        outputText = getString(R.string.error_no_datos);
                                     fin = true;
                                 }
                                 else if(response.getIntents().get(0).getIntent()
@@ -475,15 +489,18 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
                                             aux_nombre = aux_nombre.replace(" de ", "-");
                                             String ciudad = aux_nombre.substring(aux_nombre.indexOf("-") + 1);
                                             String nombre = aux_nombre.substring(0, aux_nombre.indexOf("-"));
-                                            para_bd += " OR (nombre='" + primeraMayus(nombre) + "' && ciudad='" + primeraMayus(ciudad) + "')";
+                                            para_bd += " OR (nombre='" + primeraMayus(nombre) + "' AND localidad='" + primeraMayus(ciudad) + "')";
                                         }
                                     }
                                     else
                                         outputText = getString(R.string.beta_error_nombre);
 
-                                    Cursor cursor_aux = bd.extraeCursorNombre(primeraMayus(para_bd));
+                                    Cursor cursor_aux = bd.extraeCursorNombre(para_bd);
                                     clase_lugar = bd.extraeLugarInteres(cursor_aux);
-                                    outputText += "\nId = " + clase_lugar.getId();
+                                    if(clase_lugar != null)
+                                        outputText += "\nId = " + clase_lugar.getId();
+                                    else
+                                        outputText += "\n" + getString(R.string.error_no_datos);
                                     fin = true;
                                 }
                                 else if(response.getIntents().get(0).getIntent()
@@ -573,19 +590,23 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
     }
 
     public String convertirANombre(String nombre) {
-        // Existe la posibilidad de que por autocorrector, en vez de las posibles soluciones
-        // que son la, el o del, hayan mayusculas y por tanto, aqui lo comprobamos
-        // Le ponemos despues de los 'la', 'el', 'del' ya que ahi es donde separaremos
-        nombre = nombre.replace(" del ", " del-");
+        // Por ahora consideramos que empezara por un articulo 'el' o 'la'
+        // mientras que 'del' y 'de la' seran partes del nombre (jardín de la música, museo del calzado)
+        String auxiliar = nombre;
+        auxiliar = auxiliar.replace(" del ", " del#");
+        auxiliar = auxiliar.replace(" de la ", " de la#");
 
-        nombre = nombre.replace(" la ", " la-");
-
-        nombre = nombre.replace(" el ", " el-");
+        auxiliar = auxiliar.replace(" la ", " la-");
+        auxiliar = auxiliar.replace(" el ", " el-");
+        // Si tiene 'del' o 'de la'
+        if(auxiliar.contains("#")) {
+            auxiliar = auxiliar.replace("#", " ");
+        }
 
         // Quitamos tambien los simbolos '?', '!'
-        nombre = nombre.replace("?", "");
-        nombre = nombre.replace("!", "");
-        return nombre;
+        auxiliar = auxiliar.replace("?", "");
+        auxiliar = auxiliar.replace("!", "");
+        return auxiliar;
     }
 
     public boolean esDouble(String d) {
