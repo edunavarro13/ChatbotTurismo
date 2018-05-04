@@ -14,6 +14,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -112,6 +113,29 @@ public class DescripcionLugarActivity extends AppCompatActivity {
                 }
             }
         });
+
+        ImageButton phone = (ImageButton)findViewById(R.id.logo_telefono);
+        ImageView lengua = (ImageView)findViewById(R.id.logo_idioma);
+
+        // Quitamos los null
+        if(lugar.getUrl() == null || lugar.getUrl().equals("")) {
+            LinearLayout linear_url = (LinearLayout) findViewById(R.id.linear_url);
+            linear_url.setVisibility(View.GONE);
+            web.setVisibility(View.GONE);
+            url.setVisibility(View.GONE);
+        }
+        if(lugar.getTelefono() == 0) {
+            LinearLayout linear_phone = (LinearLayout) findViewById(R.id.linear_telefono);
+            linear_phone.setVisibility(View.GONE);
+            phone.setVisibility(View.GONE);
+            telefono.setVisibility(View.GONE);
+        }
+        if(lugar.getIdioma() == null) {
+            LinearLayout linear_idioma = (LinearLayout) findViewById(R.id.linear_idioma);
+            linear_idioma.setVisibility(View.GONE);
+            lengua.setVisibility(View.GONE);
+            idioma.setVisibility(View.GONE);
+        }
 
     }
 
