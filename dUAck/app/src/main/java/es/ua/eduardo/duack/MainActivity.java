@@ -297,16 +297,31 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
 
     public void finDatosLugar() {
         Cursor cursor_aux = bd.extraeCursorConsulta(clase_lugar);
-        clase_lugar = bd.extraeLugarInteres(cursor_aux);
-        if(clase_lugar != null) {
-            String datos_li = "Id: " + clase_lugar.getId() + "\nNombre: " + clase_lugar.getNombre();
-            datos_li += "\n" + getString(R.string.fin_chat);
-            ChatModel fin_datos = new ChatModel(datos_li, false, false);
-            list_chat.add(fin_datos);
-            ChatModel fin_chat_pregunta = new ChatModel("", false, true);
-            list_chat.add(fin_chat_pregunta);
-            iniciarDescripcion();
-            fin = true;
+        List<LugarInteres> lista = bd.extraeLugarInteres(cursor_aux);
+        if(lista != null) {
+            if(lista.size() == 1) {
+                String datos_li = getString(R.string.un_dato);
+                datos_li += "\n" + getString(R.string.fin_chat);
+                ChatModel fin_datos = new ChatModel(datos_li, false, false);
+                list_chat.add(fin_datos);
+                ChatModel fin_chat_pregunta = new ChatModel("", false, true);
+                list_chat.add(fin_chat_pregunta);
+                clase_lugar = lista.get(0);
+                iniciarDescripcion();
+                fin = true;
+            }
+            else {
+                String datos_li = getString(R.string.varios_datos_1) + " " + lista.size()
+                        + " " + getString(R.string.varios_datos_2);
+                datos_li += "\n" + getString(R.string.fin_chat);
+                ChatModel fin_datos = new ChatModel(datos_li, false, false);
+                list_chat.add(fin_datos);
+                ChatModel fin_chat_pregunta = new ChatModel("", false, true);
+                list_chat.add(fin_chat_pregunta);
+                clase_lugar = lista.get(0);
+                iniciarDescripcion(); // Aqui se llamara a otro
+                fin = true;
+            }
         } else {
             String datos_li = getString(R.string.error_no_datos);
             datos_li += "\n" + getString(R.string.fin_chat);
@@ -449,10 +464,16 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
                                     }*/
                                     clase_lugar.setTipo(TipoLugar.OFICINA);
                                     Cursor cursor_aux = bd.extraeCursorConsulta(clase_lugar);
-                                    clase_lugar = bd.extraeLugarInteres(cursor_aux);
-                                    if(clase_lugar != null) {
-                                        outputText = "Direccion: " + clase_lugar.getDireccion();
-                                        outputText += "\nId = " + clase_lugar.getId();
+                                    List<LugarInteres> lista = bd.extraeLugarInteres(cursor_aux);
+                                    if(lista != null) {
+                                        if(lista.size() == 1) {
+                                            outputText = getString(R.string.un_dato);
+                                            clase_lugar = lista.get(0);
+                                        } else {
+                                            outputText = getString(R.string.varios_datos_1) + " " + lista.size()
+                                                    + " " + getString(R.string.varios_datos_2);
+                                            clase_lugar = lista.get(0); // Hay que cambiarlo
+                                        }
                                     }
                                     else
                                         outputText = getString(R.string.error_no_datos);
@@ -499,9 +520,17 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
                                         outputText = getString(R.string.beta_error_nombre);
 
                                     Cursor cursor_aux = bd.extraeCursorNombre(para_bd);
-                                    clase_lugar = bd.extraeLugarInteres(cursor_aux);
-                                    if(clase_lugar != null)
-                                        outputText += "\nId = " + clase_lugar.getId();
+                                    List<LugarInteres> lista = bd.extraeLugarInteres(cursor_aux);
+                                    if(lista != null) {
+                                        if(lista.size() == 1) {
+                                            outputText = getString(R.string.un_dato);
+                                            clase_lugar = lista.get(0);
+                                        } else {
+                                            outputText = getString(R.string.varios_datos_1) + " " + lista.size()
+                                                    + " " + getString(R.string.varios_datos_2);
+                                            clase_lugar = lista.get(0); // Hay que cambiarlo
+                                        }
+                                    }
                                     else
                                         outputText += "\n" + getString(R.string.error_no_datos);
                                     fin = true;
