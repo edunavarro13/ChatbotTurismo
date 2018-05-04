@@ -4,7 +4,8 @@ public enum SubTipoLugar {
     OTROS("Otros"),
     CALZADO("Calzado"),
     ARTE("Arte"),
-    ARQUEOLOGICO("Arqueologico");
+    ARQUEOLOGICO("Arqueologico"),
+    ETNOLOGICO("Etnologico");
 
     private final String texto;
 

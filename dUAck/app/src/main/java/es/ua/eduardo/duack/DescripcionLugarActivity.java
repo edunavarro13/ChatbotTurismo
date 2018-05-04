@@ -177,6 +177,21 @@ public class DescripcionLugarActivity extends AppCompatActivity {
             case "castillopalacio.png" :
                 imageView.setImageResource(R.drawable.castillopalacio);
                 break;
+            case "yacimientomonastil.png" :
+                imageView.setImageResource(R.drawable.yacimientomonastil);
+                break;
+            case "ermitasananton.png" :
+                imageView.setImageResource(R.drawable.ermitasananton);
+                break;
+            case "museoarqueologicomunicipal.png" :
+                imageView.setImageResource(R.drawable.museoarqueologicomunicipal);
+                break;
+            case "museoetnologicoelda.png" :
+                imageView.setImageResource(R.drawable.museoetnologicoelda);
+                break;
+            case "auditorioadoc.png" :
+                imageView.setImageResource(R.drawable.auditorioadoc);
+                break;
         }
     }
 

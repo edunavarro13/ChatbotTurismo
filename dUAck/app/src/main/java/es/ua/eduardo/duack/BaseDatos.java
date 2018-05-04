@@ -46,6 +46,7 @@ public class BaseDatos extends SQLiteOpenHelper {
         insertarIglesias(bd);
         insertarEstadios(bd);
         insertarCastillos(bd);
+        insertarYacimientos(bd);
     }
 
     public void insertarJardines(SQLiteDatabase bd) {
@@ -90,10 +91,22 @@ public class BaseDatos extends SQLiteOpenHelper {
         // -------------- Elda ------------------
         // Museo del calzado
         bd.execSQL("INSERT INTO lugares VALUES (null, " +
-                "'Museo del calzado', null, 'Museo del calzado de Elda', " +
+                "'Museo del calzado', 'Museo del calzado elda', 'Museo del calzado de Elda', " +
                 "38.474002312619994, -0.7952750999999125, 'Avenida chapí, 32', 'Elda', " +
                 "'Alicante', 'España', 0.0, 0, '" + Idioma.ESPAÑOL.getTexto() + "', " +
                 "'" + TipoLugar.MUSEO.getTexto() + "', '" + SubTipoLugar.CALZADO.getTexto() + "', 'museodelcalzado.png', 965383021, 'museocalzado.com')");
+        // Museo Arqueologico Municipal
+        bd.execSQL("INSERT INTO lugares VALUES (null, " +
+                "'Museo arqueologico municipal', 'Museo arqueologico municipal elda', 'Museo arqueologico de Elda', " +
+                "38.47761431262163, -0.7909325000000536, 'Calle Príncipe de Asturias, 40', 'Elda', " +
+                "'Alicante', 'España', 0.0, 0, '" + Idioma.ESPAÑOL.getTexto() + "', " +
+                "'" + TipoLugar.MUSEO.getTexto() + "', '" + SubTipoLugar.ARQUEOLOGICO.getTexto() + "', 'museoarqueologicomunicipal.png', 966989233, null)");
+        // Museo Etnologico de Elda
+        bd.execSQL("INSERT INTO lugares VALUES (null, " +
+                "'Museo etnologico elda', 'Museo etnologico', 'Museo etnologico de Elda', " +
+                "38.47434801262015, -0.7926439999999957, 'Calle Eduardo Dato, 22', 'Elda', " +
+                "'Alicante', 'España', 0.0, 0, '" + Idioma.ESPAÑOL.getTexto() + "', " +
+                "'" + TipoLugar.MUSEO.getTexto() + "', '" + SubTipoLugar.ETNOLOGICO.getTexto() + "', 'museoetnologicoelda.png', 966841021, null)");
     }
 
     public void insertarTeatros(SQLiteDatabase bd) {
@@ -104,6 +117,12 @@ public class BaseDatos extends SQLiteOpenHelper {
                 "38.47704941262138, -0.7952086000000236, 'Calle jardines, 24', 'Elda', " +
                 "'Alicante', 'España', 0.0, 0, '" + Idioma.ESPAÑOL.getTexto() + "', " +
                 "'" + TipoLugar.TEATRO.getTexto() + "', null, 'teatrocastelar.png', 966982222, 'teatrocastelar.wordpress.com')");
+        // Auditorio Adoc
+        bd.execSQL("INSERT INTO lugares VALUES (null, " +
+                "'Auditorio adoc', null, 'Auditorio de la ciudad de Elda', " +
+                "38.47631981262106, -0.7972641000000067, 'Calle Paquito Vera, 6', 'Elda', " +
+                "'Alicante', 'España', 0.0, 0, '" + Idioma.ESPAÑOL.getTexto() + "', " +
+                "'" + TipoLugar.TEATRO.getTexto() + "', null, 'auditorioadoc.png', 965383025, 'www.adoc-elda.com')");
     }
 
     public void insertarPlazas(SQLiteDatabase bd) {
@@ -130,6 +149,12 @@ public class BaseDatos extends SQLiteOpenHelper {
                 "38.47920391262236, -0.7958945999999969, 'Calle los Giles, 0', 'Elda', " +
                 "'Alicante', 'España', 0.0, 0, '" + Idioma.ESPAÑOL.getTexto() + "', " +
                 "'" + TipoLugar.IGLESIA.getTexto() + "', null, 'santaana.png', 965385208, 'parroquiadesantaana.wordpress.com')");
+        // Ermita De San Antón Elda
+        bd.execSQL("INSERT INTO lugares VALUES (null, " +
+                "'Ermita de san anton', 'Ermita de san anton elda', 'Ermita de San Antón de Elda', " +
+                "38.48055841262297, -0.7984593999999561, 'Calle Independencia, 39', 'Elda', " +
+                "'Alicante', 'España', 0.0, 0, '" + Idioma.ESPAÑOL.getTexto() + "', " +
+                "'" + TipoLugar.IGLESIA.getTexto() + "', null, 'ermitasananton.png', null, null)");
     }
 
     public void insertarEstadios(SQLiteDatabase bd) {
@@ -150,6 +175,16 @@ public class BaseDatos extends SQLiteOpenHelper {
                 "38.48105421262318, -0.7973575999999412, 'Castillo del Conde de Elda', 'Elda', " +
                 "'Alicante', 'España', 0.0, 0, null, " +
                 "'" + TipoLugar.CASTILLO.getTexto() + "', null, 'castillopalacio.png', null, null)");
+    }
+
+    public void insertarYacimientos(SQLiteDatabase bd) {
+        // -------------- Elda ------------------
+        // Yacimiento Arqueologico Del Monastil
+        bd.execSQL("INSERT INTO lugares VALUES (null, " +
+                "'Yacimiento arqueologico del monastil', 'Yacimiento del monastil', 'Yacimiento arqueológico de Elda', " +
+                "38.49355821262883, -0.788763900000049, 'CV-835', 'Elda', " +
+                "'Alicante', 'España', 0.0, 0, null, " +
+                "'" + TipoLugar.YACIMIENTO.getTexto() + "', '" + SubTipoLugar.ARQUEOLOGICO.getTexto() + "', 'yacimientomonastil.png', 966980300, 'www.elda.com/empresas/empresa/1292/yacimiento-monastil-1292')");
     }
 
     @Override
