@@ -364,7 +364,10 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
 
     public void salirDuack() {
         // Ponemos clase_lugar a null
-        clase_lugar.vaciarLugar();
+        if(clase_lugar == null)
+            clase_lugar = new LugarInteres();
+        else
+            clase_lugar.vaciarLugar();
         datos_interes = true;
         outputText = "";
         // Caso de queremos hacer otra consulta
