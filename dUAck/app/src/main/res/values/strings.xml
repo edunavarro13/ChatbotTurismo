@@ -13,11 +13,32 @@
     <string name="datos_coste">¿Buscas que sea gratis o cuál es el coste máximo de entrada que quieres pagar?</string>
     <string name="datos_guia">¿Quieres que, a ser posible, el sitio que buscas tenga guía o no?</string>
     <string name="datos_idioma">¿Quieres que se hable algún idioma en particular?</string>
-    <string name="datos_tipo">El lugar turístico que buscas, ¿es de algún tipo en concreto?</string>
+    <string name="datos_tipo">El lugar turístico que buscas, ¿es de algún tipo en concreto? Si no sabes qué tipos hay, pulsa el botón naranja.</string>
     <string name="datos_sub_tipo">El lugar de interés turístico que buscas, ¿es de algún sub tipo en concreto?</string>
     <string name="un_dato">He encontrado un lugar con la descripción que me has dado. Te lo muestro en seguida.</string>
     <string name="varios_datos_1">He encontrado</string>
     <string name="varios_datos_2">lugares con la descripcion que me has dado. Te los muestro en seguida.</string>
+
+    <string name="tipos">Tipos</string>
+    <string name="palabra_clave">Palabra clave</string>
+    <string name="significado">Significado</string>
+    <string name="museo">Museo</string>
+    <string name="sinonimos_museo">Museos, galerías, exposiciones</string>
+    <string name="teatro">Teatro</string>
+    <string name="sinonimos_teatro">Teatros, anfiteatros, auditorios</string>
+    <string name="jardin">Jardin</string>
+    <string name="sinonimos_jardin">Jardines, parques, zonas verdes</string>
+    <string name="plaza">Plaza</string>
+    <string name="sinonimos_plaza">Plazas</string>
+    <string name="iglesia">Iglesia</string>
+    <string name="sinonimos_iglesia">Iglesias, parroquias, templos, catedrales, basílicas, ermitas, santuarios</string>
+    <string name="estadio">Estadio</string>
+    <string name="sinonimos_estadio">Estadios, campos de fútbol</string>
+    <string name="castillo">Castillo</string>
+    <string name="sinonimos_castillo">Castillos, fortalezas, ciudadelas</string>
+    <string name="yacimiento">Yacimiento</string>
+    <string name="sinonimos_yacimiento">Yacimientos, minas, canteras</string>
+
     <string name="irrelevante">(Si el dato no te parece importante, escribe PASO)</string>
     <string name="ibm_no_responde">He perdido la conexión con Internet. ¡Comprueba tu conexión y vuelve a intentarlo!</string>
     <string name="location_null">¡Vaya! No estoy detectando bien tu ubicación. Intenta salir de la aplicación y volver a entrar con el GPS activado.</string>
@@ -25,6 +46,7 @@
     <string name="error_no_mensaje">Introduce un mensaje</string>
     <string name="error_precio_incorrecto">Introduce un numero decimal, PASO o FIN</string>
     <string name="error_salir_incorrecto">Pulse uno de los botones naranjas</string>
+    <string name="error_tipo_incorrecto">El tipo introducido es incorrecto.</string>
     <string name="error_dato_espacio">Las respuestas deben ser en una sola palabra, sin espacios</string>
     <string name="beta_error_nombre">ERROR EN BUSQUEDA NOMBRE</string>
     <string name="beta_error_modificar_datos">ERROR EN MODIFICAR DATOS</string>

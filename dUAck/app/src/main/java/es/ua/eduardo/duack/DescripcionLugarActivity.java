@@ -123,12 +123,16 @@ public class DescripcionLugarActivity extends AppCompatActivity {
             linear_url.setVisibility(View.GONE);
             web.setVisibility(View.GONE);
             url.setVisibility(View.GONE);
+            View view_url = (View)findViewById(R.id.view_url);
+            view_url.setVisibility(View.GONE);
         }
         if(lugar.getTelefono() == 0) {
             LinearLayout linear_phone = (LinearLayout) findViewById(R.id.linear_telefono);
             linear_phone.setVisibility(View.GONE);
             phone.setVisibility(View.GONE);
             telefono.setVisibility(View.GONE);
+            View view_telefono = (View)findViewById(R.id.view_telefono);
+            view_telefono.setVisibility(View.GONE);
         }
         if(lugar.getIdioma() == null) {
             LinearLayout linear_idioma = (LinearLayout) findViewById(R.id.linear_idioma);

@@ -2,6 +2,7 @@ package es.ua.eduardo.duack.Adapter;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.support.design.widget.FloatingActionButton;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,11 +10,14 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 
 import com.github.library.bubbleview.BubbleTextView;
 
 import java.util.List;
 
+import es.ua.eduardo.duack.AyudaTiposActivity;
+import es.ua.eduardo.duack.DescripcionLugarActivity;
 import es.ua.eduardo.duack.MainActivity;
 import es.ua.eduardo.duack.Models.ChatModel;
 import es.ua.eduardo.duack.R;
@@ -64,7 +68,8 @@ public class CustomAdapter extends BaseAdapter {
         View view = convertView;
         if(view == null)
         {
-            if(list_chat_models.get(position).isPregunta()) {
+            // Caso mensaje pregunta
+            if(list_chat_models.get(position).isPregunta() == 0) {
                 view = layoutInflater.inflate(R.layout.list_item_message_pregunta, null);
                 Button button_si = (Button) view.findViewById(R.id.boton_si);
                 final Button button_no = (Button) view.findViewById(R.id.boton_no);
@@ -84,6 +89,23 @@ public class CustomAdapter extends BaseAdapter {
                         button_main.callOnClick();
                     }
                 });
+            }
+            // Caso mensaje informacion tipos
+            else if(list_chat_models.get(position).isPregunta() == 1) {
+                view = layoutInflater.inflate(R.layout.list_item_message_informacion, null);
+                ImageButton button_inf = (ImageButton) view.findViewById(R.id.boton_inf);
+
+                button_inf.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        editText.setText(">*<AyudaTiposActivity<644/2|714>"); // Si que lo pilla pero no lo imprime
+                        button_main.callOnClick();
+                    }
+                });
+            }
+            // Caso mensaje informacion sub tipos
+            else if(list_chat_models.get(position).isPregunta() == 2) {
+
             }
             else {
                 if (list_chat_models.get(position).isSend)
