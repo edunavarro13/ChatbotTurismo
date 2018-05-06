@@ -1,5 +1,7 @@
 package es.ua.eduardo.duack;
 
+import android.widget.ImageView;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -254,6 +256,62 @@ public class LugarInteres {
 
     public Boolean getComprobadoId(int id) {
         return comprobado.get(id);
+    }
+
+    public static void elegirFoto(ImageView imageView, String uri) {
+        switch(uri) {
+            case "plazacastelar.png" :
+                imageView.setImageResource(R.drawable.plazacastelar);
+                break;
+            case "jardindelamusica.png" :
+                imageView.setImageResource(R.drawable.jardindelamusica);
+                break;
+            case "plazadelzapatero.png" :
+                imageView.setImageResource(R.drawable.plazadelzapatero);
+                break;
+            case "parquedelaconcordia.png" :
+                imageView.setImageResource(R.drawable.parquedelaconcordia);
+                break;
+            case "touristinfo.png" :
+                imageView.setImageResource(R.drawable.touristinfo);
+                break;
+            case "museodelcalzado.png" :
+                imageView.setImageResource(R.drawable.museodelcalzado);
+                break;
+            case "teatrocastelar.png" :
+                imageView.setImageResource(R.drawable.teatrocastelar);
+                break;
+            case "plazamayor.png" :
+                imageView.setImageResource(R.drawable.plazamayor);
+                break;
+            case "inmaculada.png" :
+                imageView.setImageResource(R.drawable.inmaculada);
+                break;
+            case "santaana.png" :
+                imageView.setImageResource(R.drawable.santaana);
+                break;
+            case "nuevopepicoamat.png" :
+                imageView.setImageResource(R.drawable.nuevopepicoamat);
+                break;
+            case "castillopalacio.png" :
+                imageView.setImageResource(R.drawable.castillopalacio);
+                break;
+            case "yacimientomonastil.png" :
+                imageView.setImageResource(R.drawable.yacimientomonastil);
+                break;
+            case "ermitasananton.png" :
+                imageView.setImageResource(R.drawable.ermitasananton);
+                break;
+            case "museoarqueologicomunicipal.png" :
+                imageView.setImageResource(R.drawable.museoarqueologicomunicipal);
+                break;
+            case "museoetnologicoelda.png" :
+                imageView.setImageResource(R.drawable.museoetnologicoelda);
+                break;
+            case "auditorioadoc.png" :
+                imageView.setImageResource(R.drawable.auditorioadoc);
+                break;
+        }
     }
 
 }

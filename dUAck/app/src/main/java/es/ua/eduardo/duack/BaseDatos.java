@@ -5,15 +5,20 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import es.ua.eduardo.duack.Models.SubTipoLugar;
 
 public class BaseDatos extends SQLiteOpenHelper {
 
     Context contexto;
+    Cursor ultimocursor;
 
     public BaseDatos(Context contexto) {
         super(contexto, "duack", null, 1);
         this.contexto = contexto;
+        this.ultimocursor = null;
     }
 
     @Override
@@ -192,52 +197,106 @@ public class BaseDatos extends SQLiteOpenHelper {
                                     int newVersion) {
     }
 
-    public LugarInteres extraeLugarInteres(Cursor cursor) {
+    public List<LugarInteres> extraeLugarInteres(Cursor cursor) {
+        List<LugarInteres> lista_lugares = new ArrayList<LugarInteres>();
         if (!cursor.moveToFirst()){
             //el cursor está vacío
             return null;
         }
-        LugarInteres lugar = new LugarInteres();
-        lugar.setId(cursor.getInt(0));
-        lugar.setNombre(cursor.getString(1));
-        lugar.setNombre2(cursor.getString(2));
-        lugar.setDescripcion(cursor.getString(3));
-        lugar.setLatitud(cursor.getDouble(4));
-        lugar.setLongitud(cursor.getDouble(5));
-        lugar.setDireccion(cursor.getString(6));
-        lugar.setLocalidad(cursor.getString(7));
-        lugar.setProvincia(cursor.getString(8));
-        lugar.setPais(cursor.getString(9));
-        lugar.setCoste(cursor.getDouble(10));
-        if(cursor.getInt(11) == 0)
-            lugar.setGuia(false);
-        else
-            lugar.setGuia(true);
-        String auxiliar = cursor.getString(12);
-        if(auxiliar != null)
-            lugar.setIdioma(Idioma.valueOf(auxiliar.toUpperCase()));
-        else
-            lugar.setIdioma(null);
-        auxiliar = cursor.getString(13);
-        if(auxiliar != null)
-            lugar.setTipo(TipoLugar.valueOf(auxiliar.toUpperCase()));
-        else
-            lugar.setTipo(null);
-        auxiliar = cursor.getString(14);
-        if(auxiliar != null)
-            lugar.setSub_tipo(SubTipoLugar.valueOf(auxiliar.toUpperCase()));
-        else
-            lugar.setSub_tipo(null);
-        lugar.setFoto(cursor.getString(15));
-        lugar.setTelefono(cursor.getInt(16));
-        lugar.setUrl(cursor.getString(17));
-        return lugar;
+        boolean no_salir = true;
+        do {
+            LugarInteres lugar = new LugarInteres();
+            lugar.setId(cursor.getInt(0));
+            lugar.setNombre(cursor.getString(1));
+            lugar.setNombre2(cursor.getString(2));
+            lugar.setDescripcion(cursor.getString(3));
+            lugar.setLatitud(cursor.getDouble(4));
+            lugar.setLongitud(cursor.getDouble(5));
+            lugar.setDireccion(cursor.getString(6));
+            lugar.setLocalidad(cursor.getString(7));
+            lugar.setProvincia(cursor.getString(8));
+            lugar.setPais(cursor.getString(9));
+            lugar.setCoste(cursor.getDouble(10));
+            if (cursor.getInt(11) == 0)
+                lugar.setGuia(false);
+            else
+                lugar.setGuia(true);
+            String auxiliar = cursor.getString(12);
+            if (auxiliar != null)
+                lugar.setIdioma(Idioma.valueOf(auxiliar.toUpperCase()));
+            else
+                lugar.setIdioma(null);
+            auxiliar = cursor.getString(13);
+            if (auxiliar != null)
+                lugar.setTipo(TipoLugar.valueOf(auxiliar.toUpperCase()));
+            else
+                lugar.setTipo(null);
+            auxiliar = cursor.getString(14);
+            if (auxiliar != null)
+                lugar.setSub_tipo(SubTipoLugar.valueOf(auxiliar.toUpperCase()));
+            else
+                lugar.setSub_tipo(null);
+            lugar.setFoto(cursor.getString(15));
+            lugar.setTelefono(cursor.getInt(16));
+            lugar.setUrl(cursor.getString(17));
+            lista_lugares.add(lugar);
+
+            no_salir = cursor.moveToNext(); // Significa que hay mas resultados
+        } while (no_salir);
+        return lista_lugares;
     }
 
     public Cursor extraeCursor() {
         String consulta = "SELECT * FROM lugares";
         SQLiteDatabase bd = getReadableDatabase();
-        return bd.rawQuery(consulta, null);
+        ultimocursor = bd.rawQuery(consulta, null);
+        return ultimocursor;
+    }
+
+    public LugarInteres lugarInteresPorId(int id) {
+        String consulta = "SELECT * FROM lugares WHERE _id=" + id;
+        SQLiteDatabase bd = getReadableDatabase();
+        Cursor cursor = bd.rawQuery(consulta, null);
+        if (!cursor.moveToFirst()){
+            //el cursor está vacío
+            return null;
+        }
+            LugarInteres lugar = new LugarInteres();
+            lugar.setId(cursor.getInt(0));
+            lugar.setNombre(cursor.getString(1));
+            lugar.setNombre2(cursor.getString(2));
+            lugar.setDescripcion(cursor.getString(3));
+            lugar.setLatitud(cursor.getDouble(4));
+            lugar.setLongitud(cursor.getDouble(5));
+            lugar.setDireccion(cursor.getString(6));
+            lugar.setLocalidad(cursor.getString(7));
+            lugar.setProvincia(cursor.getString(8));
+            lugar.setPais(cursor.getString(9));
+            lugar.setCoste(cursor.getDouble(10));
+            if (cursor.getInt(11) == 0)
+                lugar.setGuia(false);
+            else
+                lugar.setGuia(true);
+            String auxiliar = cursor.getString(12);
+            if (auxiliar != null)
+                lugar.setIdioma(Idioma.valueOf(auxiliar.toUpperCase()));
+            else
+                lugar.setIdioma(null);
+            auxiliar = cursor.getString(13);
+            if (auxiliar != null)
+                lugar.setTipo(TipoLugar.valueOf(auxiliar.toUpperCase()));
+            else
+                lugar.setTipo(null);
+            auxiliar = cursor.getString(14);
+            if (auxiliar != null)
+                lugar.setSub_tipo(SubTipoLugar.valueOf(auxiliar.toUpperCase()));
+            else
+                lugar.setSub_tipo(null);
+            lugar.setFoto(cursor.getString(15));
+            lugar.setTelefono(cursor.getInt(16));
+            lugar.setUrl(cursor.getString(17));
+            return lugar;
+
     }
 
     public Cursor extraeCursorConsulta(LugarInteres lugar) {
@@ -277,12 +336,21 @@ public class BaseDatos extends SQLiteOpenHelper {
             consulta += aux_consulta;
 
         SQLiteDatabase bd = getReadableDatabase();
-        return bd.rawQuery(consulta, null);
+        ultimocursor = bd.rawQuery(consulta, null);
+        return ultimocursor;
     }
 
     public Cursor extraeCursorNombre(String consultanombre) {
         SQLiteDatabase bd = getReadableDatabase();
-        Cursor cursor = bd.rawQuery(consultanombre, null);
-        return cursor;
+        ultimocursor = bd.rawQuery(consultanombre, null);
+        return ultimocursor;
+    }
+
+    public Cursor getUltimocursor() {
+        return ultimocursor;
+    }
+
+    public void setUltimocursor(Cursor ultimocursor) {
+        this.ultimocursor = ultimocursor;
     }
 }

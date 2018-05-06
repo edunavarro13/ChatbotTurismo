@@ -22,6 +22,8 @@ import java.io.FileNotFoundException;
 
 import es.ua.eduardo.duack.Models.SubTipoLugar;
 
+import static es.ua.eduardo.duack.MainActivity.bd;
+
 public class DescripcionLugarActivity extends AppCompatActivity {
 
     LugarInteres lugar;
@@ -33,33 +35,14 @@ public class DescripcionLugarActivity extends AppCompatActivity {
 
         lugar = new LugarInteres();
         Bundle extras = getIntent().getExtras();
-        lugar.setNombre(extras.getString("nombre"));
-        lugar.setFoto(extras.getString("foto"));
-        lugar.setDireccion(extras.getString("direccion"));
-        lugar.setLocalidad(extras.getString("localidad"));
-        lugar.setProvincia(extras.getString("provincia"));
-        lugar.setPais(extras.getString("pais"));
-        lugar.setLatitud(extras.getDouble("latitud"));
-        lugar.setLongitud(extras.getDouble("longitud"));
-        lugar.setCoste(extras.getDouble("precio"));
-        lugar.setGuia(extras.getBoolean("guia"));
-        String aux = extras.getString("idioma");
-        if(aux != null)
-            lugar.setIdioma(Idioma.valueOf(aux.toUpperCase()));
-        aux = extras.getString("tipo");
-        if(aux != null)
-            lugar.setTipo(TipoLugar.valueOf(aux.toUpperCase()));
-        aux = extras.getString("subtipo");
-        if (aux != null)
-            lugar.setSub_tipo(SubTipoLugar.valueOf(aux.toUpperCase()));
-        lugar.setTelefono(extras.getInt("telefono"));
-        lugar.setUrl(extras.getString("url"));
+        int id = extras.getInt("id");
+        lugar = bd.lugarInteresPorId(id);
 
         // Inicializamos los textview
         TextView nombre = (TextView)findViewById(R.id.nombre_lugar);
         nombre.setText(lugar.getNombre());
         ImageView foto = (ImageView)findViewById(R.id.imagen_lugar);
-        elegirFoto(foto, lugar.getFoto());
+        LugarInteres.elegirFoto(foto, lugar.getFoto());
         TextView direccion = (TextView)findViewById(R.id.direccion_lugar);
         direccion.setText(lugar.getDireccion());
         // Localidad es localidad, provincia, pais
@@ -123,12 +106,16 @@ public class DescripcionLugarActivity extends AppCompatActivity {
             linear_url.setVisibility(View.GONE);
             web.setVisibility(View.GONE);
             url.setVisibility(View.GONE);
+            View view_url = (View)findViewById(R.id.view_url);
+            view_url.setVisibility(View.GONE);
         }
         if(lugar.getTelefono() == 0) {
             LinearLayout linear_phone = (LinearLayout) findViewById(R.id.linear_telefono);
             linear_phone.setVisibility(View.GONE);
             phone.setVisibility(View.GONE);
             telefono.setVisibility(View.GONE);
+            View view_telefono = (View)findViewById(R.id.view_telefono);
+            view_telefono.setVisibility(View.GONE);
         }
         if(lugar.getIdioma() == null) {
             LinearLayout linear_idioma = (LinearLayout) findViewById(R.id.linear_idioma);
@@ -137,62 +124,6 @@ public class DescripcionLugarActivity extends AppCompatActivity {
             idioma.setVisibility(View.GONE);
         }
 
-    }
-
-    protected void elegirFoto(ImageView imageView, String uri) {
-        switch(uri) {
-            case "plazacastelar.png" :
-                imageView.setImageResource(R.drawable.plazacastelar);
-                break;
-            case "jardindelamusica.png" :
-                imageView.setImageResource(R.drawable.jardindelamusica);
-                break;
-            case "plazadelzapatero.png" :
-                imageView.setImageResource(R.drawable.plazadelzapatero);
-                break;
-            case "parquedelaconcordia.png" :
-                imageView.setImageResource(R.drawable.parquedelaconcordia);
-                break;
-            case "touristinfo.png" :
-                imageView.setImageResource(R.drawable.touristinfo);
-                break;
-            case "museodelcalzado.png" :
-                imageView.setImageResource(R.drawable.museodelcalzado);
-                break;
-            case "teatrocastelar.png" :
-                imageView.setImageResource(R.drawable.teatrocastelar);
-                break;
-            case "plazamayor.png" :
-                imageView.setImageResource(R.drawable.plazamayor);
-                break;
-            case "inmaculada.png" :
-                imageView.setImageResource(R.drawable.inmaculada);
-                break;
-            case "santaana.png" :
-                imageView.setImageResource(R.drawable.santaana);
-                break;
-            case "nuevopepicoamat.png" :
-                imageView.setImageResource(R.drawable.nuevopepicoamat);
-                break;
-            case "castillopalacio.png" :
-                imageView.setImageResource(R.drawable.castillopalacio);
-                break;
-            case "yacimientomonastil.png" :
-                imageView.setImageResource(R.drawable.yacimientomonastil);
-                break;
-            case "ermitasananton.png" :
-                imageView.setImageResource(R.drawable.ermitasananton);
-                break;
-            case "museoarqueologicomunicipal.png" :
-                imageView.setImageResource(R.drawable.museoarqueologicomunicipal);
-                break;
-            case "museoetnologicoelda.png" :
-                imageView.setImageResource(R.drawable.museoetnologicoelda);
-                break;
-            case "auditorioadoc.png" :
-                imageView.setImageResource(R.drawable.auditorioadoc);
-                break;
-        }
     }
 
     // --------------- Menu -----------------

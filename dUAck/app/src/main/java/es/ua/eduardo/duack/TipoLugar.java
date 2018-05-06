@@ -1,7 +1,6 @@
 package es.ua.eduardo.duack;
 
 public enum TipoLugar {
-    OTROS("Otros"),
     MUSEO("Museo"),
     TEATRO("Teatro"),
     JARDIN("Jardin"),
@@ -18,4 +17,27 @@ public enum TipoLugar {
         this.texto = texto;
     }
     public String getTexto() { return texto; }
+
+    public static boolean esTipoValido(String cadena) {
+        switch(cadena) {
+            case "Museo" :
+                return true;
+            case "Teatro" :
+                return true;
+            case "Jardin" :
+                return true;
+            case "Plaza" :
+                return true;
+            case "Iglesia" :
+                return true;
+            case "Estadio" :
+                return true;
+            case "Castillo" :
+                return true;
+            case "Yacimiento" :
+                return true;
+            default:
+                return false;
+        }
+    }
 }

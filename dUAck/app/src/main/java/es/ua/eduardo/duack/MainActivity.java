@@ -59,6 +59,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
     private boolean datos_interes = true;
     private int modificar_datos_lugar = -1; // 0=coste;1=guia;2=idioma;3=tipo;4=sub_tipo
     public static BaseDatos bd;
+    private AdaptadorLugares adaptador;
 
     // IBM
     String outputText;
@@ -90,7 +91,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
         );
 
         // Saludo inicial
-        ChatModel saludo = new ChatModel(getString(R.string.saludo), false, false);
+        ChatModel saludo = new ChatModel(getString(R.string.saludo), false, 3);
 
         list_chat.add(saludo);
 
@@ -100,169 +101,193 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
         btn_send_message.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(!fin) {
-                    if(datos_interes) {
-                        String text = quitarAcentosMayus(editText.getText().toString());
-                        if (!text.isEmpty()) {
-                            ChatModel model = new ChatModel(editText.getText().toString(), true, false); // user send message
-                            list_chat.add(model);
+                if(editText.getText().toString().equals(">*<AyudaTiposActivity<644/2|714>")) {
+                    // Caso ">*<AyudaTiposActivity<644/2|714>" es decir ejecutar Tipos
+                    editText.setText("");
+                    iniciarAyudaTipo(true);
+                }
+                else if (editText.getText().toString().equals(">*<AyudaSubTiposActivity<644/2|714>")) {
+                    // Caso ">*<AyudaTiposActivity<644/2|714>" es decir ejecutar Tipos
+                    editText.setText("");
+                    iniciarAyudaTipo(false);
+                }
+                else {
+                    if (!fin) {
+                        if (datos_interes) {
+                            String text = quitarAcentosMayus(editText.getText().toString());
+                            if (!text.isEmpty()) {
+                                ChatModel model = new ChatModel(editText.getText().toString(), true, 3); // user send message
+                                list_chat.add(model);
 
-                            //remove user message
-                            editText.setText("");
-                            // Cogemos el mensaje de IBM
-                            mensajeIBM(text);
-                            // Si outputText esta vacio es que aun no ha cargado el mensaje
-                            // asi que esperamos hasta que lo este y lo cargamos
-                            while (outputText == null || outputText == "") {
-                                try {
-                                    Thread.sleep(TIEMPO_BUCLE);
-                                } catch (Exception ex) {
-                                    outputText = "El hilo ha dado el error: " + ex.toString();
+                                //remove user message
+                                editText.setText("");
+                                // Cogemos el mensaje de IBM
+                                mensajeIBM(text);
+                                // Si outputText esta vacio es que aun no ha cargado el mensaje
+                                // asi que esperamos hasta que lo este y lo cargamos
+                                while (outputText == null || outputText == "") {
+                                    try {
+                                        Thread.sleep(TIEMPO_BUCLE);
+                                    } catch (Exception ex) {
+                                        outputText = "El hilo ha dado el error: " + ex.toString();
+                                    }
                                 }
-                            }
-                            if(datos_interes) {
-                                if (fin) {
-                                    outputText += "\n" + getString(R.string.fin_chat);
-                                }
+                                if (datos_interes) {
+                                    if (fin) {
+                                        outputText += "\n" + getString(R.string.fin_chat);
+                                    }
 
-                                ChatModel respuesta = new ChatModel(outputText, false, false);
+                                    ChatModel respuesta = new ChatModel(outputText, false, 3);
 
-                                // Lo vacio para que no salga del while en el proximo mensaje hasta que tenga un mensaje
-                                outputText = "";
+                                    // Lo vacio para que no salga del while en el proximo mensaje hasta que tenga un mensaje
+                                    outputText = "";
 
-                                list_chat.add(respuesta);
+                                    list_chat.add(respuesta);
 
-                                CustomAdapter adapter2 = new CustomAdapter(list_chat, getApplicationContext());
-                                listView.setAdapter(adapter2);
+                                    CustomAdapter adapter2 = new CustomAdapter(list_chat, getApplicationContext());
+                                    listView.setAdapter(adapter2);
 
-                                // Si hay que decir el mensaje de fin
-                                if (fin) {
-                                    ChatModel fin_chat_pregunta = new ChatModel("", false, true);
-                                    list_chat.add(fin_chat_pregunta);
-                                    adapter2 = new CustomAdapter(list_chat, getApplicationContext());
+                                    // Si hay que decir el mensaje de fin
+                                    if (fin) {
+                                        ChatModel fin_chat_pregunta = new ChatModel("", false, 0);
+                                        list_chat.add(fin_chat_pregunta);
+                                        adapter2 = new CustomAdapter(list_chat, getApplicationContext());
+                                        adapter2.setEdit(editText);
+                                        adapter2.setButton(btn_send_message);
+                                        listView.setAdapter(adapter2);
+                                        if (clase_lugar != null)
+                                            iniciarDescripcion();
+                                    }
+                                } else {
+                                    ejecutarDatosLugarInteres(outputText);
+                                    CustomAdapter adapter2 = new CustomAdapter(list_chat, getApplicationContext());
                                     adapter2.setEdit(editText);
                                     adapter2.setButton(btn_send_message);
                                     listView.setAdapter(adapter2);
-                                    if(clase_lugar != null)
-                                        iniciarDescripcion();
                                 }
                             } else {
-                                ejecutarDatosLugarInteres(outputText);
-                                CustomAdapter adapter2 = new CustomAdapter(list_chat, getApplicationContext());
-                                adapter2.setEdit(editText);
-                                adapter2.setButton(btn_send_message);
-                                listView.setAdapter(adapter2);
+                                Toast.makeText(MainActivity.this, getString(R.string.error_no_mensaje), Toast.LENGTH_LONG).show();
                             }
+                            // Caso en el que preguntamos al usuario los datos de LugaresInteres
+                            // que faltan o hasta que pone FIN o Fin
                         } else {
-                            Toast.makeText(MainActivity.this, getString(R.string.error_no_mensaje), Toast.LENGTH_LONG).show();
-                        }
-                        // Caso en el que preguntamos al usuario los datos de LugaresInteres
-                        // que faltan o hasta que pone FIN o Fin
-                    } else {
-                        String aux_edit = editText.getText().toString();
-                        String text = quitarAcentosMayus(aux_edit);
-                        //remove user message
-                        editText.setText("");
-                        if (!text.isEmpty()) {
-                            // Han de ser palabras sueltas, sin espacios
-                            if(!text.contains(" ")) {
-                                if (!text.equals("fin")) {
-                                    boolean correcto = true;
-                                    // Modificar coste
-                                    if (modificar_datos_lugar == 0) {
-                                        // Si no es irrelevante
-                                        if (!text.equals("paso")) {
-                                            if(text.equals("gratis"))
-                                                clase_lugar.setCoste(0.0);
-                                            else if(esDouble(text)) {
-                                                text = text.replace(',', '.'); // Los doubles necesitan '.'
-                                                clase_lugar.setCoste(Double.parseDouble(text));
-                                            }
-                                            else {
-                                                Toast.makeText(MainActivity.this, getString(R.string.error_precio_incorrecto), Toast.LENGTH_LONG).show();
+                            String aux_edit = editText.getText().toString();
+                            String text = quitarAcentosMayus(aux_edit);
+                            //remove user message
+                            editText.setText("");
+                            if (!text.isEmpty()) {
+                                // Han de ser palabras sueltas, sin espacios
+                                if (!text.contains(" ")) {
+                                    if (!text.equals("fin")) {
+                                        boolean correcto = true;
+                                        // Modificar coste
+                                        if (modificar_datos_lugar == 0) {
+                                            // Si no es irrelevante
+                                            if (!text.equals("paso")) {
+                                                if (text.equals("gratis"))
+                                                    clase_lugar.setCoste(0.0);
+                                                else if (esDouble(text)) {
+                                                    text = text.replace(',', '.'); // Los doubles necesitan '.'
+                                                    clase_lugar.setCoste(Double.parseDouble(text));
+                                                } else {
+                                                    Toast.makeText(MainActivity.this, getString(R.string.error_precio_incorrecto), Toast.LENGTH_LONG).show();
+                                                    correcto = false;
+                                                }
+                                            } else
+                                                clase_lugar.setCoste(null);
+                                        }
+                                        // Modificar guia
+                                        else if (modificar_datos_lugar == 1) {
+                                            if (text.equals("si"))
+                                                clase_lugar.setGuia(true);
+                                            else if (text.equals("no"))
+                                                clase_lugar.setGuia(false);
+                                            else if (!text.equals("paso")) {
+                                                Toast.makeText(MainActivity.this, getString(R.string.error_salir_incorrecto), Toast.LENGTH_LONG).show();
                                                 correcto = false;
+                                            } else {
+                                                clase_lugar.setGuia(null);
                                             }
                                         }
-                                        else
-                                            clase_lugar.setCoste(null);
-                                    }
-                                    // Modificar guia
-                                    else if(modificar_datos_lugar == 1) {
-                                        if(text.equals("si"))
-                                            clase_lugar.setGuia(true);
-                                        else if(text.equals("no"))
-                                            clase_lugar.setGuia(false);
-                                        else if(!text.equals("paso")) {
-                                            Toast.makeText(MainActivity.this, getString(R.string.error_salir_incorrecto), Toast.LENGTH_LONG).show();
-                                            correcto = false;
+                                        // Modificar idioma
+                                        else if (modificar_datos_lugar == 2) {
+                                            if (!text.equals("paso")) {
+                                                if(Idioma.esTipoValido(primeraMayus(text)))
+                                                    clase_lugar.setIdioma(Idioma.valueOf(text.toUpperCase()));
+                                                else {
+                                                    Toast.makeText(MainActivity.this, getString(R.string.error_idioma_incorrecto), Toast.LENGTH_LONG).show();
+                                                    correcto = false;
+                                                }
+                                            }
+                                            else
+                                                clase_lugar.setIdioma(null);
                                         }
-                                        else {
-                                            clase_lugar.setGuia(null);
+                                        // Modificar tipo
+                                        else if (modificar_datos_lugar == 3) {
+                                            if (!text.equals("paso")) {
+                                                if(TipoLugar.esTipoValido(primeraMayus(text)))
+                                                    clase_lugar.setTipo(TipoLugar.valueOf(text.toUpperCase()));
+                                                else {
+                                                    Toast.makeText(MainActivity.this, getString(R.string.error_tipo_incorrecto), Toast.LENGTH_LONG).show();
+                                                    correcto = false;
+                                                }
+                                            }
+                                            else
+                                                clase_lugar.setTipo(null);
                                         }
-                                    }
-                                    // Modificar idioma
-                                    else if (modificar_datos_lugar == 2) {
-                                        if (!text.equals("paso"))
-                                            clase_lugar.setIdioma(Idioma.valueOf(text.toUpperCase()));
-                                        else
-                                            clase_lugar.setIdioma(null);
-                                    }
-                                    // Modificar tipo
-                                    else if (modificar_datos_lugar == 3) {
-                                        if (!text.equals("paso"))
-                                            clase_lugar.setTipo(TipoLugar.valueOf(text.toUpperCase()));
-                                        else
-                                            clase_lugar.setTipo(null);
-                                    }
-                                    // Modificar sub_tipo
-                                    else if (modificar_datos_lugar == 4) {
-                                        if (!text.equals("paso"))
-                                            clase_lugar.setSub_tipo(SubTipoLugar.valueOf(text.toUpperCase()));
-                                        else
-                                            clase_lugar.setSub_tipo(null);
-                                    }
-                                    else {
-                                        Toast.makeText(MainActivity.this, getString(R.string.beta_error_modificar_datos), Toast.LENGTH_LONG).show();
-                                    }
+                                        // Modificar sub_tipo
+                                        else if (modificar_datos_lugar == 4) {
+                                            if (!text.equals("paso")) {
+                                                if(SubTipoLugar.esTipoValido(primeraMayus(text)))
+                                                    clase_lugar.setSub_tipo(SubTipoLugar.valueOf(text.toUpperCase()));
+                                                else {
+                                                    Toast.makeText(MainActivity.this, getString(R.string.error_subtipo_incorrecto), Toast.LENGTH_LONG).show();
+                                                    correcto = false;
+                                                }
+                                            }
+                                            else
+                                                clase_lugar.setSub_tipo(null);
+                                        } else {
+                                            Toast.makeText(MainActivity.this, getString(R.string.beta_error_modificar_datos), Toast.LENGTH_LONG).show();
+                                        }
 
-                                    if(correcto) {
-                                        ChatModel datos = new ChatModel(aux_edit, true, false);
+                                        if (correcto) {
+                                            ChatModel datos = new ChatModel(aux_edit, true, 3);
+                                            list_chat.add(datos);
+                                            CustomAdapter adapter4 = new CustomAdapter(list_chat, getApplicationContext());
+                                            adapter4.setEdit(editText);
+                                            adapter4.setButton(btn_send_message);
+                                            listView.setAdapter(adapter4);
+
+                                            ejecutarDatosLugarInteres("");
+                                            CustomAdapter adapter2 = new CustomAdapter(list_chat, getApplicationContext());
+                                            adapter2.setEdit(editText);
+                                            adapter2.setButton(btn_send_message);
+                                            listView.setAdapter(adapter2);
+                                        }
+                                    }
+                                    // Caso pone fin
+                                    else if (text.equals("fin")) {
+                                        ChatModel datos = new ChatModel(aux_edit, true, 3);
                                         list_chat.add(datos);
                                         CustomAdapter adapter4 = new CustomAdapter(list_chat, getApplicationContext());
                                         adapter4.setEdit(editText);
                                         adapter4.setButton(btn_send_message);
                                         listView.setAdapter(adapter4);
 
-                                        ejecutarDatosLugarInteres("");
-                                        CustomAdapter adapter2 = new CustomAdapter(list_chat, getApplicationContext());
-                                        adapter2.setEdit(editText);
-                                        adapter2.setButton(btn_send_message);
-                                        listView.setAdapter(adapter2);
+                                        datos_interes = true;
+                                        finDatosLugar();
                                     }
+                                } else {
+                                    Toast.makeText(MainActivity.this, getString(R.string.error_dato_espacio), Toast.LENGTH_LONG).show();
                                 }
-                                // Caso pone fin
-                                else if (text.equals("fin")) {
-                                    ChatModel datos = new ChatModel(aux_edit, true, false);
-                                    list_chat.add(datos);
-                                    CustomAdapter adapter4 = new CustomAdapter(list_chat, getApplicationContext());
-                                    adapter4.setEdit(editText);
-                                    adapter4.setButton(btn_send_message);
-                                    listView.setAdapter(adapter4);
-
-                                    datos_interes = true;
-                                    finDatosLugar();
-                                }
-                            }
-                            else {
-                                Toast.makeText(MainActivity.this, getString(R.string.error_dato_espacio), Toast.LENGTH_LONG).show();
+                            } else {
+                                Toast.makeText(MainActivity.this, getString(R.string.error_no_mensaje), Toast.LENGTH_LONG).show();
                             }
                         }
-                        else {
-                            Toast.makeText(MainActivity.this, getString(R.string.error_no_mensaje), Toast.LENGTH_LONG).show();
-                        }
+                    } else {
+                        salirDuack();
                     }
-                } else {
-                    salirDuack();
                 }
             }
         });
@@ -272,47 +297,53 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
         // ###########################
     }
 
+    public void iniciarAyudaTipo(boolean tipo) {
+        Intent intent = new Intent(this, AyudaTiposActivity.class);
+        intent.putExtra("tipo", tipo); // true carga Tipo y false carga Subtipo
+        startActivity(intent);
+    }
+
     public void iniciarDescripcion() {
         Intent intent = new Intent(this, DescripcionLugarActivity.class);
-        intent.putExtra("nombre", clase_lugar.getNombre());
-        intent.putExtra("foto", clase_lugar.getFoto());
-        intent.putExtra("direccion", clase_lugar.getDireccion());
-        intent.putExtra("localidad", clase_lugar.getLocalidad());
-        intent.putExtra("provincia", clase_lugar.getProvincia());
-        intent.putExtra("pais", clase_lugar.getPais());
-        intent.putExtra("latitud", clase_lugar.getLatitud());
-        intent.putExtra("longitud", clase_lugar.getLongitud());
-        intent.putExtra("precio", clase_lugar.getCoste());
-        intent.putExtra("guia", clase_lugar.getGuia());
-        if(clase_lugar.getIdioma() != null)
-            intent.putExtra("idioma", clase_lugar.getIdioma().getTexto());
-        if(clase_lugar.getTipo() != null)
-            intent.putExtra("tipo", clase_lugar.getTipo().getTexto());
-        if(clase_lugar.getSub_tipo() != null)
-            intent.putExtra("subtipo", clase_lugar.getSub_tipo().getTexto());
-        intent.putExtra("telefono", clase_lugar.getTelefono());
-        intent.putExtra("url", clase_lugar.getUrl());
+        intent.putExtra("id", clase_lugar.getId());
         startActivity(intent);
     }
 
     public void finDatosLugar() {
         Cursor cursor_aux = bd.extraeCursorConsulta(clase_lugar);
-        clase_lugar = bd.extraeLugarInteres(cursor_aux);
-        if(clase_lugar != null) {
-            String datos_li = "Id: " + clase_lugar.getId() + "\nNombre: " + clase_lugar.getNombre();
-            datos_li += "\n" + getString(R.string.fin_chat);
-            ChatModel fin_datos = new ChatModel(datos_li, false, false);
-            list_chat.add(fin_datos);
-            ChatModel fin_chat_pregunta = new ChatModel("", false, true);
-            list_chat.add(fin_chat_pregunta);
-            iniciarDescripcion();
-            fin = true;
+        List<LugarInteres> lista = bd.extraeLugarInteres(cursor_aux);
+        if(lista != null) {
+            if(lista.size() == 1) {
+                String datos_li = getString(R.string.un_dato);
+                datos_li += "\n" + getString(R.string.fin_chat);
+                ChatModel fin_datos = new ChatModel(datos_li, false, 3);
+                list_chat.add(fin_datos);
+                ChatModel fin_chat_pregunta = new ChatModel("", false, 0);
+                list_chat.add(fin_chat_pregunta);
+                clase_lugar = lista.get(0);
+                iniciarDescripcion();
+                fin = true;
+            }
+            else {
+                String datos_li = getString(R.string.varios_datos_1) + " " + lista.size()
+                        + " " + getString(R.string.varios_datos_2);
+                datos_li += "\n" + getString(R.string.fin_chat);
+                ChatModel fin_datos = new ChatModel(datos_li, false, 3);
+                list_chat.add(fin_datos);
+                ChatModel fin_chat_pregunta = new ChatModel("", false, 0);
+                list_chat.add(fin_chat_pregunta);
+                /*clase_lugar = lista.get(0);
+                iniciarDescripcion(); // Aqui se llamara a otro*/
+                Intent intent = new Intent(this, VariosResultadosActivity.class);
+                startActivity(intent);
+                fin = true;
+            }
         } else {
             String datos_li = getString(R.string.error_no_datos);
             datos_li += "\n" + getString(R.string.fin_chat);
-            ChatModel fin_datos = new ChatModel(datos_li, false, false);
+            ChatModel fin_datos = new ChatModel(datos_li, false, 3);
             list_chat.add(fin_datos);
-            ChatModel fin_chat_pregunta = new ChatModel("", false, true);
+            ChatModel fin_chat_pregunta = new ChatModel("", false, 0);
             list_chat.add(fin_chat_pregunta);
             fin = true;
         }
@@ -326,34 +357,38 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
             // Coste
             if (clase_lugar.getCoste() == null && !clase_lugar.getComprobadoId(0)) {
                 ChatModel datos_coste= new ChatModel(cadena + getString(R.string.datos_coste)
-                        + "\n" + getString(R.string.irrelevante), false, false);
+                        + "\n" + getString(R.string.irrelevante), false, 3);
                 list_chat.add(datos_coste);
                 modificar_datos_lugar = 0;
             } // Guia
             else if (clase_lugar.isGuia() == null && !clase_lugar.getComprobadoId(1)) {
                 ChatModel datos_guia = new ChatModel(cadena + getString(R.string.datos_guia)
-                        + "\n" + getString(R.string.irrelevante), false, false);
+                        + "\n" + getString(R.string.irrelevante), false, 3);
                 list_chat.add(datos_guia);
-                ChatModel fin_chat_opciones = new ChatModel("", false, true);
+                ChatModel fin_chat_opciones = new ChatModel("", false, 0);
                 list_chat.add(fin_chat_opciones);
                 modificar_datos_lugar = 1;
             } // Idioma
             else if (clase_lugar.getIdioma() == null && !clase_lugar.getComprobadoId(2)) {
                 ChatModel datos_idioma = new ChatModel(cadena + getString(R.string.datos_idioma)
-                        + "\n" + getString(R.string.irrelevante), false, false);
+                        + "\n" + getString(R.string.irrelevante), false, 3);
                 list_chat.add(datos_idioma);
                 modificar_datos_lugar = 2;
             } // Tipo
             else if (clase_lugar.getTipo() == null && !clase_lugar.getComprobadoId(3)) {
                 ChatModel datos_tipo = new ChatModel(cadena + getString(R.string.datos_tipo)
-                        + "\n" + getString(R.string.irrelevante), false, false);
+                        + "\n" + getString(R.string.irrelevante), false, 3);
                 list_chat.add(datos_tipo);
+                ChatModel fin_chat_opciones = new ChatModel("", false, 1);
+                list_chat.add(fin_chat_opciones);
                 modificar_datos_lugar = 3;
             } // Sub tipo
             else if (clase_lugar.getSub_tipo() == null && !clase_lugar.getComprobadoId(4)) {
                 ChatModel datos_sub_tipo = new ChatModel(cadena + getString(R.string.datos_sub_tipo)
-                        + "\n" + getString(R.string.irrelevante), false, false);
+                        + "\n" + getString(R.string.irrelevante), false, 3);
                 list_chat.add(datos_sub_tipo);
+                ChatModel fin_chat_opciones = new ChatModel("", false, 2);
+                list_chat.add(fin_chat_opciones);
                 modificar_datos_lugar = 4;
             }
         } else {
@@ -364,12 +399,15 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
 
     public void salirDuack() {
         // Ponemos clase_lugar a null
-        clase_lugar.vaciarLugar();
+        if(clase_lugar == null)
+            clase_lugar = new LugarInteres();
+        else
+            clase_lugar.vaciarLugar();
         datos_interes = true;
         outputText = "";
         // Caso de queremos hacer otra consulta
         if(quitarAcentosMayus(editText.getText().toString()).equals("si")) {
-            ChatModel final_duack = new ChatModel(getString(R.string.nueva_consulta), false, false);
+            ChatModel final_duack = new ChatModel(getString(R.string.nueva_consulta), false, 3);
             list_chat.add(final_duack);
             CustomAdapter adapter2 = new CustomAdapter(list_chat, getApplicationContext());
             adapter2.setEdit(editText);
@@ -382,7 +420,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
         else if(quitarAcentosMayus(editText.getText().toString()).equals("no")) {
             //fin = false;
             try {
-                ChatModel final_duack = new ChatModel(getString(R.string.salir), false, false);
+                ChatModel final_duack = new ChatModel(getString(R.string.salir), false, 3);
                 list_chat.add(final_duack);
                 CustomAdapter adapter2 = new CustomAdapter(list_chat, getApplicationContext());
                 adapter2.setEdit(editText);
@@ -446,10 +484,16 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
                                     }*/
                                     clase_lugar.setTipo(TipoLugar.OFICINA);
                                     Cursor cursor_aux = bd.extraeCursorConsulta(clase_lugar);
-                                    clase_lugar = bd.extraeLugarInteres(cursor_aux);
-                                    if(clase_lugar != null) {
-                                        outputText = "Direccion: " + clase_lugar.getDireccion();
-                                        outputText += "\nId = " + clase_lugar.getId();
+                                    List<LugarInteres> lista = bd.extraeLugarInteres(cursor_aux);
+                                    if(lista != null) {
+                                        if(lista.size() == 1) {
+                                            outputText = getString(R.string.un_dato);
+                                            clase_lugar = lista.get(0);
+                                        } else {
+                                            outputText = getString(R.string.varios_datos_1) + " " + lista.size()
+                                                    + " " + getString(R.string.varios_datos_2);
+                                            clase_lugar = lista.get(0); // Hay que cambiarlo
+                                        }
                                     }
                                     else
                                         outputText = getString(R.string.error_no_datos);
@@ -496,9 +540,17 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
                                         outputText = getString(R.string.beta_error_nombre);
 
                                     Cursor cursor_aux = bd.extraeCursorNombre(para_bd);
-                                    clase_lugar = bd.extraeLugarInteres(cursor_aux);
-                                    if(clase_lugar != null)
-                                        outputText += "\nId = " + clase_lugar.getId();
+                                    List<LugarInteres> lista = bd.extraeLugarInteres(cursor_aux);
+                                    if(lista != null) {
+                                        if(lista.size() == 1) {
+                                            outputText = getString(R.string.un_dato);
+                                            clase_lugar = lista.get(0);
+                                        } else {
+                                            outputText = getString(R.string.varios_datos_1) + " " + lista.size()
+                                                    + " " + getString(R.string.varios_datos_2);
+                                            clase_lugar = lista.get(0); // Hay que cambiarlo
+                                        }
+                                    }
                                     else
                                         outputText += "\n" + getString(R.string.error_no_datos);
                                     fin = true;
