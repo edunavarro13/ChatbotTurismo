@@ -13,4 +13,19 @@ public enum Idioma {
     }
 
     public String getTexto() { return texto; }
+
+    public static boolean esTipoValido(String cadena) {
+        switch(cadena) {
+            case "Español" :
+                return true;
+            case "Ingles" :
+                return true;
+            case "Valenciano" :
+                return true;
+            case "Catalan" :
+                return true;
+            default:
+                return false;
+        }
+    }
 }

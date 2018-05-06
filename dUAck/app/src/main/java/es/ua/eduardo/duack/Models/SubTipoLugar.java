@@ -1,7 +1,6 @@
 package es.ua.eduardo.duack.Models;
 
 public enum SubTipoLugar {
-    OTROS("Otros"),
     CALZADO("Calzado"),
     ARTE("Arte"),
     ARQUEOLOGICO("Arqueologico"),
@@ -13,4 +12,19 @@ public enum SubTipoLugar {
         this.texto = texto;
     }
     public String getTexto() { return texto; }
+
+    public static boolean esTipoValido(String cadena) {
+        switch(cadena) {
+            case "Calzado" :
+                return true;
+            case "Arte" :
+                return true;
+            case "Arqueologico" :
+                return true;
+            case "Etnologico" :
+                return true;
+            default:
+                return false;
+        }
+    }
 }

@@ -14,7 +14,7 @@
     <string name="datos_guia">¿Quieres que, a ser posible, el sitio que buscas tenga guía o no?</string>
     <string name="datos_idioma">¿Quieres que se hable algún idioma en particular?</string>
     <string name="datos_tipo">El lugar turístico que buscas, ¿es de algún tipo en concreto? Si no sabes qué tipos hay, pulsa el botón naranja.</string>
-    <string name="datos_sub_tipo">El lugar de interés turístico que buscas, ¿es de algún sub tipo en concreto?</string>
+    <string name="datos_sub_tipo">El lugar de interés turístico que buscas, ¿es de algún subtipo en concreto? Si no sabes qué subtipos hay, pulsa el botón naranja</string>
     <string name="un_dato">He encontrado un lugar con la descripción que me has dado. Te lo muestro en seguida.</string>
     <string name="varios_datos_1">He encontrado</string>
     <string name="varios_datos_2">lugares con la descripcion que me has dado. Te los muestro en seguida.</string>
@@ -38,6 +38,16 @@
     <string name="sinonimos_castillo">Castillos, fortalezas, ciudadelas</string>
     <string name="yacimiento">Yacimiento</string>
     <string name="sinonimos_yacimiento">Yacimientos, minas, canteras</string>
+    <string name="subtipos">Subtipos</string>
+    <string name="calzado">Calzado</string>
+    <string name="calzado_disponible">Museos</string>
+    <string name="arte">Arte</string>
+    <string name="arte_disponible">Museos</string>
+    <string name="arqueologico">Arqueológico</string>
+    <string name="arqueologico_disponible">Museos</string>
+    <string name="etnologico">Etnológico</string>
+    <string name="etnologico_disponible">Yacimientos</string>
+    <string name="tipos_disponibles">Tipos disponibles</string>
 
     <string name="irrelevante">(Si el dato no te parece importante, escribe PASO)</string>
     <string name="ibm_no_responde">He perdido la conexión con Internet. ¡Comprueba tu conexión y vuelve a intentarlo!</string>
@@ -46,7 +56,9 @@
     <string name="error_no_mensaje">Introduce un mensaje</string>
     <string name="error_precio_incorrecto">Introduce un numero decimal, PASO o FIN</string>
     <string name="error_salir_incorrecto">Pulse uno de los botones naranjas</string>
-    <string name="error_tipo_incorrecto">El tipo introducido es incorrecto.</string>
+    <string name="error_tipo_incorrecto">El tipo introducido es incorrecto o no está disponible.</string>
+    <string name="error_idioma_incorrecto">El idioma introducido es incorrecto o no está disponible.</string>
+    <string name="error_subtipo_incorrecto">El subtipo introducido es incorrecto o no está disponible.</string>
     <string name="error_dato_espacio">Las respuestas deben ser en una sola palabra, sin espacios</string>
     <string name="beta_error_nombre">ERROR EN BUSQUEDA NOMBRE</string>
     <string name="beta_error_modificar_datos">ERROR EN MODIFICAR DATOS</string>

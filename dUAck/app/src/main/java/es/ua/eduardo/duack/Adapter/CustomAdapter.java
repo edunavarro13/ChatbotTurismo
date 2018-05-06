@@ -105,7 +105,16 @@ public class CustomAdapter extends BaseAdapter {
             }
             // Caso mensaje informacion sub tipos
             else if(list_chat_models.get(position).isPregunta() == 2) {
+                view = layoutInflater.inflate(R.layout.list_item_message_informacion, null);
+                ImageButton button_inf = (ImageButton) view.findViewById(R.id.boton_inf);
 
+                button_inf.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        editText.setText(">*<AyudaSubTiposActivity<644/2|714>"); // Si que lo pilla pero no lo imprime
+                        button_main.callOnClick();
+                    }
+                });
             }
             else {
                 if (list_chat_models.get(position).isSend)

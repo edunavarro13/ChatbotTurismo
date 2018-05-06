@@ -100,7 +100,17 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
         btn_send_message.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(!editText.getText().toString().equals(">*<AyudaTiposActivity<644/2|714>")) {
+                if(editText.getText().toString().equals(">*<AyudaTiposActivity<644/2|714>")) {
+                    // Caso ">*<AyudaTiposActivity<644/2|714>" es decir ejecutar Tipos
+                    editText.setText("");
+                    iniciarAyudaTipo(true);
+                }
+                else if (editText.getText().toString().equals(">*<AyudaSubTiposActivity<644/2|714>")) {
+                    // Caso ">*<AyudaTiposActivity<644/2|714>" es decir ejecutar Tipos
+                    editText.setText("");
+                    iniciarAyudaTipo(false);
+                }
+                else {
                     if (!fin) {
                         if (datos_interes) {
                             String text = quitarAcentosMayus(editText.getText().toString());
@@ -200,8 +210,14 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
                                         }
                                         // Modificar idioma
                                         else if (modificar_datos_lugar == 2) {
-                                            if (!text.equals("paso"))
-                                                clase_lugar.setIdioma(Idioma.valueOf(text.toUpperCase()));
+                                            if (!text.equals("paso")) {
+                                                if(Idioma.esTipoValido(primeraMayus(text)))
+                                                    clase_lugar.setIdioma(Idioma.valueOf(text.toUpperCase()));
+                                                else {
+                                                    Toast.makeText(MainActivity.this, getString(R.string.error_idioma_incorrecto), Toast.LENGTH_LONG).show();
+                                                    correcto = false;
+                                                }
+                                            }
                                             else
                                                 clase_lugar.setIdioma(null);
                                         }
@@ -220,8 +236,14 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
                                         }
                                         // Modificar sub_tipo
                                         else if (modificar_datos_lugar == 4) {
-                                            if (!text.equals("paso"))
-                                                clase_lugar.setSub_tipo(SubTipoLugar.valueOf(text.toUpperCase()));
+                                            if (!text.equals("paso")) {
+                                                if(SubTipoLugar.esTipoValido(primeraMayus(text)))
+                                                    clase_lugar.setSub_tipo(SubTipoLugar.valueOf(text.toUpperCase()));
+                                                else {
+                                                    Toast.makeText(MainActivity.this, getString(R.string.error_subtipo_incorrecto), Toast.LENGTH_LONG).show();
+                                                    correcto = false;
+                                                }
+                                            }
                                             else
                                                 clase_lugar.setSub_tipo(null);
                                         } else {
@@ -266,11 +288,6 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
                         salirDuack();
                     }
                 }
-                // Caso ">*<AyudaTiposActivity<644/2|714>" es decir ejecutar Tipos
-                else {
-                    editText.setText("");
-                    iniciarAyudaTipo();
-                }
             }
         });
 
@@ -279,8 +296,9 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
         // ###########################
     }
 
-    public void iniciarAyudaTipo() {
+    public void iniciarAyudaTipo(boolean tipo) {
         Intent intent = new Intent(this, AyudaTiposActivity.class);
+        intent.putExtra("tipo", tipo); // true carga Tipo y false carga Subtipo
         startActivity(intent);
     }
 
@@ -383,6 +401,8 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
                 ChatModel datos_sub_tipo = new ChatModel(cadena + getString(R.string.datos_sub_tipo)
                         + "\n" + getString(R.string.irrelevante), false, 3);
                 list_chat.add(datos_sub_tipo);
+                ChatModel fin_chat_opciones = new ChatModel("", false, 2);
+                list_chat.add(fin_chat_opciones);
                 modificar_datos_lugar = 4;
             }
         } else {

@@ -10,7 +10,12 @@ public class AyudaTiposActivity extends AppCompatActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.ayuda_tipos);
+        Bundle extras = getIntent().getExtras();
+        boolean tipo = (extras.getBoolean("tipo"));
+        if(tipo)
+            setContentView(R.layout.ayuda_tipos);
+        else
+            setContentView(R.layout.ayuda_subtipos);
     }
 
     // --------------- Menu -----------------
