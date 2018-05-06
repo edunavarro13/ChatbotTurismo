@@ -348,8 +348,10 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
                 list_chat.add(fin_datos);
                 ChatModel fin_chat_pregunta = new ChatModel("", false, 0);
                 list_chat.add(fin_chat_pregunta);
-                clase_lugar = lista.get(0);
-                iniciarDescripcion(); // Aqui se llamara a otro
+                /*clase_lugar = lista.get(0);
+                iniciarDescripcion(); // Aqui se llamara a otro*/
+                Intent intent = new Intent(this, VariosResultadosActivity.class);
+                startActivity(intent);
                 fin = true;
             }
         } else {

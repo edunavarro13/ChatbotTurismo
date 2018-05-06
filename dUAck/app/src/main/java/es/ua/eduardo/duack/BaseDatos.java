@@ -13,10 +13,12 @@ import es.ua.eduardo.duack.Models.SubTipoLugar;
 public class BaseDatos extends SQLiteOpenHelper {
 
     Context contexto;
+    Cursor ultimocursor;
 
     public BaseDatos(Context contexto) {
         super(contexto, "duack", null, 1);
         this.contexto = contexto;
+        this.ultimocursor = null;
     }
 
     @Override
@@ -247,7 +249,8 @@ public class BaseDatos extends SQLiteOpenHelper {
     public Cursor extraeCursor() {
         String consulta = "SELECT * FROM lugares";
         SQLiteDatabase bd = getReadableDatabase();
-        return bd.rawQuery(consulta, null);
+        ultimocursor = bd.rawQuery(consulta, null);
+        return ultimocursor;
     }
 
     public Cursor extraeCursorConsulta(LugarInteres lugar) {
@@ -287,12 +290,21 @@ public class BaseDatos extends SQLiteOpenHelper {
             consulta += aux_consulta;
 
         SQLiteDatabase bd = getReadableDatabase();
-        return bd.rawQuery(consulta, null);
+        ultimocursor = bd.rawQuery(consulta, null);
+        return ultimocursor;
     }
 
     public Cursor extraeCursorNombre(String consultanombre) {
         SQLiteDatabase bd = getReadableDatabase();
-        Cursor cursor = bd.rawQuery(consultanombre, null);
-        return cursor;
+        ultimocursor = bd.rawQuery(consultanombre, null);
+        return ultimocursor;
+    }
+
+    public Cursor getUltimocursor() {
+        return ultimocursor;
+    }
+
+    public void setUltimocursor(Cursor ultimocursor) {
+        this.ultimocursor = ultimocursor;
     }
 }
