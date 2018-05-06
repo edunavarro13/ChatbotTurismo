@@ -253,6 +253,52 @@ public class BaseDatos extends SQLiteOpenHelper {
         return ultimocursor;
     }
 
+    public LugarInteres lugarInteresPorId(int id) {
+        String consulta = "SELECT * FROM lugares WHERE _id=" + id;
+        SQLiteDatabase bd = getReadableDatabase();
+        Cursor cursor = bd.rawQuery(consulta, null);
+        if (!cursor.moveToFirst()){
+            //el cursor está vacío
+            return null;
+        }
+            LugarInteres lugar = new LugarInteres();
+            lugar.setId(cursor.getInt(0));
+            lugar.setNombre(cursor.getString(1));
+            lugar.setNombre2(cursor.getString(2));
+            lugar.setDescripcion(cursor.getString(3));
+            lugar.setLatitud(cursor.getDouble(4));
+            lugar.setLongitud(cursor.getDouble(5));
+            lugar.setDireccion(cursor.getString(6));
+            lugar.setLocalidad(cursor.getString(7));
+            lugar.setProvincia(cursor.getString(8));
+            lugar.setPais(cursor.getString(9));
+            lugar.setCoste(cursor.getDouble(10));
+            if (cursor.getInt(11) == 0)
+                lugar.setGuia(false);
+            else
+                lugar.setGuia(true);
+            String auxiliar = cursor.getString(12);
+            if (auxiliar != null)
+                lugar.setIdioma(Idioma.valueOf(auxiliar.toUpperCase()));
+            else
+                lugar.setIdioma(null);
+            auxiliar = cursor.getString(13);
+            if (auxiliar != null)
+                lugar.setTipo(TipoLugar.valueOf(auxiliar.toUpperCase()));
+            else
+                lugar.setTipo(null);
+            auxiliar = cursor.getString(14);
+            if (auxiliar != null)
+                lugar.setSub_tipo(SubTipoLugar.valueOf(auxiliar.toUpperCase()));
+            else
+                lugar.setSub_tipo(null);
+            lugar.setFoto(cursor.getString(15));
+            lugar.setTelefono(cursor.getInt(16));
+            lugar.setUrl(cursor.getString(17));
+            return lugar;
+
+    }
+
     public Cursor extraeCursorConsulta(LugarInteres lugar) {
         String consulta = "SELECT * FROM lugares";
         String aux_consulta = " WHERE";

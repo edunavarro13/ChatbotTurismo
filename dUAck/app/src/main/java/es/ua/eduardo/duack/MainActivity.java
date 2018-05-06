@@ -59,6 +59,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
     private boolean datos_interes = true;
     private int modificar_datos_lugar = -1; // 0=coste;1=guia;2=idioma;3=tipo;4=sub_tipo
     public static BaseDatos bd;
+    private AdaptadorLugares adaptador;
 
     // IBM
     String outputText;
@@ -304,24 +305,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
 
     public void iniciarDescripcion() {
         Intent intent = new Intent(this, DescripcionLugarActivity.class);
-        intent.putExtra("nombre", clase_lugar.getNombre());
-        intent.putExtra("foto", clase_lugar.getFoto());
-        intent.putExtra("direccion", clase_lugar.getDireccion());
-        intent.putExtra("localidad", clase_lugar.getLocalidad());
-        intent.putExtra("provincia", clase_lugar.getProvincia());
-        intent.putExtra("pais", clase_lugar.getPais());
-        intent.putExtra("latitud", clase_lugar.getLatitud());
-        intent.putExtra("longitud", clase_lugar.getLongitud());
-        intent.putExtra("precio", clase_lugar.getCoste());
-        intent.putExtra("guia", clase_lugar.getGuia());
-        if(clase_lugar.getIdioma() != null)
-            intent.putExtra("idioma", clase_lugar.getIdioma().getTexto());
-        if(clase_lugar.getTipo() != null)
-            intent.putExtra("tipo", clase_lugar.getTipo().getTexto());
-        if(clase_lugar.getSub_tipo() != null)
-            intent.putExtra("subtipo", clase_lugar.getSub_tipo().getTexto());
-        intent.putExtra("telefono", clase_lugar.getTelefono());
-        intent.putExtra("url", clase_lugar.getUrl());
+        intent.putExtra("id", clase_lugar.getId());
         startActivity(intent);
     }
 

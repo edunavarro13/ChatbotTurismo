@@ -22,6 +22,8 @@ import java.io.FileNotFoundException;
 
 import es.ua.eduardo.duack.Models.SubTipoLugar;
 
+import static es.ua.eduardo.duack.MainActivity.bd;
+
 public class DescripcionLugarActivity extends AppCompatActivity {
 
     LugarInteres lugar;
@@ -33,27 +35,8 @@ public class DescripcionLugarActivity extends AppCompatActivity {
 
         lugar = new LugarInteres();
         Bundle extras = getIntent().getExtras();
-        lugar.setNombre(extras.getString("nombre"));
-        lugar.setFoto(extras.getString("foto"));
-        lugar.setDireccion(extras.getString("direccion"));
-        lugar.setLocalidad(extras.getString("localidad"));
-        lugar.setProvincia(extras.getString("provincia"));
-        lugar.setPais(extras.getString("pais"));
-        lugar.setLatitud(extras.getDouble("latitud"));
-        lugar.setLongitud(extras.getDouble("longitud"));
-        lugar.setCoste(extras.getDouble("precio"));
-        lugar.setGuia(extras.getBoolean("guia"));
-        String aux = extras.getString("idioma");
-        if(aux != null)
-            lugar.setIdioma(Idioma.valueOf(aux.toUpperCase()));
-        aux = extras.getString("tipo");
-        if(aux != null)
-            lugar.setTipo(TipoLugar.valueOf(aux.toUpperCase()));
-        aux = extras.getString("subtipo");
-        if (aux != null)
-            lugar.setSub_tipo(SubTipoLugar.valueOf(aux.toUpperCase()));
-        lugar.setTelefono(extras.getInt("telefono"));
-        lugar.setUrl(extras.getString("url"));
+        int id = extras.getInt("id");
+        lugar = bd.lugarInteresPorId(id);
 
         // Inicializamos los textview
         TextView nombre = (TextView)findViewById(R.id.nombre_lugar);
