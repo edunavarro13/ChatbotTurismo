@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    android:key="preferencias_principal" >
+    <CheckBoxPreference
+        android:key="ubicacion"
+        android:summary="@string/por_ubicacion_summary"
+        android:title="@string/por_ubicacion"
+        android:checked="true"
+        android:singleLine="true"/>
+    <PreferenceCategory
+        android:key="pref_no_ub"
+        android:title="@string/por_no_ubicacion">
+        <ListPreference
+            android:key="pais"
+            android:title="@string/por_pais"
+            android:summary="@string/por_pais_summary"
+            android:entries="@array/paises"
+            android:entryValues="@array/paisesValores"
+            android:defaultValue="España"
+            android:singleLine="true"/>
+        <ListPreference
+            android:key="provincia"
+            android:title="@string/por_provincia"
+            android:summary="@string/por_provincia_summary"
+            android:entries="@array/provincias"
+            android:entryValues="@array/provinciasValores"
+            android:defaultValue="Alicante"
+            android:singleLine="true"/>
+        <ListPreference
+            android:key="localidad"
+            android:title="@string/por_localidad"
+            android:summary="@string/por_localidad_summary"
+            android:entries="@array/localidades"
+            android:entryValues="@array/localidadesValores"
+            android:defaultValue="Elda"
+            android:singleLine="true"/>
+    </PreferenceCategory>
+
+</PreferenceScreen>

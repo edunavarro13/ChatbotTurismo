@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="paises">
+        <item>España</item>
+        <item>Portugal</item>
+        <item>Francia</item>
+    </string-array>
+    <string-array name="paisesValores">
+        <item>España</item>
+        <item>Portugal</item>
+        <item>Francia</item>
+    </string-array>
+
+    <string-array name="provincias">
+        <item>Alicante</item>
+        <item>Valencia</item>
+        <item>Castellón</item>
+    </string-array>
+    <string-array name="provinciasValores">
+        <item>Alicante</item>
+        <item>Valencia</item>
+        <item>Castellon</item>
+    </string-array>
+
+    <string-array name="localidades">
+        <item>Elda</item>
+        <item>Petrer</item>
+        <item>San Vicente</item>
+        <item>Alicante</item>
+        <item>Elche</item>
+        <item>Sax</item>
+    </string-array>
+    <string-array name="localidadesValores">
+        <item>Elda</item>
+        <item>Petrer</item>
+        <item>San vicente</item>
+        <item>Alicante</item>
+        <item>Elche</item>
+        <item>Sax</item>
+    </string-array>
+</resources>

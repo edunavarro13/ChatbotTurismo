@@ -311,6 +311,9 @@ public class LugarInteres {
             case "auditorioadoc.png" :
                 imageView.setImageResource(R.drawable.auditorioadoc);
                 break;
+            case "touristinfosanvicente.png" :
+                imageView.setImageResource(R.drawable.touristinfosanvicente);
+                break;
         }
     }
 
