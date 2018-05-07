@@ -48,6 +48,15 @@
     <string name="etnologico">Etnológico</string>
     <string name="etnologico_disponible">Yacimientos</string>
     <string name="tipos_disponibles">Tipos disponibles</string>
+    <string name="por_ubicacion">Por ubicación</string>
+    <string name="por_ubicacion_summary">Busca lugares cercanos a tu ubicación actual.</string>
+    <string name="por_pais">Por país</string>
+    <string name="por_pais_summary">La búsqueda se realiza en el país seleccionado.</string>
+    <string name="por_provincia">Por provincia</string>
+    <string name="por_provincia_summary">La búsqueda se realiza en la provincia seleccionada.</string>
+    <string name="por_localidad">Por localidad</string>
+    <string name="por_localidad_summary">La búsqueda se realiza en la localidad seleccionada.</string>
+    <string name="por_no_ubicacion">Búsqueda por localidad</string>
 
     <string name="irrelevante">(Si el dato no te parece importante, escribe PASO)</string>
     <string name="ibm_no_responde">He perdido la conexión con Internet. ¡Comprueba tu conexión y vuelve a intentarlo!</string>

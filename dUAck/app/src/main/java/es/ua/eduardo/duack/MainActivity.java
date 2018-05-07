@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.location.Location;
@@ -12,6 +13,7 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.preference.PreferenceManager;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
@@ -61,6 +63,10 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
     public static BaseDatos bd;
     private AdaptadorLugares adaptador;
 
+    // ### Datos preferencias ###
+    private boolean prefubicacion;
+    private String prefpais, prefprovincia, preflocalidad;
+
     // IBM
     String outputText;
 
@@ -77,6 +83,8 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
         setContentView(R.layout.activity_main);
 
         bd = new BaseDatos(this);
+        PreferenceManager.setDefaultValues(this, R.xml.preferencias, false);
+        mostrarPreferencias();
 
         clase_lugar = new LugarInteres();
 
@@ -741,6 +749,8 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
     @Override protected void onResume() {
         super.onResume();
         activarProveedores();
+        mostrarPreferencias();
+        invalidateOptionsMenu();
     }
 
     private void activarProveedores() {
@@ -801,6 +811,16 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
         return true; /** true -> el menú ya está visible */
     }
 
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        MenuItem myItem = menu.findItem(R.id.menu_preferencia);
+        if(prefubicacion)
+            myItem.setTitle("Ubicacion");
+        else
+            myItem.setTitle(preflocalidad);
+        return true;
+    }
+
     @Override public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         if (id == R.id.menu_mail) {
@@ -810,6 +830,19 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
             intent.putExtra(Intent.EXTRA_TEXT, mensaje_mail());
             intent.putExtra(Intent.EXTRA_EMAIL, new String[] {"duackchatbot@gmail.com"});
             startActivity(intent);
+            return true;
+        }
+        else if  (id == R.id.action_settings) {
+            Intent intent = new Intent(this, PreferenciasActivity.class);
+            startActivity(intent);
+            return true;
+        }
+        else if (id == R.id.salir_settings) {
+            finish();
+            return true;
+        }
+        else if (id == R.id.acercaDe) {
+            Toast.makeText(MainActivity.this, prefubicacion + ", " + preflocalidad, Toast.LENGTH_LONG).show();
             return true;
         }
         return super.onOptionsItemSelected(item);
@@ -852,6 +885,15 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
             }
         }
         return nueva_cadena;
+    }
+
+    public void mostrarPreferencias(){
+        SharedPreferences pref =
+                PreferenceManager.getDefaultSharedPreferences(this);
+        prefubicacion = pref.getBoolean("ubicacion",true);
+        prefpais = pref.getString("pais","?");
+        prefprovincia = pref.getString("localidad","?");
+        preflocalidad = pref.getString("localidad","?");
     }
 
 }
