@@ -78,7 +78,7 @@ public class AdaptadorLugares extends
         this.cursor = cursor;
     }
     public int idLugarPosicion(int posicion) {
-        return (bd.extraeLugarInteres(cursor)).get(posicion).getId();
+        return lugares.get(posicion).getId();
     }
     public int idPosicion(int posicion) {
         cursor.moveToPosition(posicion);

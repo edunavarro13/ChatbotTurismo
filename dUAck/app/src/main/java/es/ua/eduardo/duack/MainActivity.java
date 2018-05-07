@@ -469,27 +469,25 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
                                             outputText = "El hilo ha dado el error: " + ex.toString();
                                         }
                                     }
-                                    /*// Comprobamos si esta conectado
-                                    ultimaLocalizazion();
-                                    //manager = (LocationManager) getSystemService( Context.LOCATION_SERVICE );
-                                    if ( !manejador.isProviderEnabled(LocationManager.GPS_PROVIDER) ||
-                                            !manejador.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
-                                        outputText += "\n" + getString(R.string.sin_gps);
+                                    // Si ubicacion es true comprobamos si esta conectado
+                                    if(prefubicacion) {
+                                        ultimaLocalizazion();
+                                        if (!manejador.isProviderEnabled(LocationManager.GPS_PROVIDER) ||
+                                                !manejador.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
+                                            outputText += "\n" + getString(R.string.sin_gps);
+                                        } else {
+                                            if (ActivityCompat.checkSelfPermission(MainActivity.this,
+                                                    Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                                                // Obtenemos la localizacion
+                                                if (mejorLocaliz != null)
+                                                    bd.setLatLong(mejorLocaliz.getLatitude(), mejorLocaliz.getLongitude());
+                                                else
+                                                    outputText += "\n" + getString(R.string.location_null);
+                                            } else {
+                                                outputText += "\n" + getString(R.string.permisos_gps);
+                                            }
+                                        }
                                     }
-                                    else {
-                                        if (ActivityCompat.checkSelfPermission(MainActivity.this,
-                                                Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-                                            // Obtenemos la localizacion
-                                            if(mejorLocaliz != null)
-                                                outputText += "\nDistancia = " + distancia(latitud_oficina, longitud_oficina,
-                                                        mejorLocaliz.getLatitude(), mejorLocaliz.getLongitude()) + " km.";
-                                            else
-                                                outputText += "\n" + getString(R.string.location_null);
-                                        }
-                                        else {
-                                            outputText += "\n" + getString(R.string.permisos_gps);
-                                        }
-                                    }*/
                                     clase_lugar.setTipo(TipoLugar.OFICINA);
                                     Cursor cursor_aux = bd.extraeCursorConsulta(clase_lugar);
                                     List<LugarInteres> lista = bd.extraeLugarInteres(cursor_aux);
@@ -599,6 +597,25 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
                                     else {
                                         outputText += " es null ";
                                     }
+                                    // Si ubicacion es true comprobamos si esta conectado
+                                    if(prefubicacion) {
+                                        ultimaLocalizazion();
+                                        if (!manejador.isProviderEnabled(LocationManager.GPS_PROVIDER) ||
+                                                !manejador.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
+                                            outputText += "\n" + getString(R.string.sin_gps);
+                                        } else {
+                                            if (ActivityCompat.checkSelfPermission(MainActivity.this,
+                                                    Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                                                // Obtenemos la localizacion
+                                                if (mejorLocaliz != null)
+                                                    bd.setLatLong(mejorLocaliz.getLatitude(), mejorLocaliz.getLongitude());
+                                                else
+                                                    outputText += "\n" + getString(R.string.location_null);
+                                            } else {
+                                                outputText += "\n" + getString(R.string.permisos_gps);
+                                            }
+                                        }
+                                    }
                                     // Comprobamos si estan todos los datos
                                     datos_interes = clase_lugar.todosDatos();
                                     if(!datos_interes) {
@@ -678,19 +695,6 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
             }
         }
         return true;
-    }
-
-    public double distancia(double lat1, double lon1, double lat2, double lon2)
-    {
-        double R = 6378.137; //Radio de la tierra en km
-        double dLat  = ( lat2 - lat1 )*Math.PI/180;
-        double dLong = ( lon2 - lon1 )*Math.PI/180;
-
-        double a = Math.sin(dLat/2) * Math.sin(dLat/2) + Math.cos(lat1*Math.PI/180) * Math.cos(lat2*Math.PI/180) * Math.sin(dLong/2) * Math.sin(dLong/2);
-        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-        double d = R * c;
-
-        return (double)Math.round(d * 1000d) / 1000d;
     }
 
     // ########## Localizacion ###########
@@ -892,8 +896,14 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
                 PreferenceManager.getDefaultSharedPreferences(this);
         prefubicacion = pref.getBoolean("ubicacion",true);
         prefpais = pref.getString("pais","?");
-        prefprovincia = pref.getString("localidad","?");
+        prefprovincia = pref.getString("provincia","?");
         preflocalidad = pref.getString("localidad","?");
+
+        // Lo añadimos a la base de datos
+        bd.setPrefubicacion(prefubicacion);
+        bd.setPrefpais(prefpais);
+        bd.setPrefprovincia(prefprovincia);
+        bd.setPreflocalidad(preflocalidad);
     }
 
 }

@@ -1,9 +1,11 @@
 package es.ua.eduardo.duack;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.preference.PreferenceManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,6 +16,12 @@ public class BaseDatos extends SQLiteOpenHelper {
 
     Context contexto;
     Cursor ultimocursor;
+    boolean ultimocursor_nombre = false; // Si es true no comprobamos preferencias, false, si
+
+    // ### Datos preferencias ###
+    private boolean prefubicacion;
+    private String prefpais, prefprovincia, preflocalidad;
+    private Double latitud, longitud = null;
 
     public BaseDatos(Context contexto) {
         super(contexto, "duack", null, 1);
@@ -90,6 +98,15 @@ public class BaseDatos extends SQLiteOpenHelper {
                 "38.47790161262177, -0.7960233999999673, 'Calle nueva, 14', 'Elda', " +
                 "'Alicante', 'España', 0.0, 0, '" + Idioma.ESPAÑOL.getTexto() + "', " +
                 "'" + TipoLugar.OFICINA.getTexto() + "', null, 'touristinfo.png', 966980300, null)");
+
+        // -------------- San vicente ------------------
+        // Oficina de Turismo Sant Vicent del Raspeig
+        bd.execSQL("INSERT INTO lugares VALUES (null, " +
+                "'Oficina de turismo sant vicent del raspeig', 'Oficina de turismo', 'Oficina de turismo de la ciudad de San Vicente', " +
+                "38.3963047125849, -0.524886400000014, 'Plaza España, 1', 'San vicente', " +
+                "'Alicante', 'España', 0.0, 0, '" + Idioma.ESPAÑOL.getTexto() + "', " +
+                "'" + TipoLugar.OFICINA.getTexto() + "', null, 'touristinfosanvicente.png', 965660104, 'www.raspeig.es')");
+
     }
 
     public void insertarMuseos(SQLiteDatabase bd) {
@@ -204,43 +221,54 @@ public class BaseDatos extends SQLiteOpenHelper {
             return null;
         }
         boolean no_salir = true;
+        boolean agregar = true;
         do {
-            LugarInteres lugar = new LugarInteres();
-            lugar.setId(cursor.getInt(0));
-            lugar.setNombre(cursor.getString(1));
-            lugar.setNombre2(cursor.getString(2));
-            lugar.setDescripcion(cursor.getString(3));
-            lugar.setLatitud(cursor.getDouble(4));
-            lugar.setLongitud(cursor.getDouble(5));
-            lugar.setDireccion(cursor.getString(6));
-            lugar.setLocalidad(cursor.getString(7));
-            lugar.setProvincia(cursor.getString(8));
-            lugar.setPais(cursor.getString(9));
-            lugar.setCoste(cursor.getDouble(10));
-            if (cursor.getInt(11) == 0)
-                lugar.setGuia(false);
-            else
-                lugar.setGuia(true);
-            String auxiliar = cursor.getString(12);
-            if (auxiliar != null)
-                lugar.setIdioma(Idioma.valueOf(auxiliar.toUpperCase()));
-            else
-                lugar.setIdioma(null);
-            auxiliar = cursor.getString(13);
-            if (auxiliar != null)
-                lugar.setTipo(TipoLugar.valueOf(auxiliar.toUpperCase()));
-            else
-                lugar.setTipo(null);
-            auxiliar = cursor.getString(14);
-            if (auxiliar != null)
-                lugar.setSub_tipo(SubTipoLugar.valueOf(auxiliar.toUpperCase()));
-            else
-                lugar.setSub_tipo(null);
-            lugar.setFoto(cursor.getString(15));
-            lugar.setTelefono(cursor.getInt(16));
-            lugar.setUrl(cursor.getString(17));
-            lista_lugares.add(lugar);
-
+            // Comprobamos la distancia
+            if(!ultimocursor_nombre && prefubicacion) {
+                double latbd = cursor.getDouble(4);
+                double lonbd = cursor.getDouble(5);
+                // Si esta mas lejos que 1 km, no lo agregamos
+                if(distancia(latitud, longitud, latbd, lonbd) > 1.0)
+                    agregar = false;
+            }
+            if(agregar) {
+                LugarInteres lugar = new LugarInteres();
+                lugar.setId(cursor.getInt(0));
+                lugar.setNombre(cursor.getString(1));
+                lugar.setNombre2(cursor.getString(2));
+                lugar.setDescripcion(cursor.getString(3));
+                lugar.setLatitud(cursor.getDouble(4));
+                lugar.setLongitud(cursor.getDouble(5));
+                lugar.setDireccion(cursor.getString(6));
+                lugar.setLocalidad(cursor.getString(7));
+                lugar.setProvincia(cursor.getString(8));
+                lugar.setPais(cursor.getString(9));
+                lugar.setCoste(cursor.getDouble(10));
+                if (cursor.getInt(11) == 0)
+                    lugar.setGuia(false);
+                else
+                    lugar.setGuia(true);
+                String auxiliar = cursor.getString(12);
+                if (auxiliar != null)
+                    lugar.setIdioma(Idioma.valueOf(auxiliar.toUpperCase()));
+                else
+                    lugar.setIdioma(null);
+                auxiliar = cursor.getString(13);
+                if (auxiliar != null)
+                    lugar.setTipo(TipoLugar.valueOf(auxiliar.toUpperCase()));
+                else
+                    lugar.setTipo(null);
+                auxiliar = cursor.getString(14);
+                if (auxiliar != null)
+                    lugar.setSub_tipo(SubTipoLugar.valueOf(auxiliar.toUpperCase()));
+                else
+                    lugar.setSub_tipo(null);
+                lugar.setFoto(cursor.getString(15));
+                lugar.setTelefono(cursor.getInt(16));
+                lugar.setUrl(cursor.getString(17));
+                lista_lugares.add(lugar);
+            }
+            agregar = true;
             no_salir = cursor.moveToNext(); // Significa que hay mas resultados
         } while (no_salir);
         return lista_lugares;
@@ -254,6 +282,7 @@ public class BaseDatos extends SQLiteOpenHelper {
     }
 
     public LugarInteres lugarInteresPorId(int id) {
+        ultimocursor_nombre = true;
         String consulta = "SELECT * FROM lugares WHERE _id=" + id;
         SQLiteDatabase bd = getReadableDatabase();
         Cursor cursor = bd.rawQuery(consulta, null);
@@ -300,6 +329,7 @@ public class BaseDatos extends SQLiteOpenHelper {
     }
 
     public Cursor extraeCursorConsulta(LugarInteres lugar) {
+        ultimocursor_nombre = false;
         String consulta = "SELECT * FROM lugares";
         String aux_consulta = " WHERE";
         boolean hayAntes = false;
@@ -322,18 +352,36 @@ public class BaseDatos extends SQLiteOpenHelper {
             aux_consulta += " idioma='" + lugar.getIdioma().getTexto() + "'";
             hayAntes = true;
         }
-        // Si no hay tipo, obviamente no hay subtipo
         if(lugar.getTipo() != null) {
             if(hayAntes)
                 aux_consulta += " AND";
             aux_consulta += " tipo='" + lugar.getTipo().getTexto() + "'";
-            if(lugar.getSub_tipo() != null)
-                aux_consulta += " AND subtipo='" + lugar.getSub_tipo().getTexto() + "'";
+            hayAntes = true;
+        }
+        if(lugar.getSub_tipo() != null) {
+            if(hayAntes)
+                aux_consulta += " AND";
+            aux_consulta += " subtipo='" + lugar.getSub_tipo().getTexto() + "'";
         }
 
         // Comprobamos si se ha añadido algo al string y lo añadimos
-        if(aux_consulta.length() > 6)
+        if(aux_consulta.length() > 6) {
+            // Si ubicacion no esta marcada, buscamos por localidad
+            if(!prefubicacion) {
+                aux_consulta += " AND localidad='" + preflocalidad + "' AND provincia='"
+                        + prefprovincia + "' AND pais='" + prefpais + "'";
+            }
             consulta += aux_consulta;
+        }
+        else {
+            // Si ubicacion no esta marcada, buscamos por localidad
+            // Solo pone WHERE
+            if(!prefubicacion) {
+                aux_consulta += " localidad='" + preflocalidad + "' AND provincia='"
+                        + prefprovincia + "' AND pais='" + prefpais + "'";
+                consulta += aux_consulta;
+            }
+        }
 
         SQLiteDatabase bd = getReadableDatabase();
         ultimocursor = bd.rawQuery(consulta, null);
@@ -341,6 +389,7 @@ public class BaseDatos extends SQLiteOpenHelper {
     }
 
     public Cursor extraeCursorNombre(String consultanombre) {
+        ultimocursor_nombre = true;
         SQLiteDatabase bd = getReadableDatabase();
         ultimocursor = bd.rawQuery(consultanombre, null);
         return ultimocursor;
@@ -352,5 +401,39 @@ public class BaseDatos extends SQLiteOpenHelper {
 
     public void setUltimocursor(Cursor ultimocursor) {
         this.ultimocursor = ultimocursor;
+    }
+
+    public void setPrefubicacion(boolean prefubicacion) {
+        this.prefubicacion = prefubicacion;
+    }
+
+    public void setPrefpais(String prefpais) {
+        this.prefpais = prefpais;
+    }
+
+    public void setPrefprovincia(String prefprovincia) {
+        this.prefprovincia = prefprovincia;
+    }
+
+    public void setPreflocalidad(String preflocalidad) {
+        this.preflocalidad = preflocalidad;
+    }
+
+    public void setLatLong(double latitud, double longitud) {
+        this.latitud = latitud;
+        this.longitud = longitud;
+    }
+
+    public double distancia(double lat1, double lon1, double lat2, double lon2)
+    {
+        double R = 6378.137; //Radio de la tierra en km
+        double dLat  = ( lat2 - lat1 )*Math.PI/180;
+        double dLong = ( lon2 - lon1 )*Math.PI/180;
+
+        double a = Math.sin(dLat/2) * Math.sin(dLat/2) + Math.cos(lat1*Math.PI/180) * Math.cos(lat2*Math.PI/180) * Math.sin(dLong/2) * Math.sin(dLong/2);
+        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+        double d = R * c;
+
+        return (double)Math.round(d * 1000d) / 1000d;
     }
 }
