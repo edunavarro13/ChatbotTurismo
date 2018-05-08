@@ -271,6 +271,9 @@ public class BaseDatos extends SQLiteOpenHelper {
             agregar = true;
             no_salir = cursor.moveToNext(); // Significa que hay mas resultados
         } while (no_salir);
+
+        if(lista_lugares.size() < 1)
+            return null;
         return lista_lugares;
     }
 
