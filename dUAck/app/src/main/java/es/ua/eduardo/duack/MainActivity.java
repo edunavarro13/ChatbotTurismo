@@ -469,41 +469,47 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
                                             outputText = "El hilo ha dado el error: " + ex.toString();
                                         }
                                     }
+                                    boolean error_gps = false;
                                     // Si ubicacion es true comprobamos si esta conectado
                                     if(prefubicacion) {
                                         ultimaLocalizazion();
                                         if (!manejador.isProviderEnabled(LocationManager.GPS_PROVIDER) ||
                                                 !manejador.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
-                                            outputText += "\n" + getString(R.string.sin_gps);
+                                            outputText = getString(R.string.sin_gps);
+                                            error_gps = true;
                                         } else {
                                             if (ActivityCompat.checkSelfPermission(MainActivity.this,
                                                     Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
                                                 // Obtenemos la localizacion
                                                 if (mejorLocaliz != null)
                                                     bd.setLatLong(mejorLocaliz.getLatitude(), mejorLocaliz.getLongitude());
-                                                else
-                                                    outputText += "\n" + getString(R.string.location_null);
+                                                else {
+                                                    outputText = getString(R.string.location_null);
+                                                    error_gps = true;
+                                                }
                                             } else {
-                                                outputText += "\n" + getString(R.string.permisos_gps);
+                                                outputText = getString(R.string.permisos_gps);
+                                                error_gps = true;
                                             }
                                         }
                                     }
-                                    clase_lugar.setTipo(TipoLugar.OFICINA);
-                                    Cursor cursor_aux = bd.extraeCursorConsulta(clase_lugar);
-                                    List<LugarInteres> lista = bd.extraeLugarInteres(cursor_aux);
-                                    if(lista != null) {
-                                        if(lista.size() == 1) {
-                                            outputText = getString(R.string.un_dato);
-                                            clase_lugar = lista.get(0);
-                                        } else {
-                                            outputText = getString(R.string.varios_datos_1) + " " + lista.size()
-                                                    + " " + getString(R.string.varios_datos_2);
-                                            clase_lugar = lista.get(0); // Hay que cambiarlo
-                                        }
+                                    if(!error_gps) {
+                                        clase_lugar.setTipo(TipoLugar.OFICINA);
+                                        Cursor cursor_aux = bd.extraeCursorConsulta(clase_lugar);
+                                        List<LugarInteres> lista = bd.extraeLugarInteres(cursor_aux);
+                                        if (lista != null) {
+                                            if (lista.size() == 1) {
+                                                outputText = getString(R.string.un_dato);
+                                                clase_lugar = lista.get(0);
+                                            } else {
+                                                outputText = getString(R.string.varios_datos_1) + " " + lista.size()
+                                                        + " " + getString(R.string.varios_datos_2);
+                                                clase_lugar = lista.get(0); // Hay que cambiarlo
+                                            }
+                                        } else
+                                            outputText = getString(R.string.error_no_datos);
+                                        fin = true;
                                     }
-                                    else
-                                        outputText = getString(R.string.error_no_datos);
-                                    fin = true;
                                 }
                                 else if(response.getIntents().get(0).getIntent()
                                         .endsWith("Nombre")) {
@@ -597,33 +603,39 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
                                     else {
                                         outputText += " es null ";
                                     }
+                                    boolean error_gps = false;
                                     // Si ubicacion es true comprobamos si esta conectado
                                     if(prefubicacion) {
                                         ultimaLocalizazion();
                                         if (!manejador.isProviderEnabled(LocationManager.GPS_PROVIDER) ||
                                                 !manejador.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
-                                            outputText += "\n" + getString(R.string.sin_gps);
+                                            outputText = getString(R.string.sin_gps);
+                                            error_gps = true;
                                         } else {
                                             if (ActivityCompat.checkSelfPermission(MainActivity.this,
                                                     Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
                                                 // Obtenemos la localizacion
                                                 if (mejorLocaliz != null)
                                                     bd.setLatLong(mejorLocaliz.getLatitude(), mejorLocaliz.getLongitude());
-                                                else
-                                                    outputText += "\n" + getString(R.string.location_null);
+                                                else {
+                                                    outputText = getString(R.string.location_null);
+                                                    error_gps = true;
+                                                }
                                             } else {
-                                                outputText += "\n" + getString(R.string.permisos_gps);
+                                                outputText = getString(R.string.permisos_gps);
+                                                error_gps = true;
                                             }
                                         }
                                     }
-                                    // Comprobamos si estan todos los datos
-                                    datos_interes = clase_lugar.todosDatos();
-                                    if(!datos_interes) {
-                                        outputText = getString(R.string.lugar_interes_datos) + "\n";
-                                    }
-                                    else {
-                                        outputText = "Buscaré en mi BD: " + clase_lugar.toString();
-                                        fin = true;
+                                    if(!error_gps) {
+                                        // Comprobamos si estan todos los datos
+                                        datos_interes = clase_lugar.todosDatos();
+                                        if (!datos_interes) {
+                                            outputText = getString(R.string.lugar_interes_datos) + "\n";
+                                        } else {
+                                            outputText = "Buscaré en mi BD: " + clase_lugar.toString();
+                                            fin = true;
+                                        }
                                     }
                                 }
                             }
