@@ -846,7 +846,8 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
             return true;
         }
         else if (id == R.id.acercaDe) {
-            Toast.makeText(MainActivity.this, prefubicacion + ", " + preflocalidad, Toast.LENGTH_LONG).show();
+            Intent intent = new Intent(this, AcercaDeActivity.class);
+            startActivity(intent);
             return true;
         }
         return super.onOptionsItemSelected(item);

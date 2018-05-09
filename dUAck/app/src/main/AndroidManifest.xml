@@ -25,6 +25,8 @@
             android:screenOrientation="portrait"/>
         <activity android:name=".PreferenciasActivity"
             android:screenOrientation="portrait"/>
+        <activity android:name=".AcercaDeActivity"
+            android:screenOrientation="portrait"/>
     </application>
 
     <uses-permission android:name="android.permission.INTERNET"/>
