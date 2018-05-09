@@ -314,6 +314,27 @@ public class LugarInteres {
             case "touristinfosanvicente.png" :
                 imageView.setImageResource(R.drawable.touristinfosanvicente);
                 break;
+            case "campobarxell.png" :
+                imageView.setImageResource(R.drawable.campobarxell);
+                break;
+            case "museodamaso.png" :
+                imageView.setImageResource(R.drawable.museodamaso);
+                break;
+            case "teatrocervantes.png" :
+                imageView.setImageResource(R.drawable.teatrocervantes);
+                break;
+            case "castillopetrer.png" :
+                imageView.setImageResource(R.drawable.castillopetrer);
+                break;
+            case "parque9octubre.png" :
+                imageView.setImageResource(R.drawable.parque9octubre);
+                break;
+            case "touristinfopetrer.png" :
+                imageView.setImageResource(R.drawable.touristinfopetrer);
+                break;
+            case "parquecocoliche.png" :
+                imageView.setImageResource(R.drawable.parquecocoliche);
+                break;
         }
     }
 

@@ -89,6 +89,21 @@ public class BaseDatos extends SQLiteOpenHelper {
                 "38.48092106262314, -0.7904552999999623, 'Parque de la Concordia', 'Elda', " +
                 "'Alicante', 'España', 0.0, 0, null, " +
                 "'" + TipoLugar.JARDIN.getTexto() + "', null, 'parquedelaconcordia.png', null, null)");
+        // Parque el Cocoliche
+        bd.execSQL("INSERT INTO lugares VALUES (null, " +
+                "'Parque el cocoliche', 'Cocoliche', 'Bonito parque de Elda', " +
+                "38.471774412619, -0.7914078999999674, 'Parque el Cocoliche', 'Elda', " +
+                "'Alicante', 'España', 0.0, 0, null, " +
+                "'" + TipoLugar.JARDIN.getTexto() + "', null, 'parquecocoliche.png', null, null)");
+
+        // -------------- Petrer ------------------
+        // Parque 9 de Octubre
+        bd.execSQL("INSERT INTO lugares VALUES (null, " +
+                "'Parque 9 de octubre', '9 de octubre', 'Bonito parque de Petrer', " +
+                "38.4802477126228, -0.7722310000000334, 'Avenida de Salinetas', 'Petrer', " +
+                "'Alicante', 'España', 0.0, 0, null, " +
+                "'" + TipoLugar.JARDIN.getTexto() + "', null, 'parque9octubre.png', 966989400, null)");
+
     }
 
     public void insertarOficinasTurismo(SQLiteDatabase bd) {
@@ -99,6 +114,14 @@ public class BaseDatos extends SQLiteOpenHelper {
                 "38.47790161262177, -0.7960233999999673, 'Calle nueva, 14', 'Elda', " +
                 "'Alicante', 'España', 0.0, 0, '" + Idioma.ESPAÑOL.getTexto() + "', " +
                 "'" + TipoLugar.OFICINA.getTexto() + "', null, 'touristinfo.png', 966980300, null)");
+
+        // -------------- Petrer ------------------
+        // Tourist info petrer
+        bd.execSQL("INSERT INTO lugares VALUES (null, " +
+                "'Tourist info petrer', null, 'Oficina de turismo de la ciudad de Petrer', " +
+                "38.48475461262487, -0.7698967000000039, 'Carrer Rector Bartolomé Munoz, 2', 'Petrer', " +
+                "'Alicante', 'España', 0.0, 0, '" + Idioma.ESPAÑOL.getTexto() + "', " +
+                "'" + TipoLugar.OFICINA.getTexto() + "', null, 'touristinfopetrer.png', 966989401, 'petrer.es/cas/oficina_de_turismo.html')");
 
         // -------------- San vicente ------------------
         // Oficina de Turismo Sant Vicent del Raspeig
@@ -130,6 +153,15 @@ public class BaseDatos extends SQLiteOpenHelper {
                 "38.47434801262015, -0.7926439999999957, 'Calle Eduardo Dato, 22', 'Elda', " +
                 "'Alicante', 'España', 0.0, 0, '" + Idioma.ESPAÑOL.getTexto() + "', " +
                 "'" + TipoLugar.MUSEO.getTexto() + "', '" + SubTipoLugar.ETNOLOGICO.getTexto() + "', 'museoetnologicoelda.png', 966841021, null)");
+
+        // -------------- Petrer ------------------
+        // Museo Dámaso Navarro
+        bd.execSQL("INSERT INTO lugares VALUES (null, " +
+                "'Museo damaso navarro', null, 'Museo del calzado de Petrer', " +
+                "38.48479201262489, -0.7700035000000298, 'Plaça de Baix, 10', 'Petrer', " +
+                "'Alicante', 'España', 0.0, 0, '" + Idioma.ESPAÑOL.getTexto() + "', " +
+                "'" + TipoLugar.MUSEO.getTexto() + "', '" + SubTipoLugar.ARQUEOLOGICO.getTexto() + "', 'museodamaso.png', 966989400, 'museodamasonavarro.blogspot.com.es')");
+
     }
 
     public void insertarTeatros(SQLiteDatabase bd) {
@@ -146,6 +178,15 @@ public class BaseDatos extends SQLiteOpenHelper {
                 "38.47631981262106, -0.7972641000000067, 'Calle Paquito Vera, 6', 'Elda', " +
                 "'Alicante', 'España', 0.0, 0, '" + Idioma.ESPAÑOL.getTexto() + "', " +
                 "'" + TipoLugar.TEATRO.getTexto() + "', null, 'auditorioadoc.png', 965383025, 'www.adoc-elda.com')");
+
+        // -------------- Petrer ------------------
+        // Teatro Cervantes
+        bd.execSQL("INSERT INTO lugares VALUES (null, " +
+                "'Teatro Cervantes', null, 'Teatro de la ciudad de Petrer', " +
+                "38.48430331262465, -0.7721100999999635, 'Carrer Gabriel Payà, 18', 'Petrer', " +
+                "'Alicante', 'España', 0.0, 0, '" + Idioma.ESPAÑOL.getTexto() + "', " +
+                "'" + TipoLugar.TEATRO.getTexto() + "', null, 'teatrocervantes.png', 966989409, null)");
+
     }
 
     public void insertarPlazas(SQLiteDatabase bd) {
@@ -188,6 +229,15 @@ public class BaseDatos extends SQLiteOpenHelper {
                 "38.46748411261705, -0.7961378999999624, 'Avenida de Ronda, 72', 'Elda', " +
                 "'Alicante', 'España', 0.0, 0, '" + Idioma.ESPAÑOL.getTexto() + "', " +
                 "'" + TipoLugar.ESTADIO.getTexto() + "', null, 'nuevopepicoamat.png', 965380402, 'www.elda.es')");
+
+        // -------------- Petrer ------------------
+        // Estadio nuevo pepico amat
+        bd.execSQL("INSERT INTO lugares VALUES (null, " +
+                "'Campo municipal el barxell', 'Barxell', 'Campo de fútbol de Petrer', " +
+                "38.48738921262604, -0.7712540999999646, 'Autovía de Alicante', 'Petrer', " +
+                "'Alicante', 'España', 0.0, 0, '" + Idioma.ESPAÑOL.getTexto() + "', " +
+                "'" + TipoLugar.ESTADIO.getTexto() + "', null, 'campobarxell.png', 966955013, 'www.udpetrelensecf.com/Club/Instalaciones')");
+
     }
 
     public void insertarCastillos(SQLiteDatabase bd) {
@@ -198,6 +248,15 @@ public class BaseDatos extends SQLiteOpenHelper {
                 "38.48105421262318, -0.7973575999999412, 'Castillo del Conde de Elda', 'Elda', " +
                 "'Alicante', 'España', 0.0, 0, null, " +
                 "'" + TipoLugar.CASTILLO.getTexto() + "', null, 'castillopalacio.png', null, null)");
+
+        // -------------- Petrer ------------------
+        // Castillo de Petrer
+        bd.execSQL("INSERT INTO lugares VALUES (null, " +
+                "'Castillo de petrer', null, 'Castillo de la ciudad de Petrer', " +
+                "38.484318112624656, -0.7678058999999848, 'Carrer Pujada al Castell, 10', 'Petrer', " +
+                "'Alicante', 'España', 0.0, 0, null, " +
+                "'" + TipoLugar.CASTILLO.getTexto() + "', null, 'castillopetrer.png', 966989400, 'www.jdiezarnal.com/castillodepetrer.html')");
+
     }
 
     public void insertarYacimientos(SQLiteDatabase bd) {
