@@ -1,12 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
     android:key="preferencias_principal" >
-    <CheckBoxPreference
-        android:key="ubicacion"
-        android:summary="@string/por_ubicacion_summary"
-        android:title="@string/por_ubicacion"
-        android:checked="true"
-        android:singleLine="true"/>
+    <PreferenceCategory
+        android:key="pref_ub"
+        android:title="@string/bus_por_ubicacion">
+        <CheckBoxPreference
+            android:key="ubicacion"
+            android:summary="@string/por_ubicacion_summary"
+            android:title="@string/por_ubicacion"
+            android:checked="true"
+            android:singleLine="true"/>
+        <EditTextPreference
+            android:key="distancia"
+            android:summary="@string/distancia_summary"
+            android:title="@string/distancia"
+            android:inputType="numberDecimal"
+            android:digits="0123456789."
+            android:defaultValue="1.0"/>
+    </PreferenceCategory>
     <PreferenceCategory
         android:key="pref_no_ub"
         android:title="@string/por_no_ubicacion">

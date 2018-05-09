@@ -21,6 +21,7 @@ public class BaseDatos extends SQLiteOpenHelper {
     // ### Datos preferencias ###
     private boolean prefubicacion;
     private String prefpais, prefprovincia, preflocalidad;
+    private double prefdistancia;
     private Double latitud, longitud = null;
 
     public BaseDatos(Context contexto) {
@@ -227,8 +228,8 @@ public class BaseDatos extends SQLiteOpenHelper {
             if(!ultimocursor_nombre && prefubicacion) {
                 double latbd = cursor.getDouble(4);
                 double lonbd = cursor.getDouble(5);
-                // Si esta mas lejos que 1 km, no lo agregamos
-                if(distancia(latitud, longitud, latbd, lonbd) > 1.0)
+                // Si esta mas lejos que prefdistancia, no lo agregamos
+                if(distancia(latitud, longitud, latbd, lonbd) > prefdistancia)
                     agregar = false;
             }
             if(agregar) {
@@ -406,8 +407,9 @@ public class BaseDatos extends SQLiteOpenHelper {
         this.ultimocursor = ultimocursor;
     }
 
-    public void setPrefubicacion(boolean prefubicacion) {
+    public void setPrefubicacion(boolean prefubicacion, double prefdistancia) {
         this.prefubicacion = prefubicacion;
+        this.prefdistancia = prefdistancia;
     }
 
     public void setPrefpais(String prefpais) {

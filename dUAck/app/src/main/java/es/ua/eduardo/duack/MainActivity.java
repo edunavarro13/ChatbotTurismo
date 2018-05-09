@@ -66,6 +66,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
     // ### Datos preferencias ###
     private boolean prefubicacion;
     private String prefpais, prefprovincia, preflocalidad;
+    private double prefdistancia;
 
     // IBM
     String outputText;
@@ -348,6 +349,8 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
             }
         } else {
             String datos_li = getString(R.string.error_no_datos);
+            if(prefubicacion)
+                    datos_li += "\n" + getString(R.string.error_no_datos_ubicacion);
             datos_li += "\n" + getString(R.string.fin_chat);
             ChatModel fin_datos = new ChatModel(datos_li, false, 3);
             list_chat.add(fin_datos);
@@ -506,8 +509,11 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
                                                         + " " + getString(R.string.varios_datos_2);
                                                 clase_lugar = lista.get(0); // Hay que cambiarlo
                                             }
-                                        } else
+                                        } else {
                                             outputText = getString(R.string.error_no_datos);
+                                            if(prefubicacion)
+                                                outputText += "\n" + getString(R.string.error_no_datos_ubicacion);
+                                        }
                                         fin = true;
                                     }
                                 }
@@ -911,9 +917,14 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
         prefpais = pref.getString("pais","?");
         prefprovincia = pref.getString("provincia","?");
         preflocalidad = pref.getString("localidad","?");
+        String aux_dis = pref.getString("distancia","?");
+        if(esDouble(aux_dis))
+            prefdistancia = Double.parseDouble(aux_dis);
+        else
+            prefdistancia = 1.0; // Si no, ponemos un kilometro
 
         // Lo añadimos a la base de datos
-        bd.setPrefubicacion(prefubicacion);
+        bd.setPrefubicacion(prefubicacion, prefdistancia);
         bd.setPrefpais(prefpais);
         bd.setPrefprovincia(prefprovincia);
         bd.setPreflocalidad(preflocalidad);
