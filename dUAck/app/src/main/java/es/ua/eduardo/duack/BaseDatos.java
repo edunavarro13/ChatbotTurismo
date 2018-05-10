@@ -61,6 +61,7 @@ public class BaseDatos extends SQLiteOpenHelper {
         insertarEstadios(bd);
         insertarCastillos(bd);
         insertarYacimientos(bd);
+        insertarEdificios(bd);
     }
 
     public void insertarJardines(SQLiteDatabase bd) {
@@ -103,6 +104,32 @@ public class BaseDatos extends SQLiteOpenHelper {
                 "38.4802477126228, -0.7722310000000334, 'Avenida de Salinetas', 'Petrer', " +
                 "'Alicante', 'España', 0.0, 0, null, " +
                 "'" + TipoLugar.JARDIN.getTexto() + "', null, 'parque9octubre.png', 966989400, null)");
+
+        // -------------- San vicente ------------------
+        // Universidad de Alicante
+        bd.execSQL("INSERT INTO lugares VALUES (null, " +
+                "'Universidad de alicante', 'Ua', 'Universidad de san vicente considerada zona verde', " +
+                "38.3852246125799, -0.5132248999999547, 'Carrer San Vicente del Raspeig', 'San vicente', " +
+                "'Alicante', 'España', 0.0, 0, null, " +
+                "'" + TipoLugar.JARDIN.getTexto() + "', null, 'universidadalicante.png', 965903400, 'eps.ua.es')");
+        // Parc L'hort de Torrent
+        bd.execSQL("INSERT INTO lugares VALUES (null, " +
+                "'Parc l`hort de torrent', null, 'Bonito parque de san vicente', " +
+                "38.39407501258391, -0.5118817000000035, 'Parc L`hort de Torrent', 'San vicente', " +
+                "'Alicante', 'España', 0.0, 0, null, " +
+                "'" + TipoLugar.JARDIN.getTexto() + "', null, 'parctorrent.png', 965675065, 'www.raspeig.es/pagina/la-ciudad-y-sus-rincones')");
+        // Parque Presidente Adolfo Suarez
+        bd.execSQL("INSERT INTO lugares VALUES (null, " +
+                "'Parque presidente adolfo suarez', 'Parque adolfo suarez', 'Bonito parque de san vicente', " +
+                "38.40389331258833, -0.5342500000000427, 'Parque Presidente Adolfo Suarez', 'San vicente', " +
+                "'Alicante', 'España', 0.0, 0, null, " +
+                "'" + TipoLugar.JARDIN.getTexto() + "', null, 'parqueadolfosuarez.png', 965660104, null)");
+        // Parque juan xxiii
+        bd.execSQL("INSERT INTO lugares VALUES (null, " +
+                "'Parque juan xxiii', 'Parc joan xxiii', 'Bonito parque de san vicente', " +
+                "38.39881531258606, -0.5286238999999568, 'Parque Juan XXIII', 'San vicente', " +
+                "'Alicante', 'España', 0.0, 0, null, " +
+                "'" + TipoLugar.JARDIN.getTexto() + "', null, 'parquejuan23.png', null, null)");
 
     }
 
@@ -203,7 +230,7 @@ public class BaseDatos extends SQLiteOpenHelper {
         // -------------- Elda ------------------
         // Inmaculada
         bd.execSQL("INSERT INTO lugares VALUES (null, " +
-                "'Parroquia de la inmaculada concepción', 'Inmaculada', 'Iglesia Inmaculada de Elda', " +
+                "'Parroquia de la inmaculada concepcion', 'Inmaculada', 'Iglesia Inmaculada de Elda', " +
                 "38.478092912621854, -0.7878170000000182, 'Calle Donoso Cortés', 'Elda', " +
                 "'Alicante', 'España', 0.0, 0, '" + Idioma.ESPAÑOL.getTexto() + "', " +
                 "'" + TipoLugar.IGLESIA.getTexto() + "', null, 'inmaculada.png', 965380823, null)");
@@ -219,6 +246,21 @@ public class BaseDatos extends SQLiteOpenHelper {
                 "38.48055841262297, -0.7984593999999561, 'Calle Independencia, 39', 'Elda', " +
                 "'Alicante', 'España', 0.0, 0, '" + Idioma.ESPAÑOL.getTexto() + "', " +
                 "'" + TipoLugar.IGLESIA.getTexto() + "', null, 'ermitasananton.png', null, null)");
+
+        // -------------- San vicente ------------------
+        // Parroquia De San Vicente Ferrer
+        bd.execSQL("INSERT INTO lugares VALUES (null, " +
+                "'Parroquia de san vicente ferrer', null, 'Parroquia de la ciudad de San vicente', " +
+                "38.39636550399276, -0.5251848699973607, 'Plaza España, 1,', 'San vicente', " +
+                "'Alicante', 'España', 0.0, 0, '" + Idioma.ESPAÑOL.getTexto() + "', " +
+                "'" + TipoLugar.IGLESIA.getTexto() + "', null, 'parroquiavicenteferrer.png', 965661087, null)");
+        // Parroquia de Santa Isabel
+        bd.execSQL("INSERT INTO lugares VALUES (null, " +
+                "'Parroquia de santa isabel', 'Santa isabel', 'Parroquia de la ciudad de San vicente', " +
+                "38.3816371125783, -0.5002769999999828, 'Calle Colonia Sta. Isabel', 'San vicente', " +
+                "'Alicante', 'España', 0.0, 0, '" + Idioma.ESPAÑOL.getTexto() + "', " +
+                "'" + TipoLugar.IGLESIA.getTexto() + "', null, 'parroquiasantaisabel.png', 965660369, 'www.conferenciaepiscopal.es')");
+
     }
 
     public void insertarEstadios(SQLiteDatabase bd) {
@@ -267,6 +309,23 @@ public class BaseDatos extends SQLiteOpenHelper {
                 "38.49355821262883, -0.788763900000049, 'CV-835', 'Elda', " +
                 "'Alicante', 'España', 0.0, 0, null, " +
                 "'" + TipoLugar.YACIMIENTO.getTexto() + "', '" + SubTipoLugar.ARQUEOLOGICO.getTexto() + "', 'yacimientomonastil.png', 966980300, 'www.elda.com/empresas/empresa/1292/yacimiento-monastil-1292')");
+    }
+
+    public void insertarEdificios(SQLiteDatabase bd) {
+        // -------------- San vicente ------------------
+        // Los Molinos
+        bd.execSQL("INSERT INTO lugares VALUES (null, " +
+                "'Caseron los molinos', 'Los molinos', 'Famoso edificio de San vicente', " +
+                "38.39114561258257, -0.5220348000000286, 'Calle Enric Valor', 'San vicente', " +
+                "'Alicante', 'España', 0.0, 0, null, " +
+                "'" + TipoLugar.EDIFICIO.getTexto() + "', null, 'losmolinos.png', null, null)");
+        // Casa de Evaristo el Lleig
+        bd.execSQL("INSERT INTO lugares VALUES (null, " +
+                "'Casa de evaristo el lleig', null, 'Famoso edificio de San vicente', " +
+                "38.39574858858059, -0.5238999773207524, 'Calle Pintor Picasso, 7', 'San vicente', " +
+                "'Alicante', 'España', 0.0, 0, null, " +
+                "'" + TipoLugar.EDIFICIO.getTexto() + "', null, 'casaevaristolleig.png', null, null)");
+
     }
 
     @Override

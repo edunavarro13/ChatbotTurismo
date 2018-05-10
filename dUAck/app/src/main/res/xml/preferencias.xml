@@ -8,7 +8,7 @@
             android:key="ubicacion"
             android:summary="@string/por_ubicacion_summary"
             android:title="@string/por_ubicacion"
-            android:checked="true"
+            android:checked="false"
             android:singleLine="true"/>
         <EditTextPreference
             android:key="distancia"

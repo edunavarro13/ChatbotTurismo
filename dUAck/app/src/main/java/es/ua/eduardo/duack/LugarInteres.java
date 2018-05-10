@@ -335,6 +335,30 @@ public class LugarInteres {
             case "parquecocoliche.png" :
                 imageView.setImageResource(R.drawable.parquecocoliche);
                 break;
+            case "universidadalicante.png" :
+                imageView.setImageResource(R.drawable.universidadalicante);
+                break;
+            case "parctorrent.png" :
+                imageView.setImageResource(R.drawable.parctorrent);
+                break;
+            case "parroquiavicenteferrer.png" :
+                imageView.setImageResource(R.drawable.parroquiavicenteferrer);
+                break;
+            case "losmolinos.png" :
+                imageView.setImageResource(R.drawable.losmolinos);
+                break;
+            case "parqueadolfosuarez.png" :
+                imageView.setImageResource(R.drawable.parqueadolfosuarez);
+                break;
+            case "parquejuan23.png" :
+                imageView.setImageResource(R.drawable.parquejuan23);
+                break;
+            case "casaevaristolleig.png" :
+                imageView.setImageResource(R.drawable.casaevaristolleig);
+                break;
+            case "parroquiasantaisabel.png" :
+                imageView.setImageResource(R.drawable.parroquiasantaisabel);
+                break;
         }
     }
 

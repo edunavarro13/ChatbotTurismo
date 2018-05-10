@@ -38,6 +38,8 @@
     <string name="sinonimos_castillo">Castillos, fortalezas, ciudadelas</string>
     <string name="yacimiento">Yacimiento</string>
     <string name="sinonimos_yacimiento">Yacimientos, minas, canteras</string>
+    <string name="edificio">Edificio</string>
+    <string name="sinonimos_edificio">Edificios, casas, fachadas, viviendas</string>
     <string name="subtipos">Subtipos</string>
     <string name="calzado">Calzado</string>
     <string name="calzado_disponible">Museos</string>
