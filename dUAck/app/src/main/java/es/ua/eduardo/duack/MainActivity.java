@@ -655,6 +655,82 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
                                         }
                                     }
                                 }
+                                else
+                                if(response.getIntents().get(0).getIntent()
+                                        .endsWith("Hoteles")) {
+
+                                    /*
+                                    // Primero comprobamos que no sea null
+                                    if(response.getEntities() != null) {
+                                        // Iniciamos el bucle
+                                        for (int t = 0; t < response.getEntities().size(); t++) {
+                                            // Caso gratis
+                                            if(response.getEntities().get(t).getValue().equals("gratis")) {
+                                                clase_lugar.setCoste(0.0);
+                                            }
+                                            // Caso guia
+                                            else if(response.getEntities().get(t).getValue().equals("guia")) {
+                                                // Puede ser 'con' o 'sin'
+                                                // En caso de no poner nada entendemos que si quiere guia
+                                                if(inputText.contains(" sin "))
+                                                    clase_lugar.setGuia(false);
+                                                else
+                                                    clase_lugar.setGuia(true);
+                                            }
+                                            // Caso idioma
+                                            else if(response.getEntities().get(t).getEntity().equals("idioma")) {
+                                                clase_lugar.setIdioma(Idioma.valueOf(response.getEntities().get(t).getValue().toUpperCase()));
+                                            }
+                                            // Caso tipo
+                                            else if(response.getEntities().get(t).getEntity().equals("tipo")) {
+                                                clase_lugar.setTipo(TipoLugar.valueOf(response.getEntities().get(t).getValue().toUpperCase()));
+                                            }
+                                            // Caso sub_tipo
+                                            else if(response.getEntities().get(t).getEntity().equals("sub_tipo")) {
+                                                clase_lugar.setSub_tipo(SubTipoLugar.valueOf(response.getEntities().get(t).getValue().toUpperCase()));
+                                            }
+                                        }
+                                    }
+                                    else {
+                                        outputText += " es null ";
+                                    }
+                                    boolean error_gps = false;
+                                    // Si ubicacion es true comprobamos si esta conectado
+                                    if(prefubicacion) {
+                                        ultimaLocalizazion();
+                                        if (!manejador.isProviderEnabled(LocationManager.GPS_PROVIDER) ||
+                                                !manejador.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
+                                            outputText = getString(R.string.sin_gps);
+                                            error_gps = true;
+                                        } else {
+                                            if (ActivityCompat.checkSelfPermission(MainActivity.this,
+                                                    Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                                                // Obtenemos la localizacion
+                                                if (mejorLocaliz != null)
+                                                    bd.setLatLong(mejorLocaliz.getLatitude(), mejorLocaliz.getLongitude());
+                                                else {
+                                                    outputText = getString(R.string.location_null);
+                                                    error_gps = true;
+                                                }
+                                            } else {
+                                                outputText = getString(R.string.permisos_gps);
+                                                error_gps = true;
+                                            }
+                                        }
+                                    }
+                                    if(!error_gps) {
+                                        // Comprobamos si estan todos los datos
+                                        datos_interes = clase_lugar.todosDatos();
+                                        if (!datos_interes) {
+                                            outputText = getString(R.string.lugar_interes_datos) + "\n";
+                                        } else {
+                                            outputText = "Buscaré en mi BD: " + clase_lugar.toString();
+                                            fin = true;
+                                        }
+                                    }*/
+                                    outputText = "Busqueda de hoteles (POR IMPLEMENTAR)";
+                                    //fin = true;
+                                }
                             }
 
                             @Override
