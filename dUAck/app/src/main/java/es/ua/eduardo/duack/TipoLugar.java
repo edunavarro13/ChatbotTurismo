@@ -9,7 +9,8 @@ public enum TipoLugar {
     OFICINA("Oficina"),
     ESTADIO("Estadio"),
     CASTILLO("Castillo"),
-    YACIMIENTO("Yacimiento");
+    YACIMIENTO("Yacimiento"),
+    EDIFICIO("Edificio");
 
     private final String texto;
 
@@ -35,6 +36,8 @@ public enum TipoLugar {
             case "Castillo" :
                 return true;
             case "Yacimiento" :
+                return true;
+            case "Edificio" :
                 return true;
             default:
                 return false;

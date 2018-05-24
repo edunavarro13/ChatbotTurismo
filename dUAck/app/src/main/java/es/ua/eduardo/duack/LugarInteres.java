@@ -314,6 +314,51 @@ public class LugarInteres {
             case "touristinfosanvicente.png" :
                 imageView.setImageResource(R.drawable.touristinfosanvicente);
                 break;
+            case "campobarxell.png" :
+                imageView.setImageResource(R.drawable.campobarxell);
+                break;
+            case "museodamaso.png" :
+                imageView.setImageResource(R.drawable.museodamaso);
+                break;
+            case "teatrocervantes.png" :
+                imageView.setImageResource(R.drawable.teatrocervantes);
+                break;
+            case "castillopetrer.png" :
+                imageView.setImageResource(R.drawable.castillopetrer);
+                break;
+            case "parque9octubre.png" :
+                imageView.setImageResource(R.drawable.parque9octubre);
+                break;
+            case "touristinfopetrer.png" :
+                imageView.setImageResource(R.drawable.touristinfopetrer);
+                break;
+            case "parquecocoliche.png" :
+                imageView.setImageResource(R.drawable.parquecocoliche);
+                break;
+            case "universidadalicante.png" :
+                imageView.setImageResource(R.drawable.universidadalicante);
+                break;
+            case "parctorrent.png" :
+                imageView.setImageResource(R.drawable.parctorrent);
+                break;
+            case "parroquiavicenteferrer.png" :
+                imageView.setImageResource(R.drawable.parroquiavicenteferrer);
+                break;
+            case "losmolinos.png" :
+                imageView.setImageResource(R.drawable.losmolinos);
+                break;
+            case "parqueadolfosuarez.png" :
+                imageView.setImageResource(R.drawable.parqueadolfosuarez);
+                break;
+            case "parquejuan23.png" :
+                imageView.setImageResource(R.drawable.parquejuan23);
+                break;
+            case "casaevaristolleig.png" :
+                imageView.setImageResource(R.drawable.casaevaristolleig);
+                break;
+            case "parroquiasantaisabel.png" :
+                imageView.setImageResource(R.drawable.parroquiasantaisabel);
+                break;
         }
     }
 

@@ -4,7 +4,7 @@
     <string name="username">597cbfb8-bd21-4d03-9b2d-fb9a0884b390</string>
     <string name="password">68cxpwUxwX5s</string>
     <string name="workspace">145540c7-0fb5-4bea-bf64-cb30ccc72c90</string>
-    <string name="sin_gps">Si conectas el GPS y me vuelves a preguntar podría decirte la distancia.</string>
+    <string name="sin_gps">Vaya, no consigo obtener tu ubicación. Intenta conectar el GPS o cambiar a modo búsqueda por localidad en preferencias y pregúntame de nuevo.</string>
     <string name="permisos_gps">Si me das los permisos necesarios comprobaré la distancia con tu ubicación.</string>
     <string name="fin_chat">¿Quieres realizar alguna otra consulta?</string>
     <string name="salir">¡Espero haberte ayudado! ¡Hasta la próxima!</string>
@@ -33,11 +33,13 @@
     <string name="iglesia">Iglesia</string>
     <string name="sinonimos_iglesia">Iglesias, parroquias, templos, catedrales, basílicas, ermitas, santuarios</string>
     <string name="estadio">Estadio</string>
-    <string name="sinonimos_estadio">Estadios, campos de fútbol</string>
+    <string name="sinonimos_estadio">Estadios, campos de fútbol, pistas de atletismo</string>
     <string name="castillo">Castillo</string>
     <string name="sinonimos_castillo">Castillos, fortalezas, ciudadelas</string>
     <string name="yacimiento">Yacimiento</string>
     <string name="sinonimos_yacimiento">Yacimientos, minas, canteras</string>
+    <string name="edificio">Edificio</string>
+    <string name="sinonimos_edificio">Edificios, casas, fachadas, viviendas</string>
     <string name="subtipos">Subtipos</string>
     <string name="calzado">Calzado</string>
     <string name="calzado_disponible">Museos</string>
@@ -56,12 +58,18 @@
     <string name="por_provincia_summary">La búsqueda se realiza en la provincia seleccionada.</string>
     <string name="por_localidad">Por localidad</string>
     <string name="por_localidad_summary">La búsqueda se realiza en la localidad seleccionada.</string>
+    <string name="distancia">Distancia</string>
+    <string name="distancia_summary">Se buscará en el radio máximo de distancia aquí apuntando.</string>
     <string name="por_no_ubicacion">Búsqueda por localidad</string>
+    <string name="bus_por_ubicacion">Búsqueda por ubicación</string>
+    <string name="acerca_de">dUAck es un trabajo de fin de grado realizado en la Universidad de Alicante por el alumno Eduardo Navarro Poveda el curso 2017/2018.</string>
+    <string name="gmail_contacto">Email de contacto: duackchatbot@gmail.com</string>
 
     <string name="irrelevante">(Si el dato no te parece importante, escribe PASO)</string>
     <string name="ibm_no_responde">He perdido la conexión con Internet. ¡Comprueba tu conexión y vuelve a intentarlo!</string>
     <string name="location_null">¡Vaya! No estoy detectando bien tu ubicación. Intenta salir de la aplicación y volver a entrar con el GPS activado.</string>
     <string name="error_no_datos">Vaya, lo siento. No tengo conocimiento de ningún sitio como el que me has descrito.</string>
+    <string name="error_no_datos_ubicacion">Ya que estás en modo ubicación, quizás si aumentas la distancia en preferencias y me vueves a preguntar, encuentro algo.</string>
     <string name="error_no_mensaje">Introduce un mensaje</string>
     <string name="error_precio_incorrecto">Introduce un numero decimal, PASO o FIN</string>
     <string name="error_salir_incorrecto">Pulse uno de los botones naranjas</string>
