@@ -32,7 +32,7 @@ public class AdaptadorLugares extends
     }
     //Creamos nuestro ViewHolder, con los tipos de elementos a modificar
     public static class ViewHolder extends RecyclerView.ViewHolder {
-        public TextView nombre, direccion, tipo;
+        public TextView nombre, direccion, tipo, distancia;
         public ImageView foto;
         public ViewHolder(View itemView) {
             super(itemView);
@@ -40,6 +40,7 @@ public class AdaptadorLugares extends
             direccion = (TextView) itemView.findViewById(R.id.direccion);
             foto = (ImageView) itemView.findViewById(R.id.foto);
             tipo = (TextView) itemView.findViewById(R.id.tipo);
+            distancia = (TextView) itemView.findViewById(R.id.distancia);
         }
     }
 
@@ -69,6 +70,10 @@ public class AdaptadorLugares extends
         if(lugar.getSub_tipo() != null)
             tipo += " - " + lugar.getSub_tipo().getTexto();
         holder.tipo.setText(tipo);
+        if(lugar.getDistancia() > 0.0)
+            holder.distancia.setText(lugar.getDistancia() + " Km");
+        else
+            holder.distancia.setVisibility(View.INVISIBLE);
     }
 
     public Cursor getCursor() {

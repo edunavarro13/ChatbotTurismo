@@ -342,12 +342,14 @@ public class BaseDatos extends SQLiteOpenHelper {
         boolean no_salir = true;
         boolean agregar = true;
         do {
+            double distanciaObtenida = 0;
             // Comprobamos la distancia
             if(!ultimocursor_nombre && prefubicacion) {
                 double latbd = cursor.getDouble(4);
                 double lonbd = cursor.getDouble(5);
                 // Si esta mas lejos que prefdistancia, no lo agregamos
-                if(distancia(latitud, longitud, latbd, lonbd) > prefdistancia)
+                distanciaObtenida = distancia(latitud, longitud, latbd, lonbd);
+                if(distanciaObtenida > prefdistancia)
                     agregar = false;
             }
             if(agregar) {
@@ -385,6 +387,7 @@ public class BaseDatos extends SQLiteOpenHelper {
                 lugar.setFoto(cursor.getString(15));
                 lugar.setTelefono(cursor.getInt(16));
                 lugar.setUrl(cursor.getString(17));
+                lugar.setDistancia(distanciaObtenida);
                 lista_lugares.add(lugar);
             }
             agregar = true;
