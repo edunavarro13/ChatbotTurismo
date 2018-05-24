@@ -309,6 +309,8 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
     public void iniciarAyudaTipo(boolean tipo) {
         Intent intent = new Intent(this, AyudaTiposActivity.class);
         intent.putExtra("tipo", tipo); // true carga Tipo y false carga Subtipo
+        AyudaTiposActivity.editText = editText;
+        AyudaTiposActivity.button_main = btn_send_message;
         startActivity(intent);
     }
 

@@ -78,15 +78,18 @@
                 android:layout_height="match_parent"
                 android:orientation="horizontal">
 
-                <TextView
-                    android:id="@+id/museo_text"
+                <Button
+                    android:id="@+id/boton_museo"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:layout_gravity="center_vertical"
+                    android:background="@drawable/borde_redondo"
                     android:layout_weight="3"
                     android:gravity="center"
                     android:text="@string/museo"
-                    android:textSize="18dp" />
+                    android:textColor="@android:color/background_light"
+                    android:textSize="15dp"
+                    android:layout_marginTop="1dp"
+                    android:layout_marginBottom="1dp"/>
 
                 <TextView
                     android:id="@+id/museo_sino"
@@ -110,15 +113,18 @@
                 android:layout_height="match_parent"
                 android:orientation="horizontal">
 
-                <TextView
-                    android:id="@+id/teatro_text"
+                <Button
+                    android:id="@+id/boton_teatro"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:layout_gravity="center_vertical"
+                    android:background="@drawable/borde_redondo"
                     android:layout_weight="3"
                     android:gravity="center"
                     android:text="@string/teatro"
-                    android:textSize="18dp" />
+                    android:textColor="@android:color/background_light"
+                    android:textSize="15dp"
+                    android:layout_marginTop="1dp"
+                    android:layout_marginBottom="1dp"/>
 
                 <TextView
                     android:id="@+id/teatro_sino"
@@ -142,15 +148,18 @@
                 android:layout_height="match_parent"
                 android:orientation="horizontal">
 
-                <TextView
-                    android:id="@+id/jardin_text"
+                <Button
+                    android:id="@+id/boton_jardin"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:layout_gravity="center_vertical"
+                    android:background="@drawable/borde_redondo"
                     android:layout_weight="3"
                     android:gravity="center"
                     android:text="@string/jardin"
-                    android:textSize="18dp" />
+                    android:textColor="@android:color/background_light"
+                    android:textSize="15dp"
+                    android:layout_marginTop="1dp"
+                    android:layout_marginBottom="1dp"/>
 
                 <TextView
                     android:id="@+id/jardin_sino"
@@ -174,15 +183,18 @@
                 android:layout_height="match_parent"
                 android:orientation="horizontal">
 
-                <TextView
-                    android:id="@+id/plaza_text"
+                <Button
+                    android:id="@+id/boton_plaza"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:layout_gravity="center_vertical"
+                    android:background="@drawable/borde_redondo"
                     android:layout_weight="3"
                     android:gravity="center"
                     android:text="@string/plaza"
-                    android:textSize="18dp" />
+                    android:textColor="@android:color/background_light"
+                    android:textSize="15dp"
+                    android:layout_marginTop="1dp"
+                    android:layout_marginBottom="1dp"/>
 
                 <TextView
                     android:id="@+id/plaza_sino"
@@ -206,15 +218,18 @@
                 android:layout_height="75dp"
                 android:orientation="horizontal">
 
-                <TextView
-                    android:id="@+id/iglesia_text"
+                <Button
+                    android:id="@+id/boton_iglesia"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:layout_gravity="center_vertical"
+                    android:background="@drawable/borde_redondo"
                     android:layout_weight="3"
                     android:gravity="center"
                     android:text="@string/iglesia"
-                    android:textSize="18dp" />
+                    android:textColor="@android:color/background_light"
+                    android:textSize="15dp"
+                    android:layout_marginTop="1dp"
+                    android:layout_marginBottom="1dp"/>
 
                 <TextView
                     android:id="@+id/iglesia_sino"
@@ -238,15 +253,18 @@
                 android:layout_height="match_parent"
                 android:orientation="horizontal">
 
-                <TextView
-                    android:id="@+id/estadio_text"
+                <Button
+                    android:id="@+id/boton_estadio"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:layout_gravity="center_vertical"
+                    android:background="@drawable/borde_redondo"
                     android:layout_weight="3"
                     android:gravity="center"
                     android:text="@string/estadio"
-                    android:textSize="18dp" />
+                    android:textColor="@android:color/background_light"
+                    android:textSize="15dp"
+                    android:layout_marginTop="1dp"
+                    android:layout_marginBottom="1dp"/>
 
                 <TextView
                     android:id="@+id/estadio_sino"
@@ -270,15 +288,18 @@
                 android:layout_height="match_parent"
                 android:orientation="horizontal">
 
-                <TextView
-                    android:id="@+id/castillo_text"
+                <Button
+                    android:id="@+id/boton_castillo"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:layout_gravity="center_vertical"
+                    android:background="@drawable/borde_redondo"
                     android:layout_weight="3"
                     android:gravity="center"
                     android:text="@string/castillo"
-                    android:textSize="18dp" />
+                    android:textColor="@android:color/background_light"
+                    android:textSize="15dp"
+                    android:layout_marginTop="1dp"
+                    android:layout_marginBottom="1dp"/>
 
                 <TextView
                     android:id="@+id/castillo_sino"
@@ -302,15 +323,18 @@
                 android:layout_height="match_parent"
                 android:orientation="horizontal">
 
-                <TextView
-                    android:id="@+id/yacimiento_text"
+                <Button
+                    android:id="@+id/boton_yacimiento"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:layout_gravity="center_vertical"
+                    android:background="@drawable/borde_redondo"
                     android:layout_weight="3"
                     android:gravity="center"
                     android:text="@string/yacimiento"
-                    android:textSize="17dp" />
+                    android:textColor="@android:color/background_light"
+                    android:textSize="14dp"
+                    android:layout_marginTop="1dp"
+                    android:layout_marginBottom="1dp"/>
 
                 <TextView
                     android:id="@+id/yacimiento_sino"
@@ -329,15 +353,18 @@
                 android:layout_height="match_parent"
                 android:orientation="horizontal">
 
-                <TextView
-                    android:id="@+id/edificio_text"
+                <Button
+                    android:id="@+id/boton_edificio"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:layout_gravity="center_vertical"
+                    android:background="@drawable/borde_redondo"
                     android:layout_weight="3"
                     android:gravity="center"
                     android:text="@string/edificio"
-                    android:textSize="17dp" />
+                    android:textColor="@android:color/background_light"
+                    android:textSize="15dp"
+                    android:layout_marginTop="1dp"
+                    android:layout_marginBottom="1dp"/>
 
                 <TextView
                     android:id="@+id/edificio_sino"
