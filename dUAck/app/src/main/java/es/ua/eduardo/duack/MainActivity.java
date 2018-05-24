@@ -51,6 +51,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
     EditText editText;
     List<ChatModel> list_chat = new ArrayList<>();
     FloatingActionButton btn_send_message;
+    int tamLista = 0;
 
     private double latitud_oficina = 38.47790161262177;
     private double longitud_oficina = -0.7960233999999673;
@@ -164,8 +165,13 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
                                         adapter2.setEdit(editText);
                                         adapter2.setButton(btn_send_message);
                                         listView.setAdapter(adapter2);
-                                        if (clase_lugar != null)
-                                            iniciarDescripcion();
+                                        if (clase_lugar != null) {
+                                            if(tamLista <= 1)
+                                                iniciarDescripcion();
+                                            else {
+                                                iniciarVariosResultados();
+                                            }
+                                        }
                                     }
                                 } else {
                                     ejecutarDatosLugarInteres(outputText);
@@ -306,6 +312,11 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
         // ###########################
     }
 
+    public void iniciarVariosResultados() {
+        Intent intent = new Intent(this, VariosResultadosActivity.class);
+        startActivity(intent);
+    }
+
     public void iniciarAyudaTipo(boolean tipo) {
         Intent intent = new Intent(this, AyudaTiposActivity.class);
         intent.putExtra("tipo", tipo); // true carga Tipo y false carga Subtipo
@@ -343,8 +354,6 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
                 list_chat.add(fin_datos);
                 ChatModel fin_chat_pregunta = new ChatModel("", false, 0);
                 list_chat.add(fin_chat_pregunta);
-                /*clase_lugar = lista.get(0);
-                iniciarDescripcion(); // Aqui se llamara a otro*/
                 Intent intent = new Intent(this, VariosResultadosActivity.class);
                 startActivity(intent);
                 fin = true;
@@ -503,13 +512,13 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
                                         Cursor cursor_aux = bd.extraeCursorConsulta(clase_lugar);
                                         List<LugarInteres> lista = bd.extraeLugarInteres(cursor_aux);
                                         if (lista != null) {
-                                            if (lista.size() == 1) {
+                                            tamLista = lista.size();
+                                            if (tamLista == 1) {
                                                 outputText = getString(R.string.un_dato);
                                                 clase_lugar = lista.get(0);
                                             } else {
                                                 outputText = getString(R.string.varios_datos_1) + " " + lista.size()
                                                         + " " + getString(R.string.varios_datos_2);
-                                                clase_lugar = lista.get(0); // Hay que cambiarlo
                                             }
                                         } else {
                                             outputText = getString(R.string.error_no_datos);
@@ -562,13 +571,13 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
                                     Cursor cursor_aux = bd.extraeCursorNombre(para_bd);
                                     List<LugarInteres> lista = bd.extraeLugarInteres(cursor_aux);
                                     if(lista != null) {
-                                        if(lista.size() == 1) {
+                                        tamLista = lista.size();
+                                        if(tamLista == 1) {
                                             outputText = getString(R.string.un_dato);
                                             clase_lugar = lista.get(0);
                                         } else {
                                             outputText = getString(R.string.varios_datos_1) + " " + lista.size()
                                                     + " " + getString(R.string.varios_datos_2);
-                                            clase_lugar = lista.get(0); // Hay que cambiarlo
                                         }
                                     }
                                     else
