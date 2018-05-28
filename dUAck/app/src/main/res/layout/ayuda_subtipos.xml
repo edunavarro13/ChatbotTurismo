@@ -78,15 +78,18 @@
                 android:layout_height="match_parent"
                 android:orientation="horizontal">
 
-                <TextView
-                    android:id="@+id/museo_text"
+                <Button
+                    android:id="@+id/boton_calzado"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:layout_gravity="center_vertical"
+                    android:background="@drawable/borde_redondo"
                     android:layout_weight="3"
                     android:gravity="center"
                     android:text="@string/calzado"
-                    android:textSize="18dp" />
+                    android:textColor="@android:color/background_light"
+                    android:textSize="13dp"
+                    android:layout_marginTop="1dp"
+                    android:layout_marginBottom="1dp"/>
 
                 <TextView
                     android:id="@+id/museo_sino"
@@ -110,15 +113,18 @@
                 android:layout_height="match_parent"
                 android:orientation="horizontal">
 
-                <TextView
-                    android:id="@+id/teatro_text"
+                <Button
+                    android:id="@+id/boton_arte"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:layout_gravity="center_vertical"
+                    android:background="@drawable/borde_redondo"
                     android:layout_weight="3"
                     android:gravity="center"
                     android:text="@string/arte"
-                    android:textSize="18dp" />
+                    android:textColor="@android:color/background_light"
+                    android:textSize="13dp"
+                    android:layout_marginTop="1dp"
+                    android:layout_marginBottom="1dp"/>
 
                 <TextView
                     android:id="@+id/teatro_sino"
@@ -142,15 +148,18 @@
                 android:layout_height="match_parent"
                 android:orientation="horizontal">
 
-                <TextView
-                    android:id="@+id/jardin_text"
+                <Button
+                    android:id="@+id/boton_arqueologico"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:layout_gravity="center_vertical"
+                    android:background="@drawable/borde_redondo"
                     android:layout_weight="3"
                     android:gravity="center"
                     android:text="@string/arqueologico"
-                    android:textSize="15dp" />
+                    android:textColor="@android:color/background_light"
+                    android:textSize="11dp"
+                    android:layout_marginTop="1dp"
+                    android:layout_marginBottom="1dp"/>
 
                 <TextView
                     android:id="@+id/jardin_sino"
@@ -174,15 +183,18 @@
                 android:layout_height="match_parent"
                 android:orientation="horizontal">
 
-                <TextView
-                    android:id="@+id/plaza_text"
+                <Button
+                    android:id="@+id/boton_etnologico"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:layout_gravity="center_vertical"
+                    android:background="@drawable/borde_redondo"
                     android:layout_weight="3"
                     android:gravity="center"
                     android:text="@string/etnologico"
-                    android:textSize="18dp" />
+                    android:textColor="@android:color/background_light"
+                    android:textSize="13dp"
+                    android:layout_marginTop="1dp"
+                    android:layout_marginBottom="1dp"/>
 
                 <TextView
                     android:id="@+id/plaza_sino"

@@ -26,6 +26,7 @@ public class LugarInteres {
     private String foto;
     private int telefono;
     private String url;
+    private double distancia = 0.0;
 
 
     // Este es para salir del bucle que comprueba los null
@@ -256,6 +257,14 @@ public class LugarInteres {
 
     public Boolean getComprobadoId(int id) {
         return comprobado.get(id);
+    }
+
+    public double getDistancia() {
+        return distancia;
+    }
+
+    public void setDistancia(double distancia) {
+        this.distancia = distancia;
     }
 
     public static void elegirFoto(ImageView imageView, String uri) {

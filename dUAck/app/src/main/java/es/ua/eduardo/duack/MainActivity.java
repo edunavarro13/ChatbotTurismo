@@ -51,6 +51,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
     EditText editText;
     List<ChatModel> list_chat = new ArrayList<>();
     FloatingActionButton btn_send_message;
+    int tamLista = 0;
 
     private double latitud_oficina = 38.47790161262177;
     private double longitud_oficina = -0.7960233999999673;
@@ -164,8 +165,13 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
                                         adapter2.setEdit(editText);
                                         adapter2.setButton(btn_send_message);
                                         listView.setAdapter(adapter2);
-                                        if (clase_lugar != null)
-                                            iniciarDescripcion();
+                                        if (clase_lugar != null) {
+                                            if(tamLista <= 1)
+                                                iniciarDescripcion();
+                                            else {
+                                                iniciarVariosResultados();
+                                            }
+                                        }
                                     }
                                 } else {
                                     ejecutarDatosLugarInteres(outputText);
@@ -306,9 +312,16 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
         // ###########################
     }
 
+    public void iniciarVariosResultados() {
+        Intent intent = new Intent(this, VariosResultadosActivity.class);
+        startActivity(intent);
+    }
+
     public void iniciarAyudaTipo(boolean tipo) {
         Intent intent = new Intent(this, AyudaTiposActivity.class);
         intent.putExtra("tipo", tipo); // true carga Tipo y false carga Subtipo
+        AyudaTiposActivity.editText = editText;
+        AyudaTiposActivity.button_main = btn_send_message;
         startActivity(intent);
     }
 
@@ -341,8 +354,6 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
                 list_chat.add(fin_datos);
                 ChatModel fin_chat_pregunta = new ChatModel("", false, 0);
                 list_chat.add(fin_chat_pregunta);
-                /*clase_lugar = lista.get(0);
-                iniciarDescripcion(); // Aqui se llamara a otro*/
                 Intent intent = new Intent(this, VariosResultadosActivity.class);
                 startActivity(intent);
                 fin = true;
@@ -501,13 +512,13 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
                                         Cursor cursor_aux = bd.extraeCursorConsulta(clase_lugar);
                                         List<LugarInteres> lista = bd.extraeLugarInteres(cursor_aux);
                                         if (lista != null) {
-                                            if (lista.size() == 1) {
+                                            tamLista = lista.size();
+                                            if (tamLista == 1) {
                                                 outputText = getString(R.string.un_dato);
                                                 clase_lugar = lista.get(0);
                                             } else {
                                                 outputText = getString(R.string.varios_datos_1) + " " + lista.size()
                                                         + " " + getString(R.string.varios_datos_2);
-                                                clase_lugar = lista.get(0); // Hay que cambiarlo
                                             }
                                         } else {
                                             outputText = getString(R.string.error_no_datos);
@@ -560,13 +571,13 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
                                     Cursor cursor_aux = bd.extraeCursorNombre(para_bd);
                                     List<LugarInteres> lista = bd.extraeLugarInteres(cursor_aux);
                                     if(lista != null) {
-                                        if(lista.size() == 1) {
+                                        tamLista = lista.size();
+                                        if(tamLista == 1) {
                                             outputText = getString(R.string.un_dato);
                                             clase_lugar = lista.get(0);
                                         } else {
                                             outputText = getString(R.string.varios_datos_1) + " " + lista.size()
                                                     + " " + getString(R.string.varios_datos_2);
-                                            clase_lugar = lista.get(0); // Hay que cambiarlo
                                         }
                                     }
                                     else
@@ -643,6 +654,82 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
                                             fin = true;
                                         }
                                     }
+                                }
+                                else
+                                if(response.getIntents().get(0).getIntent()
+                                        .endsWith("Hoteles")) {
+
+                                    /*
+                                    // Primero comprobamos que no sea null
+                                    if(response.getEntities() != null) {
+                                        // Iniciamos el bucle
+                                        for (int t = 0; t < response.getEntities().size(); t++) {
+                                            // Caso gratis
+                                            if(response.getEntities().get(t).getValue().equals("gratis")) {
+                                                clase_lugar.setCoste(0.0);
+                                            }
+                                            // Caso guia
+                                            else if(response.getEntities().get(t).getValue().equals("guia")) {
+                                                // Puede ser 'con' o 'sin'
+                                                // En caso de no poner nada entendemos que si quiere guia
+                                                if(inputText.contains(" sin "))
+                                                    clase_lugar.setGuia(false);
+                                                else
+                                                    clase_lugar.setGuia(true);
+                                            }
+                                            // Caso idioma
+                                            else if(response.getEntities().get(t).getEntity().equals("idioma")) {
+                                                clase_lugar.setIdioma(Idioma.valueOf(response.getEntities().get(t).getValue().toUpperCase()));
+                                            }
+                                            // Caso tipo
+                                            else if(response.getEntities().get(t).getEntity().equals("tipo")) {
+                                                clase_lugar.setTipo(TipoLugar.valueOf(response.getEntities().get(t).getValue().toUpperCase()));
+                                            }
+                                            // Caso sub_tipo
+                                            else if(response.getEntities().get(t).getEntity().equals("sub_tipo")) {
+                                                clase_lugar.setSub_tipo(SubTipoLugar.valueOf(response.getEntities().get(t).getValue().toUpperCase()));
+                                            }
+                                        }
+                                    }
+                                    else {
+                                        outputText += " es null ";
+                                    }
+                                    boolean error_gps = false;
+                                    // Si ubicacion es true comprobamos si esta conectado
+                                    if(prefubicacion) {
+                                        ultimaLocalizazion();
+                                        if (!manejador.isProviderEnabled(LocationManager.GPS_PROVIDER) ||
+                                                !manejador.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
+                                            outputText = getString(R.string.sin_gps);
+                                            error_gps = true;
+                                        } else {
+                                            if (ActivityCompat.checkSelfPermission(MainActivity.this,
+                                                    Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                                                // Obtenemos la localizacion
+                                                if (mejorLocaliz != null)
+                                                    bd.setLatLong(mejorLocaliz.getLatitude(), mejorLocaliz.getLongitude());
+                                                else {
+                                                    outputText = getString(R.string.location_null);
+                                                    error_gps = true;
+                                                }
+                                            } else {
+                                                outputText = getString(R.string.permisos_gps);
+                                                error_gps = true;
+                                            }
+                                        }
+                                    }
+                                    if(!error_gps) {
+                                        // Comprobamos si estan todos los datos
+                                        datos_interes = clase_lugar.todosDatos();
+                                        if (!datos_interes) {
+                                            outputText = getString(R.string.lugar_interes_datos) + "\n";
+                                        } else {
+                                            outputText = "Buscaré en mi BD: " + clase_lugar.toString();
+                                            fin = true;
+                                        }
+                                    }*/
+                                    outputText = "Busqueda de hoteles (POR IMPLEMENTAR)";
+                                    //fin = true;
                                 }
                             }
 

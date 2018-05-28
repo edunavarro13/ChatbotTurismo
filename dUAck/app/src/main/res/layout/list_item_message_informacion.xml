@@ -14,10 +14,11 @@
 
         <ImageButton
             android:id="@+id/boton_inf"
+            style="@android:style/Widget.DeviceDefault.ImageButton"
             android:layout_width="60dp"
             android:layout_height="45dp"
             android:layout_marginHorizontal="5dp"
-            android:background="@color/colorAccent"
+            android:background="@drawable/borde_redondo"
             android:src="@android:drawable/ic_menu_info_details"
             android:textColor="@android:color/background_light" />
     </LinearLayout>
