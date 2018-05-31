@@ -1,0 +1,24 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Schema Namespace="BDDuackModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+  <EntityType Name="Hoteles">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Type="int" Nullable="false" />
+    <Property Name="nombre" Type="nvarchar" MaxLength="50" Nullable="false" />
+    <Property Name="latitud" Type="real" Nullable="false" />
+    <Property Name="longitud" Type="real" Nullable="false" />
+    <Property Name="direccion" Type="nvarchar" MaxLength="100" />
+    <Property Name="localidad" Type="nvarchar" MaxLength="50" Nullable="false" />
+    <Property Name="provincia" Type="nvarchar" MaxLength="50" Nullable="false" />
+    <Property Name="pais" Type="nvarchar" MaxLength="50" Nullable="false" />
+    <Property Name="precio" Type="real" />
+    <Property Name="idioma" Type="nvarchar" MaxLength="50" />
+    <Property Name="foto" Type="nvarchar" MaxLength="100" />
+    <Property Name="telefono" Type="nvarchar" MaxLength="10" />
+    <Property Name="url" Type="nvarchar" MaxLength="200" />
+  </EntityType>
+  <EntityContainer Name="BDDuackModelStoreContainer">
+    <EntitySet Name="Hoteles" EntityType="Self.Hoteles" Schema="dbo" store:Type="Tables" />
+  </EntityContainer>
+</Schema>
