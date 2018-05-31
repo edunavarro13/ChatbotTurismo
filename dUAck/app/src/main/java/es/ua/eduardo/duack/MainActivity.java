@@ -13,6 +13,7 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.StrictMode;
 import android.preference.PreferenceManager;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -20,6 +21,7 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.design.widget.FloatingActionButton;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -27,6 +29,9 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -60,6 +65,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
     private LugarInteres clase_lugar;
     private boolean fin = false;
     private boolean datos_interes = true;
+    private boolean b_hoteles = false;
     private int modificar_datos_lugar = -1; // 0=coste;1=guia;2=idioma;3=tipo;4=sub_tipo
     public static BaseDatos bd;
     private AdaptadorLugares adaptador;
@@ -78,6 +84,8 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
     private LocationManager manejador;
     private Location mejorLocaliz;
     // ###########################
+
+    String url_hoteles = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -142,7 +150,26 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
                                         outputText = "El hilo ha dado el error: " + ex.toString();
                                     }
                                 }
-                                if (datos_interes) {
+                                if(b_hoteles) {
+                                    b_hoteles = false;
+                                    outputText += "\n" + getString(R.string.fin_chat);
+
+                                    ChatModel respuesta = new ChatModel(outputText, false, 3);
+
+                                    // Lo vacio para que no salga del while en el proximo mensaje hasta que tenga un mensaje
+                                    outputText = "";
+                                    list_chat.add(respuesta);
+                                    CustomAdapter adapter2 = new CustomAdapter(list_chat, getApplicationContext());
+                                    listView.setAdapter(adapter2);
+                                    ChatModel fin_chat_pregunta = new ChatModel("", false, 0);
+                                    list_chat.add(fin_chat_pregunta);
+                                    adapter2 = new CustomAdapter(list_chat, getApplicationContext());
+                                    adapter2.setEdit(editText);
+                                    adapter2.setButton(btn_send_message);
+                                    listView.setAdapter(adapter2);
+                                    iniciarVariosResultadosHoteles();
+                                }
+                                else if (datos_interes) {
                                     if (fin) {
                                         outputText += "\n" + getString(R.string.fin_chat);
                                     }
@@ -314,6 +341,12 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
 
     public void iniciarVariosResultados() {
         Intent intent = new Intent(this, VariosResultadosActivity.class);
+        startActivity(intent);
+    }
+
+    public void iniciarVariosResultadosHoteles() {
+        Intent intent = new Intent(this, VariosResultadosHotelesActivity.class);
+        intent.putExtra("url", url_hoteles);
         startActivity(intent);
     }
 
@@ -659,41 +692,15 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
                                 if(response.getIntents().get(0).getIntent()
                                         .endsWith("Hoteles")) {
 
-                                    /*
-                                    // Primero comprobamos que no sea null
-                                    if(response.getEntities() != null) {
-                                        // Iniciamos el bucle
-                                        for (int t = 0; t < response.getEntities().size(); t++) {
-                                            // Caso gratis
-                                            if(response.getEntities().get(t).getValue().equals("gratis")) {
-                                                clase_lugar.setCoste(0.0);
-                                            }
-                                            // Caso guia
-                                            else if(response.getEntities().get(t).getValue().equals("guia")) {
-                                                // Puede ser 'con' o 'sin'
-                                                // En caso de no poner nada entendemos que si quiere guia
-                                                if(inputText.contains(" sin "))
-                                                    clase_lugar.setGuia(false);
-                                                else
-                                                    clase_lugar.setGuia(true);
-                                            }
-                                            // Caso idioma
-                                            else if(response.getEntities().get(t).getEntity().equals("idioma")) {
-                                                clase_lugar.setIdioma(Idioma.valueOf(response.getEntities().get(t).getValue().toUpperCase()));
-                                            }
-                                            // Caso tipo
-                                            else if(response.getEntities().get(t).getEntity().equals("tipo")) {
-                                                clase_lugar.setTipo(TipoLugar.valueOf(response.getEntities().get(t).getValue().toUpperCase()));
-                                            }
-                                            // Caso sub_tipo
-                                            else if(response.getEntities().get(t).getEntity().equals("sub_tipo")) {
-                                                clase_lugar.setSub_tipo(SubTipoLugar.valueOf(response.getEntities().get(t).getValue().toUpperCase()));
-                                            }
+                                    while (outputText == null || outputText == "") {
+                                        try {
+                                            Thread.sleep(TIEMPO_BUCLE);
+                                        } catch (Exception ex) {
+                                            outputText = "El hilo ha dado el error: " + ex.toString();
                                         }
                                     }
-                                    else {
-                                        outputText += " es null ";
-                                    }
+
+                                    url_hoteles = outputText;
                                     boolean error_gps = false;
                                     // Si ubicacion es true comprobamos si esta conectado
                                     if(prefubicacion) {
@@ -719,17 +726,10 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
                                         }
                                     }
                                     if(!error_gps) {
-                                        // Comprobamos si estan todos los datos
-                                        datos_interes = clase_lugar.todosDatos();
-                                        if (!datos_interes) {
-                                            outputText = getString(R.string.lugar_interes_datos) + "\n";
-                                        } else {
-                                            outputText = "Buscaré en mi BD: " + clase_lugar.toString();
-                                            fin = true;
-                                        }
-                                    }*/
-                                    outputText = "Busqueda de hoteles (POR IMPLEMENTAR)";
-                                    //fin = true;
+                                        outputText = "Buscaré en mi BD hoteles. ";
+                                        fin = true;
+                                        b_hoteles = true;
+                                    }
                                 }
                             }
 
