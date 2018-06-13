@@ -18,6 +18,14 @@
     <string name="un_dato">He encontrado un lugar con la descripción que me has dado. Te lo muestro en seguida.</string>
     <string name="varios_datos_1">He encontrado</string>
     <string name="varios_datos_2">lugares con la descripcion que me has dado. Te los muestro en seguida.</string>
+    <string name="server_inactivo_titulo">Servidor inactivo</string>
+    <string name="server_inactivo_mensaje">El servidor de base de datos no está activo en este momento. Vuelva a intentarlo más tarde.</string>
+    <string name="server_ya_actualizado_title">BD local actualizada</string>
+    <string name="server_ya_actualizado_mensaje">La base de datos local ya está actualizada, no es necesario volverla a actualizar</string>
+    <string name="server_no_actualizado_title">BD local por actualizar</string>
+    <string name="server_no_actualizado_mensaje">Hay datos en el servidor que no has instalado en tu base de datos local. ¿Deseas instalarlos?</string>
+    <string name="si">Sí</string>
+    <string name="no">No</string>
 
     <string name="tipos">Tipos</string>
     <string name="palabra_clave">Palabra clave</string>

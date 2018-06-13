@@ -32,9 +32,11 @@ public class VariosResultadosHotelesActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.varios_resultados_hoteles);
 
-        Bundle extras = getIntent().getExtras();
+        /*Bundle extras = getIntent().getExtras();
         String url = extras.getString("url");
-        ejecutar(url);
+        ejecutar(url);*/
+
+        hoteles = bd.extraeHoteles(bd.getUltimocursor(), true);
 
         recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
         adaptador = new AdaptadorHoteles(this, hoteles);
@@ -46,7 +48,7 @@ public class VariosResultadosHotelesActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 long pos = (long) recyclerView.getChildAdapterPosition(v);
-                Intent i = new Intent(VariosResultadosHotelesActivity.this, DescripcionLugarActivity.class);
+                Intent i = new Intent(VariosResultadosHotelesActivity.this, DescripcionHotelActivity.class);
                 i.putExtra("id", adaptador.idLugarPosicion((int) pos));
                 startActivity(i);
             }
@@ -54,7 +56,7 @@ public class VariosResultadosHotelesActivity extends AppCompatActivity {
     }
 
     // -------------------- Hoteles -----------
-    public void ejecutar(String cadenaurl) {
+    public static List<Hoteles> ejecutar(String cadenaurl) {
         try {
             URL url = new URL(cadenaurl + "/api/Hoteles");
             StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
@@ -65,16 +67,24 @@ public class VariosResultadosHotelesActivity extends AppCompatActivity {
             while (null != (str = br.readLine())) {
                 xml = str;
             }
-            llenarArray(xml);
+            return llenarArray(xml);
 
         } catch (Exception ex) {
             ex.printStackTrace();
             Log.d("MyError", ex.getMessage());
         }
+        return null;
     }
 
-    public void llenarArray(String cadena) {
-        hoteles = new ArrayList<Hoteles>();
+    public static double convertirDouble(String cadena) {
+        double devolver = 0;
+        cadena.replace(",", ".");
+        devolver = Double.parseDouble(cadena);
+        return devolver;
+    }
+
+    public static List<Hoteles> llenarArray(String cadena) {
+        List<Hoteles> hoteles_aux = new ArrayList<Hoteles>();
 
         // Eso es que hay un hotel aun por añadir
         while (cadena.contains("Id")) {
@@ -92,11 +102,11 @@ public class VariosResultadosHotelesActivity extends AppCompatActivity {
             // Tercero latitud
             cadena = cadena.substring(start+9);
             start = cadena.indexOf("longitud");
-            hotel.setLatitud(Double.parseDouble(cadena.substring(0, start-2)));
+            hotel.setLatitud(convertirDouble(cadena.substring(0, start-2)));
             // Cuarto longitud
             cadena = cadena.substring(start+10);
             start = cadena.indexOf("direccion");
-            hotel.setLatitud(Double.parseDouble(cadena.substring(0, start-2)));
+            hotel.setLatitud(convertirDouble(cadena.substring(0, start-2)));
             // Quinto direccion
             cadena = cadena.substring(start+12);
             start = cadena.indexOf("localidad");
@@ -116,15 +126,15 @@ public class VariosResultadosHotelesActivity extends AppCompatActivity {
             // Noveno precio
             cadena = cadena.substring(start+8);
             start = cadena.indexOf("idioma");
-            hotel.setPrecio(Double.parseDouble(cadena.substring(0, start-2)));
+            hotel.setPrecio(convertirDouble(cadena.substring(0, start-2)));
             // Decimo idioma
             cadena = cadena.substring(start+9);
             start = cadena.indexOf("foto");
-            hotel.setFoto(cadena.substring(0, start-3));
+            hotel.setIdioma(Idioma.valueOf(cadena.substring(0, start-3).toUpperCase()));
             // Onceavo Foto AQUI PUEDEN SER NULL
             cadena = cadena.substring(start+6);
             start = cadena.indexOf("telefono");
-            String auxiliar = cadena.substring(0, start-2);
+            String auxiliar = cadena.substring(1, start-3);
             if(auxiliar.equals("null"))
                 hotel.setFoto(null);
             else
@@ -132,22 +142,31 @@ public class VariosResultadosHotelesActivity extends AppCompatActivity {
             // Doceavo telefono
             cadena = cadena.substring(start+10);
             start = cadena.indexOf("url");
-            auxiliar = cadena.substring(0, start-2);
-            if(auxiliar.equals("null"))
-                hotel.setTelefono(null);
+            auxiliar = cadena.substring(1, start-3);
+            if(auxiliar.equals("null") || !esNumero(auxiliar))
+                hotel.setTelefono(0);
             else
-                hotel.setTelefono(auxiliar);
+                hotel.setTelefono(Integer.parseInt(auxiliar));
             // Treceavo Url
             cadena = cadena.substring(start+5);
             start = cadena.indexOf("}");
-            auxiliar = cadena.substring(0, start-2);
+            auxiliar = cadena.substring(1, start-1);
             if(auxiliar.equals("null"))
                 hotel.setUrl(null);
             else
                 hotel.setUrl(auxiliar);
 
-            hoteles.add(hotel);
+            hoteles_aux.add(hotel);
         }
+        return hoteles_aux;
+    }
+
+    public static boolean esNumero(String n) {
+        for (int i = 0; i < n.length(); i++) {
+            if(n.charAt(i) < '0' || n.charAt(i) > '9')
+                return false;
+        }
+        return true;
     }
 
     // --------------- Menu -----------------

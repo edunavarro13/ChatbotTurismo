@@ -7,7 +7,7 @@ public class Hoteles {
     String nombre;
     String direccion;
     String foto;
-    String idioma;
+    Idioma idioma;
     Double latitud;
     Double longitud;
     String localidad;
@@ -16,6 +16,7 @@ public class Hoteles {
     Double precio;
     int telefono;
     String url;
+    private double distancia = 0.0;
 
     public int getId() {
         return Id;
@@ -46,18 +47,16 @@ public class Hoteles {
     }
 
     public void setFoto(String foto) {
-        if(foto != null)
-        {
-            foto = foto.replace("\"", "");
-        }
         this.foto = foto;
     }
 
     public String getIdioma() {
-        return idioma;
+        if(idioma == null)
+            return null;
+        return idioma.getTexto();
     }
 
-    public void setIdioma(String idioma) {
+    public void setIdioma(Idioma idioma) {
         this.idioma = idioma;
     }
 
@@ -113,33 +112,33 @@ public class Hoteles {
         return telefono;
     }
 
-    public void setTelefono(String telefono) {
-        if(telefono != null)
-        {
-            telefono = telefono.replace("\"", "");
-        }
-        this.telefono = Integer.parseInt(telefono);
+    public void setTelefono(int telefono) {
+        this.telefono = telefono;
     }
 
     public String getUrl() {
-
         return url;
     }
 
     public void setUrl(String url) {
-        if(url != null)
-        {
-            url = url.replace("\"", "");
-        }
         this.url = url;
     }
 
+    public double getDistancia() {
+        return distancia;
+    }
+
+    public void setDistancia(double distancia) {
+        this.distancia = distancia;
+    }
+
     public static void elegirFoto(ImageView imageView, String uri) {
-        imageView.setImageResource(R.drawable.plazacastelar);
-        /*switch(uri) {
-            case "plazacastelar.png" :
-                imageView.setImageResource(R.drawable.plazacastelar);
+        switch(uri) {
+            case "marriot.png" :
+                imageView.setImageResource(R.drawable.marriot);
                 break;
-        }*/
+            default :
+                imageView.setImageResource(R.drawable.nofoto);
+        }
     }
 }

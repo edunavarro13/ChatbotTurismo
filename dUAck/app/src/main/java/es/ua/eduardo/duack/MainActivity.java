@@ -63,6 +63,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
     private int TIEMPO_BUCLE = 500;
 
     private LugarInteres clase_lugar;
+    private Hoteles clase_hotel;
     private boolean fin = false;
     private boolean datos_interes = true;
     private boolean b_hoteles = false;
@@ -152,21 +153,6 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
                                 }
                                 if(b_hoteles) {
                                     b_hoteles = false;
-                                    outputText += "\n" + getString(R.string.fin_chat);
-
-                                    ChatModel respuesta = new ChatModel(outputText, false, 3);
-
-                                    // Lo vacio para que no salga del while en el proximo mensaje hasta que tenga un mensaje
-                                    outputText = "";
-                                    list_chat.add(respuesta);
-                                    CustomAdapter adapter2 = new CustomAdapter(list_chat, getApplicationContext());
-                                    listView.setAdapter(adapter2);
-                                    ChatModel fin_chat_pregunta = new ChatModel("", false, 0);
-                                    list_chat.add(fin_chat_pregunta);
-                                    adapter2 = new CustomAdapter(list_chat, getApplicationContext());
-                                    adapter2.setEdit(editText);
-                                    adapter2.setButton(btn_send_message);
-                                    listView.setAdapter(adapter2);
                                     iniciarVariosResultadosHoteles();
                                 }
                                 else if (datos_interes) {
@@ -345,9 +331,51 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
     }
 
     public void iniciarVariosResultadosHoteles() {
-        Intent intent = new Intent(this, VariosResultadosHotelesActivity.class);
+        Cursor cursor_aux = bd.extraeCursorHoteles();
+        List<Hoteles> hoteles_ini = bd.extraeHoteles(cursor_aux, true);
+        if(hoteles_ini != null) {
+            if(hoteles_ini.size() == 1) {
+                String datos_li = getString(R.string.un_dato);
+                datos_li += "\n" + getString(R.string.fin_chat);
+                ChatModel fin_datos_hotel = new ChatModel(datos_li, false, 3);
+                list_chat.add(fin_datos_hotel);
+                ChatModel fin_chat_pregunta_hotel = new ChatModel("", false, 0);
+                list_chat.add(fin_chat_pregunta_hotel);
+                clase_hotel = hoteles_ini.get(0);
+                iniciarDescripcionHoteles();
+                fin = true;
+            }
+            else {
+                String datos_li = getString(R.string.varios_datos_1) + " " + hoteles_ini.size()
+                        + " " + getString(R.string.varios_datos_2);
+                datos_li += "\n" + getString(R.string.fin_chat);
+                ChatModel fin_datos_hotel = new ChatModel(datos_li, false, 3);
+                list_chat.add(fin_datos_hotel);
+                ChatModel fin_chat_pregunta_hotel = new ChatModel("", false, 0);
+                list_chat.add(fin_chat_pregunta_hotel);
+                Intent intent = new Intent(this, VariosResultadosHotelesActivity.class);
+                startActivity(intent);
+                fin = true;
+            }
+        } else {
+            String datos_li = getString(R.string.error_no_datos);
+            if(prefubicacion)
+                datos_li += "\n" + getString(R.string.error_no_datos_ubicacion);
+            datos_li += "\n" + getString(R.string.fin_chat);
+            ChatModel fin_datos_hotel = new ChatModel(datos_li, false, 3);
+            list_chat.add(fin_datos_hotel);
+            ChatModel fin_chat_pregunta_hotel = new ChatModel("", false, 0);
+            list_chat.add(fin_chat_pregunta_hotel);
+            fin = true;
+        }
+
+        CustomAdapter adapter4 = new CustomAdapter(list_chat, getApplicationContext());
+        adapter4.setEdit(editText);
+        adapter4.setButton(btn_send_message);
+        listView.setAdapter(adapter4);
+        /*Intent intent = new Intent(this, VariosResultadosHotelesActivity.class);
         intent.putExtra("url", url_hoteles);
-        startActivity(intent);
+        startActivity(intent);*/
     }
 
     public void iniciarAyudaTipo(boolean tipo) {
@@ -361,6 +389,12 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
     public void iniciarDescripcion() {
         Intent intent = new Intent(this, DescripcionLugarActivity.class);
         intent.putExtra("id", clase_lugar.getId());
+        startActivity(intent);
+    }
+
+    public void iniciarDescripcionHoteles() {
+        Intent intent = new Intent(this, DescripcionHotelActivity.class);
+        intent.putExtra("id", clase_hotel.getId());
         startActivity(intent);
     }
 
@@ -692,15 +726,6 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
                                 if(response.getIntents().get(0).getIntent()
                                         .endsWith("Hoteles")) {
 
-                                    while (outputText == null || outputText == "") {
-                                        try {
-                                            Thread.sleep(TIEMPO_BUCLE);
-                                        } catch (Exception ex) {
-                                            outputText = "El hilo ha dado el error: " + ex.toString();
-                                        }
-                                    }
-
-                                    url_hoteles = outputText;
                                     boolean error_gps = false;
                                     // Si ubicacion es true comprobamos si esta conectado
                                     if(prefubicacion) {
@@ -914,6 +939,51 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
 
     // ###################################
 
+    public void comprobarServidor(String url) {
+
+        final List<Hoteles> server_hoteles = VariosResultadosHotelesActivity.ejecutar(url);
+
+        Cursor cursor_aux = bd.extraeCursorHoteles();
+        List<Hoteles> hoteles_ini = bd.extraeHoteles(cursor_aux, false);
+
+        final int inicio_bd = hoteles_ini.size();
+
+        // Faltan datos en local que sí estan en servidor
+        if(inicio_bd < server_hoteles.size()) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setTitle(getString(R.string.server_no_actualizado_title));
+            builder.setMessage(getString(R.string.server_no_actualizado_mensaje))
+                    .setCancelable(false)
+                    .setPositiveButton(getString(R.string.si), new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            //do things
+                            bd.insertarDesdeServidor(inicio_bd, server_hoteles);
+                        }
+                    }).setNegativeButton(getString(R.string.no), new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int id) {
+                    //do things
+                }
+            });
+            AlertDialog alert = builder.create();
+            alert.show();
+        }
+        // Servidor y local estan exactamente igual
+        else {
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setTitle(getString(R.string.server_ya_actualizado_title));
+            builder.setMessage(getString(R.string.server_ya_actualizado_mensaje))
+                    .setCancelable(false)
+                    .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            //do things
+                        }
+                    });
+            AlertDialog alert = builder.create();
+            alert.show();
+        }
+
+    }
+
     // --------------- Menu -----------------
     @Override public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.activity_main, menu);
@@ -953,6 +1023,57 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
         else if (id == R.id.acercaDe) {
             Intent intent = new Intent(this, AcercaDeActivity.class);
             startActivity(intent);
+            return true;
+        }
+        else if (id == R.id.action_actualizar) {
+            outputText = "";
+            if (compruebaConexion(this)) {
+                MessageRequest request = new MessageRequest.Builder().inputText("hotel").build();
+                try {
+                    myConversationService
+                            .message(getString(R.string.workspace), request)
+                            .enqueue(new ServiceCallback<MessageResponse>() {
+                                @Override
+                                public void onResponse(MessageResponse response) {
+
+                                    outputText = response.getText().get(0);
+                                }
+                                @Override
+                                public void onFailure(Exception e) {
+                                }
+                            });
+                } catch (Exception ex) {
+                    outputText = getString(R.string.ibm_no_responde);
+                }
+            }
+            else {
+                outputText = getString(R.string.ibm_no_responde);
+            }
+            while (outputText == null || outputText.equals("")) {
+                try {
+                    Thread.sleep(TIEMPO_BUCLE);
+                } catch (Exception ex) {
+                    outputText = "El hilo ha dado el error: " + ex.toString();
+                }
+            }
+            if(outputText.equals("nova")) {
+                outputText = "";
+                AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                builder.setTitle(getString(R.string.server_inactivo_titulo));
+                builder.setMessage(getString(R.string.server_inactivo_mensaje))
+                        .setCancelable(false)
+                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                //do things
+                            }
+                        });
+                AlertDialog alert = builder.create();
+                alert.show();
+            }
+            else {
+                comprobarServidor(outputText);
+                outputText = "";
+            }
             return true;
         }
         return super.onOptionsItemSelected(item);

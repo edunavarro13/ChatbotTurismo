@@ -19,6 +19,8 @@
         </activity>
         <activity android:name=".DescripcionLugarActivity"
             android:screenOrientation="portrait"/>
+        <activity android:name=".DescripcionHotelActivity"
+            android:screenOrientation="portrait"/>
         <activity android:name=".AyudaTiposActivity"
             android:screenOrientation="portrait"/>
         <activity android:name=".VariosResultadosActivity"

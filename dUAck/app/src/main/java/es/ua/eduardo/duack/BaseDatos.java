@@ -18,6 +18,8 @@ public class BaseDatos extends SQLiteOpenHelper {
     Cursor ultimocursor;
     boolean ultimocursor_nombre = false; // Si es true no comprobamos preferencias, false, si
 
+    SQLiteDatabase bd_actual;
+
     // ### Datos preferencias ###
     private boolean prefubicacion;
     private String prefpais, prefprovincia, preflocalidad;
@@ -62,6 +64,24 @@ public class BaseDatos extends SQLiteOpenHelper {
         insertarCastillos(bd);
         insertarYacimientos(bd);
         insertarEdificios(bd);
+
+        // Hoteles
+        bd.execSQL("CREATE TABLE hoteles ("+
+                "_id INTEGER PRIMARY KEY AUTOINCREMENT, "+
+                "nombre TEXT, " +
+                "latitud REAL, " +
+                "longitud REAL, " +
+                "direccion TEXT, " +
+                "localidad TEXT, " +
+                "provincia TEXT, " +
+                "pais TEXT, " +
+                "precio REAL, " +
+                "idioma TEXT, " +
+                "foto TEXT, " +
+                "telefono INTEGER, " +
+                "url TEXT)");
+
+        insertarHoteles(bd);
     }
 
     public void insertarJardines(SQLiteDatabase bd) {
@@ -328,6 +348,16 @@ public class BaseDatos extends SQLiteOpenHelper {
 
     }
 
+    public void insertarHoteles(SQLiteDatabase bd) {
+        // -------------- Elda ------------------
+        // Plaza mayor
+        bd.execSQL("INSERT INTO hoteles VALUES (null, " +
+                "'Ac hotel by marriott', " +
+                "38.47296311261953, -0.794270499999925, 'Avenida de Chapí 38, Plaza de la Ficia', 'Elda', " +
+                "'Alicante', 'España', 0.0, " +
+                "'" + Idioma.ESPAÑOL.getTexto() + "', 'marriot.png', 966981221, 'marriott.com')");
+    }
+
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion,
                                     int newVersion) {
@@ -399,11 +429,106 @@ public class BaseDatos extends SQLiteOpenHelper {
         return lista_lugares;
     }
 
-    public Cursor extraeCursor() {
-        String consulta = "SELECT * FROM lugares";
+    public List<Hoteles> extraeHoteles(Cursor cursor, boolean dist) {
+        List<Hoteles> hoteles = new ArrayList<Hoteles>();
+        if (!cursor.moveToFirst()){
+            //el cursor está vacío
+            return null;
+        }
+        boolean no_salir = true;
+        boolean agregar = true;
+        do {
+            double distanciaObtenida = 0;
+            if(dist) {
+                // Comprobamos la distancia
+                if (!ultimocursor_nombre && prefubicacion) {
+                    double latbd = cursor.getDouble(2);
+                    double lonbd = cursor.getDouble(3);
+                    // Si esta mas lejos que prefdistancia, no lo agregamos
+                    distanciaObtenida = distancia(latitud, longitud, latbd, lonbd);
+                    if (distanciaObtenida > prefdistancia)
+                        agregar = false;
+                }
+            }
+            if(agregar) {
+                Hoteles hotel = new Hoteles();
+                hotel.setId(cursor.getInt(0));
+                hotel.setNombre(cursor.getString(1));
+                hotel.setLatitud(cursor.getDouble(2));
+                hotel.setLongitud(cursor.getDouble(3));
+                hotel.setDireccion(cursor.getString(4));
+                hotel.setLocalidad(cursor.getString(5));
+                hotel.setProvincia(cursor.getString(6));
+                hotel.setPais(cursor.getString(7));
+                hotel.setPrecio(cursor.getDouble(8));
+                String auxiliar = cursor.getString(9);
+                if (auxiliar != null && !auxiliar.equals("null"))
+                    hotel.setIdioma(Idioma.valueOf(auxiliar.toUpperCase()));
+                else
+                    hotel.setIdioma(null);
+                hotel.setFoto(cursor.getString(10));
+                hotel.setTelefono(cursor.getInt(11));
+                hotel.setUrl(cursor.getString(12));
+                hotel.setDistancia(distanciaObtenida);
+                hoteles.add(hotel);
+            }
+            agregar = true;
+            no_salir = cursor.moveToNext(); // Significa que hay mas resultados
+        } while (no_salir);
+
+        if(hoteles.size() < 1)
+            return null;
+        return hoteles;
+    }
+
+    public Cursor extraeCursorHoteles() {
+        String consulta = "SELECT * FROM hoteles";
         SQLiteDatabase bd = getReadableDatabase();
         ultimocursor = bd.rawQuery(consulta, null);
         return ultimocursor;
+    }
+
+    public void insertarDesdeServidor(int inicio, List<Hoteles> servidor) {
+        SQLiteDatabase sqLiteDatabase = getWritableDatabase();
+
+        for (int i = inicio; i < servidor.size(); i++) {
+            sqLiteDatabase.execSQL("INSERT INTO hoteles VALUES (null, " +
+                    "'" + servidor.get(i).getNombre() + "', " +
+                    "" + servidor.get(i).getLatitud() + ", " + servidor.get(i).getLongitud() + ", '" + servidor.get(i).getDireccion() + "', '" + servidor.get(i).getLocalidad() + "', " +
+                    "'" + servidor.get(i).getProvincia() + "', '" + servidor.get(i).getPais() + "', " + servidor.get(i).getPrecio() + ", " +
+                    "'" + servidor.get(i).getIdioma() + "', '" + servidor.get(i).getFoto() + "', " + servidor.get(i).getTelefono() + ", '" + servidor.get(i).getUrl() + "')");
+        }
+    }
+
+    public Hoteles hotelPorId(int id) {
+        ultimocursor_nombre = true;
+        String consulta = "SELECT * FROM hoteles WHERE _id=" + id;
+        SQLiteDatabase bd = getReadableDatabase();
+        Cursor cursor = bd.rawQuery(consulta, null);
+        if (!cursor.moveToFirst()){
+            //el cursor está vacío
+            return null;
+        }
+        Hoteles hotel = new Hoteles();
+        hotel.setId(cursor.getInt(0));
+        hotel.setNombre(cursor.getString(1));
+        hotel.setLatitud(cursor.getDouble(2));
+        hotel.setLongitud(cursor.getDouble(3));
+        hotel.setDireccion(cursor.getString(4));
+        hotel.setLocalidad(cursor.getString(5));
+        hotel.setProvincia(cursor.getString(6));
+        hotel.setPais(cursor.getString(7));
+        hotel.setPrecio(cursor.getDouble(8));
+        String auxiliar = cursor.getString(9);
+        if (auxiliar != null  && !auxiliar.equals("null"))
+            hotel.setIdioma(Idioma.valueOf(auxiliar.toUpperCase()));
+        else
+            hotel.setIdioma(null);
+        hotel.setFoto(cursor.getString(10));
+        hotel.setTelefono(cursor.getInt(11));
+        hotel.setUrl(cursor.getString(12));
+        return hotel;
+
     }
 
     public LugarInteres lugarInteresPorId(int id) {
