@@ -1025,6 +1025,11 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
             startActivity(intent);
             return true;
         }
+        else if (id == R.id.action_ayuda) {
+            Intent intent = new Intent(this, VideosActivity.class);
+            startActivity(intent);
+            return true;
+        }
         else if (id == R.id.action_actualizar) {
             outputText = "";
             if (compruebaConexion(this)) {
