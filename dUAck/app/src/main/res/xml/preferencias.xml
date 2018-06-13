@@ -5,11 +5,12 @@
         android:key="pref_ub"
         android:title="@string/bus_por_ubicacion">
         <CheckBoxPreference
-            android:key="ubicacion"
-            android:summary="@string/por_ubicacion_summary"
-            android:title="@string/por_ubicacion"
             android:checked="false"
-            android:singleLine="true"/>
+            android:defaultValue="true"
+            android:key="ubicacion"
+            android:singleLine="true"
+            android:summary="@string/por_ubicacion_summary"
+            android:title="@string/por_ubicacion" />
         <EditTextPreference
             android:key="distancia"
             android:summary="@string/distancia_summary"

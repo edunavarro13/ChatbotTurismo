@@ -9,12 +9,12 @@
     <string name="fin_chat">¿Quieres realizar alguna otra consulta?</string>
     <string name="salir">¡Espero haberte ayudado! ¡Hasta la próxima!</string>
     <string name="nueva_consulta">¡Genial! En ese caso, adelante con tu nueva consuta</string>
-    <string name="lugar_interes_datos">Muy bien, aunque podría reducir la búsqueda si me contestas las siguientes preguntas. En caso de que quieras los resultados, contesta en algunas de mis preguntas FIN</string>
+    <string name="lugar_interes_datos">Muy bien, aunque podría reducir la búsqueda si me contestas las siguientes preguntas. En caso de que quieras los resultados, contesta en alguna de mis preguntas FIN</string>
     <string name="datos_coste">¿Buscas que sea gratis o cuál es el coste máximo de entrada que quieres pagar?</string>
     <string name="datos_guia">¿Quieres que, a ser posible, el sitio que buscas tenga guía o no?</string>
     <string name="datos_idioma">¿Quieres que se hable algún idioma en particular?</string>
     <string name="datos_tipo">El lugar turístico que buscas, ¿es de algún tipo en concreto? Si no sabes qué tipos hay, pulsa el botón naranja.</string>
-    <string name="datos_sub_tipo">El lugar de interés turístico que buscas, ¿es de algún subtipo en concreto? Si no sabes qué subtipos hay, pulsa el botón naranja</string>
+    <string name="datos_sub_tipo">Para acabar, el lugar de interés turístico que buscas, ¿es de algún subtipo en concreto? Si no sabes qué subtipos hay, pulsa el botón naranja</string>
     <string name="un_dato">He encontrado un lugar con la descripción que me has dado. Te lo muestro en seguida.</string>
     <string name="varios_datos_1">He encontrado</string>
     <string name="varios_datos_2">lugares con la descripcion que me has dado. Te los muestro en seguida.</string>
