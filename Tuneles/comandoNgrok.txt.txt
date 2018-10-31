@@ -1,0 +1,2 @@
+En C:\Users\Eduardo\Documents\Visual Studio 2015\Projects\Practica2MTIS2018>
+	ngrok http -host-header=localhost 61163

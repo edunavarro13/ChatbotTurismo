@@ -25,6 +25,16 @@
         android:icon="@android:drawable/ic_menu_preferences"
         android:orderInCategory="100"
         app:showAsAction="never"/>
+    <item android:id="@+id/action_ayuda"
+        android:title="AYUDA"
+        android:icon="@android:drawable/ic_menu_preferences"
+        android:orderInCategory="99"
+        app:showAsAction="never"/>
+    <item android:id="@+id/action_actualizar"
+        android:title="Actualizar BD"
+        android:icon="@android:drawable/ic_menu_preferences"
+        android:orderInCategory="98"
+        app:showAsAction="never"/>
     <item android:title="Acerca de..."
         android:id="@+id/acercaDe"
         android:icon="@android:drawable/ic_menu_info_details"/>

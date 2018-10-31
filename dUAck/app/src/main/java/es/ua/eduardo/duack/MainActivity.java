@@ -13,6 +13,7 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.StrictMode;
 import android.preference.PreferenceManager;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -20,6 +21,7 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.design.widget.FloatingActionButton;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -27,6 +29,9 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -58,8 +63,10 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
     private int TIEMPO_BUCLE = 500;
 
     private LugarInteres clase_lugar;
+    private Hoteles clase_hotel;
     private boolean fin = false;
     private boolean datos_interes = true;
+    private boolean b_hoteles = false;
     private int modificar_datos_lugar = -1; // 0=coste;1=guia;2=idioma;3=tipo;4=sub_tipo
     public static BaseDatos bd;
     private AdaptadorLugares adaptador;
@@ -78,6 +85,8 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
     private LocationManager manejador;
     private Location mejorLocaliz;
     // ###########################
+
+    String url_hoteles = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -142,7 +151,11 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
                                         outputText = "El hilo ha dado el error: " + ex.toString();
                                     }
                                 }
-                                if (datos_interes) {
+                                if(b_hoteles) {
+                                    b_hoteles = false;
+                                    iniciarVariosResultadosHoteles();
+                                }
+                                else if (datos_interes) {
                                     if (fin) {
                                         outputText += "\n" + getString(R.string.fin_chat);
                                     }
@@ -317,6 +330,54 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
         startActivity(intent);
     }
 
+    public void iniciarVariosResultadosHoteles() {
+        Cursor cursor_aux = bd.extraeCursorHoteles();
+        List<Hoteles> hoteles_ini = bd.extraeHoteles(cursor_aux, true);
+        if(hoteles_ini != null) {
+            if(hoteles_ini.size() == 1) {
+                String datos_li = getString(R.string.un_dato);
+                datos_li += "\n" + getString(R.string.fin_chat);
+                ChatModel fin_datos_hotel = new ChatModel(datos_li, false, 3);
+                list_chat.add(fin_datos_hotel);
+                ChatModel fin_chat_pregunta_hotel = new ChatModel("", false, 0);
+                list_chat.add(fin_chat_pregunta_hotel);
+                clase_hotel = hoteles_ini.get(0);
+                iniciarDescripcionHoteles();
+                fin = true;
+            }
+            else {
+                String datos_li = getString(R.string.varios_datos_1) + " " + hoteles_ini.size()
+                        + " " + getString(R.string.varios_datos_2);
+                datos_li += "\n" + getString(R.string.fin_chat);
+                ChatModel fin_datos_hotel = new ChatModel(datos_li, false, 3);
+                list_chat.add(fin_datos_hotel);
+                ChatModel fin_chat_pregunta_hotel = new ChatModel("", false, 0);
+                list_chat.add(fin_chat_pregunta_hotel);
+                Intent intent = new Intent(this, VariosResultadosHotelesActivity.class);
+                startActivity(intent);
+                fin = true;
+            }
+        } else {
+            String datos_li = getString(R.string.error_no_datos);
+            if(prefubicacion)
+                datos_li += "\n" + getString(R.string.error_no_datos_ubicacion);
+            datos_li += "\n" + getString(R.string.fin_chat);
+            ChatModel fin_datos_hotel = new ChatModel(datos_li, false, 3);
+            list_chat.add(fin_datos_hotel);
+            ChatModel fin_chat_pregunta_hotel = new ChatModel("", false, 0);
+            list_chat.add(fin_chat_pregunta_hotel);
+            fin = true;
+        }
+
+        CustomAdapter adapter4 = new CustomAdapter(list_chat, getApplicationContext());
+        adapter4.setEdit(editText);
+        adapter4.setButton(btn_send_message);
+        listView.setAdapter(adapter4);
+        /*Intent intent = new Intent(this, VariosResultadosHotelesActivity.class);
+        intent.putExtra("url", url_hoteles);
+        startActivity(intent);*/
+    }
+
     public void iniciarAyudaTipo(boolean tipo) {
         Intent intent = new Intent(this, AyudaTiposActivity.class);
         intent.putExtra("tipo", tipo); // true carga Tipo y false carga Subtipo
@@ -328,6 +389,12 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
     public void iniciarDescripcion() {
         Intent intent = new Intent(this, DescripcionLugarActivity.class);
         intent.putExtra("id", clase_lugar.getId());
+        startActivity(intent);
+    }
+
+    public void iniciarDescripcionHoteles() {
+        Intent intent = new Intent(this, DescripcionHotelActivity.class);
+        intent.putExtra("id", clase_hotel.getId());
         startActivity(intent);
     }
 
@@ -659,41 +726,6 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
                                 if(response.getIntents().get(0).getIntent()
                                         .endsWith("Hoteles")) {
 
-                                    /*
-                                    // Primero comprobamos que no sea null
-                                    if(response.getEntities() != null) {
-                                        // Iniciamos el bucle
-                                        for (int t = 0; t < response.getEntities().size(); t++) {
-                                            // Caso gratis
-                                            if(response.getEntities().get(t).getValue().equals("gratis")) {
-                                                clase_lugar.setCoste(0.0);
-                                            }
-                                            // Caso guia
-                                            else if(response.getEntities().get(t).getValue().equals("guia")) {
-                                                // Puede ser 'con' o 'sin'
-                                                // En caso de no poner nada entendemos que si quiere guia
-                                                if(inputText.contains(" sin "))
-                                                    clase_lugar.setGuia(false);
-                                                else
-                                                    clase_lugar.setGuia(true);
-                                            }
-                                            // Caso idioma
-                                            else if(response.getEntities().get(t).getEntity().equals("idioma")) {
-                                                clase_lugar.setIdioma(Idioma.valueOf(response.getEntities().get(t).getValue().toUpperCase()));
-                                            }
-                                            // Caso tipo
-                                            else if(response.getEntities().get(t).getEntity().equals("tipo")) {
-                                                clase_lugar.setTipo(TipoLugar.valueOf(response.getEntities().get(t).getValue().toUpperCase()));
-                                            }
-                                            // Caso sub_tipo
-                                            else if(response.getEntities().get(t).getEntity().equals("sub_tipo")) {
-                                                clase_lugar.setSub_tipo(SubTipoLugar.valueOf(response.getEntities().get(t).getValue().toUpperCase()));
-                                            }
-                                        }
-                                    }
-                                    else {
-                                        outputText += " es null ";
-                                    }
                                     boolean error_gps = false;
                                     // Si ubicacion es true comprobamos si esta conectado
                                     if(prefubicacion) {
@@ -719,17 +751,10 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
                                         }
                                     }
                                     if(!error_gps) {
-                                        // Comprobamos si estan todos los datos
-                                        datos_interes = clase_lugar.todosDatos();
-                                        if (!datos_interes) {
-                                            outputText = getString(R.string.lugar_interes_datos) + "\n";
-                                        } else {
-                                            outputText = "Buscaré en mi BD: " + clase_lugar.toString();
-                                            fin = true;
-                                        }
-                                    }*/
-                                    outputText = "Busqueda de hoteles (POR IMPLEMENTAR)";
-                                    //fin = true;
+                                        outputText = "Buscaré en mi BD hoteles. ";
+                                        fin = true;
+                                        b_hoteles = true;
+                                    }
                                 }
                             }
 
@@ -914,6 +939,51 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
 
     // ###################################
 
+    public void comprobarServidor(String url) {
+
+        final List<Hoteles> server_hoteles = VariosResultadosHotelesActivity.ejecutar(url);
+
+        Cursor cursor_aux = bd.extraeCursorHoteles();
+        List<Hoteles> hoteles_ini = bd.extraeHoteles(cursor_aux, false);
+
+        final int inicio_bd = hoteles_ini.size();
+
+        // Faltan datos en local que sí estan en servidor
+        if(inicio_bd < server_hoteles.size()) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setTitle(getString(R.string.server_no_actualizado_title));
+            builder.setMessage(getString(R.string.server_no_actualizado_mensaje))
+                    .setCancelable(false)
+                    .setPositiveButton(getString(R.string.si), new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            //do things
+                            bd.insertarDesdeServidor(inicio_bd, server_hoteles);
+                        }
+                    }).setNegativeButton(getString(R.string.no), new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int id) {
+                    //do things
+                }
+            });
+            AlertDialog alert = builder.create();
+            alert.show();
+        }
+        // Servidor y local estan exactamente igual
+        else {
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setTitle(getString(R.string.server_ya_actualizado_title));
+            builder.setMessage(getString(R.string.server_ya_actualizado_mensaje))
+                    .setCancelable(false)
+                    .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            //do things
+                        }
+                    });
+            AlertDialog alert = builder.create();
+            alert.show();
+        }
+
+    }
+
     // --------------- Menu -----------------
     @Override public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.activity_main, menu);
@@ -953,6 +1023,62 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
         else if (id == R.id.acercaDe) {
             Intent intent = new Intent(this, AcercaDeActivity.class);
             startActivity(intent);
+            return true;
+        }
+        else if (id == R.id.action_ayuda) {
+            Intent intent = new Intent(this, VideosActivity.class);
+            startActivity(intent);
+            return true;
+        }
+        else if (id == R.id.action_actualizar) {
+            outputText = "";
+            if (compruebaConexion(this)) {
+                MessageRequest request = new MessageRequest.Builder().inputText("hotel").build();
+                try {
+                    myConversationService
+                            .message(getString(R.string.workspace), request)
+                            .enqueue(new ServiceCallback<MessageResponse>() {
+                                @Override
+                                public void onResponse(MessageResponse response) {
+
+                                    outputText = response.getText().get(0);
+                                }
+                                @Override
+                                public void onFailure(Exception e) {
+                                }
+                            });
+                } catch (Exception ex) {
+                    outputText = getString(R.string.ibm_no_responde);
+                }
+            }
+            else {
+                outputText = getString(R.string.ibm_no_responde);
+            }
+            while (outputText == null || outputText.equals("")) {
+                try {
+                    Thread.sleep(TIEMPO_BUCLE);
+                } catch (Exception ex) {
+                    outputText = "El hilo ha dado el error: " + ex.toString();
+                }
+            }
+            if(outputText.equals("nova")) {
+                outputText = "";
+                AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                builder.setTitle(getString(R.string.server_inactivo_titulo));
+                builder.setMessage(getString(R.string.server_inactivo_mensaje))
+                        .setCancelable(false)
+                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                //do things
+                            }
+                        });
+                AlertDialog alert = builder.create();
+                alert.show();
+            }
+            else {
+                comprobarServidor(outputText);
+                outputText = "";
+            }
             return true;
         }
         return super.onOptionsItemSelected(item);

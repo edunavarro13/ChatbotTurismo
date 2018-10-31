@@ -19,13 +19,19 @@
         </activity>
         <activity android:name=".DescripcionLugarActivity"
             android:screenOrientation="portrait"/>
+        <activity android:name=".DescripcionHotelActivity"
+            android:screenOrientation="portrait"/>
         <activity android:name=".AyudaTiposActivity"
             android:screenOrientation="portrait"/>
         <activity android:name=".VariosResultadosActivity"
             android:screenOrientation="portrait"/>
+        <activity android:name=".VariosResultadosHotelesActivity"
+            android:screenOrientation="portrait"/>
         <activity android:name=".PreferenciasActivity"
             android:screenOrientation="portrait"/>
         <activity android:name=".AcercaDeActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".VideosActivity"
             android:screenOrientation="portrait"/>
     </application>
 
