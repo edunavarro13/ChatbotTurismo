@@ -11,6 +11,16 @@ Es una aplicación móvil Android con dos funciones principales:
 
 Actualmente dUAck está disponible en Google Play en el siguiente enlace: [https://play.google.com/store/apps/details?id=es.ua.eduardo.duack](https://play.google.com/store/apps/details?id=es.ua.eduardo.duack)
 
+## Herramientas usadas
+* Frontend:
+  * Lenguaje: Java.
+  * Entorno de desarrollo: Android Studio.
+* Backend:
+  * Lenguaje: C#.
+  * Entorno de desarrollo: Visual Studio 2017.
+* IBM Watson Conversations para la lógica del chat.
+* NGrok para crear un túnel que permite accesos al backend local.
+
 ## Funcionamiento
 
 Su funcionamiento es muy simple: al ser un chatbot, las preguntas deben realizarse como si estuvieras hablando con una persona. Por poner algunos ejemplos:
